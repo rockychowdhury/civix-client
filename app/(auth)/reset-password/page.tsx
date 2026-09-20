@@ -9,7 +9,9 @@ export const metadata: Metadata = {
   description: "Set a new password for your Civix account.",
 };
 
-export default async function ResetPasswordPage(props: { searchParams: Promise<{ email?: string; otp?: string }> }) {
+export default async function ResetPasswordPage(props: {
+  searchParams: Promise<{ email?: string; otp?: string }>;
+}) {
   const searchParams = await props.searchParams;
 
   return (

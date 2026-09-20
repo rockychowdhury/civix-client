@@ -3,9 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
-import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
+import { Button } from "@/components/ui/button";
 import { authService } from "@/services/auth.service";
 import { Container } from "./container";
 import { TrackReportDialog } from "./track-report-dialog";
@@ -107,7 +106,7 @@ export function Navbar({ user }: NavbarProps) {
           )}
 
           <Button asChild variant="inverse" size="sm" className="ml-2 shrink-0 px-4 py-2">
-            <Link href="/register">Report an Issue</Link>
+            <Link href="/report">Report an Issue</Link>
           </Button>
 
           <ThemeToggle className="text-paper" />

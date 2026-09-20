@@ -33,8 +33,8 @@ export default function Error({
 
         {/* Description */}
         <p className="font-body text-[0.9375rem] leading-relaxed text-ink/60">
-          We hit an unexpected problem. This has been logged and our team will
-          look into it. You can try again, or head back to the homepage.
+          We hit an unexpected problem. This has been logged and our team will look into it. You can
+          try again, or head back to the homepage.
         </p>
 
         {/* Actions */}
@@ -49,9 +49,7 @@ export default function Error({
 
         {/* Digest (if available, for support) */}
         {error.digest && (
-          <p className="font-mono text-[0.6875rem] text-ink/30">
-            Reference: {error.digest}
-          </p>
+          <p className="font-mono text-[0.6875rem] text-ink/30">Reference: {error.digest}</p>
         )}
       </div>
     </div>

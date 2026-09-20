@@ -1,4 +1,3 @@
-import { getUser, getUserDisplayName } from "@/services/user.service";
 import { AccountabilityPromise } from "@/components/landing/accountability-promise";
 import { BrokenLoop } from "@/components/landing/broken-loop";
 import { FinalCTA } from "@/components/landing/final-cta";
@@ -13,6 +12,7 @@ import { TwoAudiences } from "@/components/landing/two-audiences";
 import { UnderTheHood } from "@/components/landing/under-the-hood";
 import { VerifiedTrusted } from "@/components/landing/verified-trusted";
 import { WhereCivixRuns } from "@/components/landing/where-civix-runs";
+import { getUser, getUserDisplayName } from "@/services/user.service";
 
 export default async function Home() {
   const user = await getUser();

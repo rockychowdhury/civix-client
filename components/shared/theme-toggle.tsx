@@ -21,18 +21,14 @@ export function ThemeToggle({ className }: { className?: string }) {
       <Sun
         className={cn(
           "absolute size-4 transition-all duration-200",
-          theme === "light"
-            ? "rotate-0 scale-100 opacity-100"
-            : "rotate-90 scale-0 opacity-0",
+          theme === "light" ? "rotate-0 scale-100 opacity-100" : "rotate-90 scale-0 opacity-0",
         )}
         aria-hidden="true"
       />
       <Moon
         className={cn(
           "absolute size-4 transition-all duration-200",
-          theme === "dark"
-            ? "rotate-0 scale-100 opacity-100"
-            : "-rotate-90 scale-0 opacity-0",
+          theme === "dark" ? "rotate-0 scale-100 opacity-100" : "-rotate-90 scale-0 opacity-0",
         )}
         aria-hidden="true"
       />

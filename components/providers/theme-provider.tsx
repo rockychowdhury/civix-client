@@ -2,10 +2,10 @@
 
 import {
   createContext,
+  type ReactNode,
   useCallback,
   useContext,
   useSyncExternalStore,
-  type ReactNode,
 } from "react";
 
 import {
@@ -31,16 +31,9 @@ function useThemeStore(): Theme {
     (listener: () => void) => subscribeToStoredValue(STORAGE_KEY, listener),
     [],
   );
-  const getSnapshot = useCallback(
-    () => getStoredValueSnapshot(STORAGE_KEY),
-    [],
-  );
+  const getSnapshot = useCallback(() => getStoredValueSnapshot(STORAGE_KEY), []);
 
-  const stored = useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-    getStoredValueServerSnapshot,
-  );
+  const stored = useSyncExternalStore(subscribe, getSnapshot, getStoredValueServerSnapshot);
 
   return stored === "dark" ? "dark" : "light";
 }
@@ -54,11 +47,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     document.documentElement.setAttribute("data-theme", next);
   }, [theme]);
 
-  return (
-    <ThemeContext value={{ theme, toggleTheme }}>
-      {children}
-    </ThemeContext>
-  );
+  return <ThemeContext value={{ theme, toggleTheme }}>{children}</ThemeContext>;
 }
 
 export function useTheme(): ThemeContextValue {

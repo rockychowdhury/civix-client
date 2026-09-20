@@ -39,7 +39,9 @@
 
 /* Smooth theme transition — scoped to avoid layout thrash */
 html[data-theme] {
-  transition: background-color 200ms ease, color 200ms ease;
+  transition:
+    background-color 200ms ease,
+    color 200ms ease;
 }
 
 @keyframes dot-pulse {

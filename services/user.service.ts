@@ -53,7 +53,7 @@ const getCachedUser = unstable_cache(
   {
     revalidate: 60, // Revalidate in background every 60 seconds
     tags: ["user-profile"],
-  }
+  },
 );
 
 export async function getUser(cookieStore?: CookieStore): Promise<MeResponse | null> {

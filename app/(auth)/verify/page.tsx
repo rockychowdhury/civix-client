@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default async function VerifyPage(props: { searchParams: Promise<{ email?: string }> }) {
   const searchParams = await props.searchParams;
-  
+
   return (
     <AuthShell panel={<VerifyPanel />}>
       <VerifyOtpForm initialEmail={searchParams.email} />

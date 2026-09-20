@@ -15,7 +15,7 @@ export function FinalCTA() {
         </p>
 
         <Button asChild size="lg">
-          <Link href="/register">Report an Issue — takes 40 seconds</Link>
+          <Link href="/report">Report an Issue — takes 40 seconds</Link>
         </Button>
       </Container>
     </section>

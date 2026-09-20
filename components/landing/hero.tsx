@@ -22,7 +22,7 @@ export function Hero() {
             </p>
             <div className="mt-8">
               <Button asChild size="lg">
-                <Link href="/register">Report an Issue — takes 40 seconds</Link>
+                <Link href="/report">Report an Issue — takes 40 seconds</Link>
               </Button>
             </div>
 

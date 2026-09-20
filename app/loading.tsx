@@ -7,12 +7,8 @@ export default function Loading() {
   const targetWord = "CIVIX";
   const cellCount = targetWord.length;
 
-  const [cells, setCells] = useState<string[]>(
-    Array(cellCount).fill(" "),
-  );
-  const [settled, setSettled] = useState<boolean[]>(
-    Array(cellCount).fill(false),
-  );
+  const [cells, setCells] = useState<string[]>(Array(cellCount).fill(" "));
+  const [settled, setSettled] = useState<boolean[]>(Array(cellCount).fill(false));
 
   useEffect(() => {
     const intervals: ReturnType<typeof setInterval>[] = [];
@@ -46,10 +42,13 @@ export default function Loading() {
       }, settleDelay);
     }
 
-    const loopTimer = setTimeout(() => {
-      setSettled(Array(cellCount).fill(false));
-      setCells(Array(cellCount).fill(" "));
-    }, 600 + cellCount * 320 + 1600);
+    const loopTimer = setTimeout(
+      () => {
+        setSettled(Array(cellCount).fill(false));
+        setCells(Array(cellCount).fill(" "));
+      },
+      600 + cellCount * 320 + 1600,
+    );
 
     return () => {
       for (const interval of intervals) clearInterval(interval);
@@ -61,11 +60,7 @@ export default function Loading() {
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-paper">
       <div className="flex flex-col items-center gap-8">
         {/* Split-flap board cells */}
-        <div
-          className="flex items-center gap-1.5"
-          role="status"
-          aria-label="Loading"
-        >
+        <div className="flex items-center gap-1.5" role="status" aria-label="Loading">
           {cells.map((char, i) => (
             <div
               key={i}
@@ -76,9 +71,7 @@ export default function Loading() {
 
               <span
                 className={`font-mono text-2xl font-medium tracking-widest sm:text-3xl ${
-                  settled[i]
-                    ? "text-signal-resolved"
-                    : "text-paper/80"
+                  settled[i] ? "text-signal-resolved" : "text-paper/80"
                 } transition-colors duration-100`}
               >
                 {char}
@@ -106,9 +99,7 @@ export default function Loading() {
           ))}
         </div>
 
-        <p className="font-body text-sm text-ink/50">
-          Loading…
-        </p>
+        <p className="font-body text-sm text-ink/50">Loading…</p>
       </div>
     </div>
   );

@@ -18,9 +18,8 @@ export default function NotFound() {
 
         {/* Description */}
         <p className="font-body text-[0.9375rem] leading-relaxed text-ink/60">
-          The page you&apos;re looking for may have been moved, removed, or
-          never existed. If you followed a link here, let us know so we can fix
-          it.
+          The page you&apos;re looking for may have been moved, removed, or never existed. If you
+          followed a link here, let us know so we can fix it.
         </p>
 
         {/* Actions */}

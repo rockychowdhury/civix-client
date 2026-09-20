@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import { ProgressRail } from "@/components/ui/progress-rail";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { Container } from "./container";
 
@@ -154,17 +155,7 @@ export function HowCivixWorks() {
           })}
         </div>
 
-        <div className="mt-8 flex items-center gap-4">
-          <div className="h-px flex-1 bg-line">
-            <div
-              className="h-px bg-ledger transition-[width] duration-300"
-              style={{ width: `${((active + 1) / steps.length) * 100}%` }}
-            />
-          </div>
-          <span className="font-mono text-xs tabular-nums text-ink/50">
-            {active + 1} / {steps.length}
-          </span>
-        </div>
+        <ProgressRail currentStep={active + 1} totalSteps={steps.length} className="mt-8" />
 
         <p className="mt-6 font-body text-sm leading-relaxed text-ink/55">
           No smartphone? Report by SMS to{" "}

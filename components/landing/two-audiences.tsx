@@ -16,7 +16,7 @@ export function TwoAudiences() {
               complaint from submission to resolution, so you always know where things stand.
             </p>
             <Button asChild>
-              <Link href="/register">Report an Issue</Link>
+              <Link href="/report">Report an Issue</Link>
             </Button>
           </div>
         </div>
