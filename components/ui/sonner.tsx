@@ -6,7 +6,7 @@ import { Toaster as Sonner, type ToasterProps } from "sonner";
 function Toaster({ toastOptions, ...props }: ToasterProps) {
   return (
     <Sonner
-      position="bottom-left"
+      position="bottom-right"
       closeButton
       style={
         {

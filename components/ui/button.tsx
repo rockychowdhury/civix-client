@@ -77,11 +77,11 @@ function Button({
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     >
-      <span className="relative inline-flex items-center justify-center overflow-hidden">
+      <span className="grid place-items-center">
         <span
           className={cn(
-            "inline-flex items-center gap-2 transition-opacity duration-150 motion-reduce:transition-none",
-            loading && "opacity-0",
+            "col-start-1 row-start-1 flex items-center gap-2 transition-opacity duration-150 motion-reduce:transition-none",
+            loading && "opacity-0 invisible",
           )}
         >
           {children}
@@ -89,7 +89,7 @@ function Button({
         {loading && (
           <span
             aria-hidden="true"
-            className="absolute inset-0 flex items-center justify-center whitespace-nowrap"
+            className="col-start-1 row-start-1 flex items-center justify-center whitespace-nowrap"
           >
             {loadingText}
           </span>

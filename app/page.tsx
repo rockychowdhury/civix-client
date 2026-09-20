@@ -1,27 +1,29 @@
-"use client";
+import { getUser, getUserDisplayName } from "@/services/user.service";
+import { AccountabilityPromise } from "@/components/landing/accountability-promise";
+import { BrokenLoop } from "@/components/landing/broken-loop";
+import { FinalCTA } from "@/components/landing/final-cta";
+import { Footer } from "@/components/landing/footer";
+import { Hero } from "@/components/landing/hero";
+import { HowCivixWorks } from "@/components/landing/how-civix-works";
+import { Navbar } from "@/components/landing/navbar";
+import { ResolvedStories } from "@/components/landing/resolved-stories";
+import { SplitFlapBoard } from "@/components/landing/split-flap-board";
+import { TransparencyDashboard } from "@/components/landing/transparency-dashboard";
+import { TwoAudiences } from "@/components/landing/two-audiences";
+import { UnderTheHood } from "@/components/landing/under-the-hood";
+import { VerifiedTrusted } from "@/components/landing/verified-trusted";
+import { WhereCivixRuns } from "@/components/landing/where-civix-runs";
 
-import { Navbar } from "./components/navbar";
-import { Hero } from "./components/hero";
-import { LiveCityPulse } from "./components/live-city-pulse";
-import { BrokenLoop } from "./components/broken-loop";
-import { HowCivixWorks } from "./components/how-civix-works";
-import { UnderTheHood } from "./components/under-the-hood";
-import { TransparencyDashboard } from "./components/transparency-dashboard";
-import { AccountabilityPromise } from "./components/accountability-promise";
-import { TwoAudiences } from "./components/two-audiences";
-import { ResolvedStories } from "./components/resolved-stories";
-import { VerifiedTrusted } from "./components/verified-trusted";
-import { WhereCivixRuns } from "./components/where-civix-runs";
-import { FinalCTA } from "./components/final-cta";
-import { Footer } from "./components/footer";
+export default async function Home() {
+  const user = await getUser();
+  const navbarUser = user ? { name: getUserDisplayName(user) } : null;
 
-export default function Home() {
   return (
     <>
-      <Navbar />
-      <main style={{ minHeight: "calc(100vh - var(--nav-height))" }}>
+      <Navbar user={navbarUser} />
+      <main className="min-h-[calc(100vh-3.5rem)]">
         <Hero />
-        <LiveCityPulse />
+        <SplitFlapBoard />
         <BrokenLoop />
         <HowCivixWorks />
         <UnderTheHood />
