@@ -1,5 +1,5 @@
-import { DataTable, type DataTableColumn } from "@/components/modules/dashboard/DataTable";
-import { StatusPill } from "@/components/modules/dashboard/StatusPill";
+import { DataTable, type DataTableColumn } from "@/components/layout/dashboard/DataTable";
+import { StatusPill } from "@/components/layout/dashboard/StatusPill";
 
 type HistoryRow = {
   id: string;

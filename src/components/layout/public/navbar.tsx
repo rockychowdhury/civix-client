@@ -6,8 +6,10 @@ import { useEffect, useState } from "react";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { useGetMe, useLogout } from "@/hooks/auth.hook";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { Container } from "./container";
-import { TrackReportDialog } from "./track-report-dialog";
+import { TrackReportDialog } from "@/components/modules/landing/track-report-dialog";
 import { getDashboardHref } from "@/lib/role-routing";
 
 const RESOLVED_THIS_MONTH = "14,208";
@@ -20,8 +22,9 @@ const navLinks = [
 export function Navbar() {
   const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
-  const { data: user } = useGetMe();
+  const { data: user, isLoading } = useGetMe();
   const logoutMutation = useLogout();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -30,10 +33,22 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  async function handleLogout() {
-    await logoutMutation.mutateAsync();
-    router.refresh();
-  }
+  const handleLogout = () => {
+    logoutMutation.mutate(undefined, {
+      onSuccess: () => {
+        toast.success("Tata", {
+          description: "Logged out successfully",
+        });
+        queryClient.removeQueries({ queryKey: ["user"] });
+        router.push("/");
+      },
+      onError: () => {
+        toast.error("Logout failed", {
+          description: "Something went wrong",
+        });
+      },
+    });
+  };
 
   const userName = user?.citizenProfile?.firstName 
     ? `${user.citizenProfile.firstName} ${user.citizenProfile.lastName}`
@@ -95,7 +110,7 @@ export function Navbar() {
             </Link>
           ))}
 
-          {user ? (
+          {!isLoading && user ? (
             <span className="flex items-center gap-4">
               <span className="whitespace-nowrap py-1 font-body text-sm text-paper">
                 {userName}
@@ -113,19 +128,20 @@ export function Navbar() {
                 variant="ghost"
                 size="sm"
                 onClick={handleLogout}
+                loading={logoutMutation.isPending}
+                loadingText="Logging out…"
                 className="px-0 text-paper/80 hover:text-paper"
               >
                 Log out
               </Button>
             </span>
-          ) : (
-            <Link
-              href="/login"
-              className="whitespace-nowrap py-1 font-body text-sm text-paper/80 transition-colors hover:text-paper"
-            >
-              Log in
-            </Link>
-          )}
+          ) : !isLoading && !user ? (
+            <Button asChild variant="ghost" size="sm" className="px-0 text-paper/80 hover:text-paper">
+              <Link href="/login">
+                Log in
+              </Link>
+            </Button>
+          ) : null}
 
           <Button asChild variant="inverse" size="sm" className="ml-2 shrink-0 px-4 py-2">
             <Link href="/report">Report an Issue</Link>

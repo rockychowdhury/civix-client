@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { useVerifyAccount } from "@/hooks/auth.hook";
 import { cn } from "@/lib/utils";
 import { type OtpValues, otpFormSchema } from "@/validation";
@@ -97,79 +98,76 @@ export function VerifyOtpForm() {
           e.stopPropagation();
           form.handleSubmit();
         }}
-        className="flex flex-col gap-6"
         noValidate
       >
-        <form.Field
-          name="email"
-          children={(field) => (
-            <Input
-              type="hidden"
-              value={field.state.value}
-              onChange={(e) => field.handleChange(e.target.value)}
-            />
-          )}
-        />
-
-        <form.Field
-          name="otp"
-          children={(field) => {
-            const hasError = Boolean(field.state.meta.errors && field.state.meta.errors.length > 0);
-            return (
-              <div className="space-y-2">
-                <InputOTP
-                  maxLength={TOTAL_DIGITS}
-                  value={field.state.value}
-                  onChange={(value) => field.handleChange(value)}
-                  onBlur={field.handleBlur}
-                  inputMode="numeric"
-                  autoComplete="one-time-code"
-                  containerClassName="justify-start"
-                >
-                  <InputOTPGroup>
-                    {OTP_SLOTS.map((slotIndex) => (
-                      <InputOTPSlot key={slotIndex} index={slotIndex} aria-invalid={hasError} />
-                    ))}
-                  </InputOTPGroup>
-                </InputOTP>
-                {hasError && (
-                  <p className="text-[0.8rem] font-medium text-destructive">
-                    {field.state.meta.errors.join(", ")}
-                  </p>
-                )}
-              </div>
-            );
-          }}
-        />
-
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-          <p className="font-mono text-xs tabular-nums text-ink/50">
-            Code expires in {formatCountdown(expiresIn)}
-          </p>
-          <button
-            type="button"
-            disabled={!canResend}
-            onClick={handleResend}
-            className={cn(
-              "font-body text-xs transition-colors",
-              canResend
-                ? "text-ink underline decoration-line underline-offset-4 hover:decoration-ink"
-                : "cursor-not-allowed text-ink/35",
+        <FieldGroup>
+          <form.Field
+            name="email"
+            children={(field) => (
+              <Input
+                type="hidden"
+                value={field.state.value}
+                onChange={(e) => field.handleChange(e.target.value)}
+              />
             )}
-          >
-            {canResend ? "Resend code" : `Resend code in ${resendIn}s`}
-          </button>
-        </div>
+          />
 
-        <Button
-          type="submit"
-          disabled={verifyPending}
-          loading={verifyPending}
-          loadingText="Verifying…"
-          className="self-start"
-        >
-          Verify
-        </Button>
+          <form.Field
+            name="otp"
+            children={(field) => {
+              const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+              return (
+                <Field data-invalid={isInvalid}>
+                  <InputOTP
+                    maxLength={TOTAL_DIGITS}
+                    value={field.state.value}
+                    onChange={(value) => field.handleChange(value)}
+                    onBlur={field.handleBlur}
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    containerClassName="justify-start"
+                  >
+                    <InputOTPGroup>
+                      {OTP_SLOTS.map((slotIndex) => (
+                        <InputOTPSlot key={slotIndex} index={slotIndex} aria-invalid={isInvalid} />
+                      ))}
+                    </InputOTPGroup>
+                  </InputOTP>
+                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                </Field>
+              );
+            }}
+          />
+
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+            <p className="font-mono text-xs tabular-nums text-ink/50">
+              Code expires in {formatCountdown(expiresIn)}
+            </p>
+            <button
+              type="button"
+              disabled={!canResend}
+              onClick={handleResend}
+              className={cn(
+                "font-body text-xs transition-colors",
+                canResend
+                  ? "text-ink underline decoration-line underline-offset-4 hover:decoration-ink"
+                  : "cursor-not-allowed text-ink/35",
+              )}
+            >
+              {canResend ? "Resend code" : `Resend code in ${resendIn}s`}
+            </button>
+          </div>
+
+          <Button
+            type="submit"
+            disabled={verifyPending}
+            loading={verifyPending}
+            loadingText="Verifying…"
+            className="self-start"
+          >
+            Verify
+          </Button>
+        </FieldGroup>
       </form>
 
       <p className="font-body text-sm text-ink/60">

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { EmptyState } from "@/components/modules/dashboard/EmptyState";
+import { EmptyState } from "@/components/layout/dashboard/EmptyState";
 import {
   Table,
   TableBody,

@@ -1,4 +1,4 @@
-import { Container } from "./container";
+import { Container } from "@/components/layout/public/container";
 
 const pullQuote =
   "Most complaints don't fail because no one filed them. They fail because no one owns them after that.";

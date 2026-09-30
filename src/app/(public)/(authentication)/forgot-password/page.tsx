@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 
-import { AuthShell } from "@/components/modules/auth/auth-shell";
 import { ForgotPasswordForm } from "@/components/form/forgot-password-form";
-import { ForgotPasswordPanel } from "@/components/modules/auth/panels";
 
 export const metadata: Metadata = {
   title: "Reset your password",
@@ -10,9 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function ForgotPasswordPage() {
-  return (
-    <AuthShell panel={<ForgotPasswordPanel />}>
-      <ForgotPasswordForm />
-    </AuthShell>
-  );
+  return <ForgotPasswordForm />;
 }

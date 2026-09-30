@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 
-import { AuthShell } from "@/components/modules/auth/auth-shell";
-import { RegisterPanel } from "@/components/modules/auth/panels";
 import { RegisterForm } from "@/components/form/register-form";
 
 export const metadata: Metadata = {
@@ -11,9 +9,5 @@ export const metadata: Metadata = {
 };
 
 export default function RegisterPage() {
-  return (
-    <AuthShell panel={<RegisterPanel />}>
-      <RegisterForm />
-    </AuthShell>
-  );
+  return <RegisterForm />;
 }

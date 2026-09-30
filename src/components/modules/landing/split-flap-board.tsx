@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { Container } from "./container";
+import { Container } from "@/components/layout/public/container";
 
 const activities = [
   "Pothole reported on 4th Avenue — assigned to Roads Dept., 6 min ago",

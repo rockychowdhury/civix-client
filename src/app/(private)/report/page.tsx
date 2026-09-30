@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { Container } from "@/components/modules/landing/container";
-import { Footer } from "@/components/modules/landing/footer";
-import { Navbar } from "@/components/modules/landing/navbar";
+import { Container } from "@/components/layout/public/container";
+import { Footer } from "@/components/layout/public/footer";
+import { Navbar } from "@/components/layout/public/navbar";
 import { ReportWizard } from "@/components/modules/report/ReportWizard";
 
 export const metadata: Metadata = {

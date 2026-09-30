@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Container } from "./container";
+import { Container } from "@/components/layout/public/container";
 
 const wardData = [
   { ward: "Downtown", open: 42, resolved: 38, x: 52, y: 35 },

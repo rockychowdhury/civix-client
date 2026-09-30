@@ -1,7 +1,7 @@
-import { DataTable, type DataTableColumn } from "@/components/modules/dashboard/DataTable";
-import { PriorityBadge } from "@/components/modules/dashboard/PriorityBadge";
-import { SLACountdown } from "@/components/modules/dashboard/SLACountdown";
-import { StatusPill } from "@/components/modules/dashboard/StatusPill";
+import { DataTable, type DataTableColumn } from "@/components/layout/dashboard/DataTable";
+import { PriorityBadge } from "@/components/layout/dashboard/PriorityBadge";
+import { SLACountdown } from "@/components/layout/dashboard/SLACountdown";
+import { StatusPill } from "@/components/layout/dashboard/StatusPill";
 
 type WorkOrderRow = {
   id: string;

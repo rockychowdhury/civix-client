@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Container } from "./container";
+import { Container } from "@/components/layout/public/container";
 
 const stories = [
   {

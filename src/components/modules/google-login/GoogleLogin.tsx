@@ -45,6 +45,7 @@ export default function GoogleLoginComponent() {
 
   return (
     <GoogleLogin
+      useOneTap={false}
       theme="outline"
       shape="pill"
       text="continue_with"

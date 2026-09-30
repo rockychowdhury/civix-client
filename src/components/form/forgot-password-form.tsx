@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { useForgotPassword } from "@/hooks/auth.hook";
 import { type ForgotPasswordValues, forgotPasswordFormSchema } from "@/validation";
 
@@ -54,50 +54,51 @@ export function ForgotPasswordForm() {
           e.stopPropagation();
           form.handleSubmit();
         }}
-        className="flex flex-col gap-6"
         noValidate
       >
-        <form.Field
-          name="email"
-          children={(field) => (
-            <div className="space-y-2">
-              <Label htmlFor={field.name}>Email</Label>
-              <Input
-                id={field.name}
-                disabled={!!submittedEmail}
-                type="email"
-                inputMode="email"
-                autoComplete="email"
-                placeholder="you@example.com"
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={(e) => field.handleChange(e.target.value)}
-              />
-              {field.state.meta.errors ? (
-                <p className="text-[0.8rem] font-medium text-destructive">
-                  {field.state.meta.errors.join(", ")}
-                </p>
-              ) : null}
-            </div>
-          )}
-        />
-
-        {!submittedEmail && (
-          <form.Subscribe
-            selector={(state) => [state.canSubmit, state.isSubmitting]}
-            children={([canSubmit, isSubmitting]) => (
-              <Button
-                type="submit"
-                disabled={!canSubmit}
-                loading={isSubmitting}
-                loadingText="Sending code…"
-                className="self-start"
-              >
-                Send reset code
-              </Button>
-            )}
+        <FieldGroup>
+          <form.Field
+            name="email"
+            children={(field) => {
+              const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+              return (
+                <Field data-invalid={isInvalid}>
+                  <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+                  <Input
+                    id={field.name}
+                    disabled={!!submittedEmail}
+                    type="email"
+                    inputMode="email"
+                    autoComplete="email"
+                    placeholder="you@example.com"
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    aria-invalid={isInvalid}
+                  />
+                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                </Field>
+              );
+            }}
           />
-        )}
+
+          {!submittedEmail && (
+            <form.Subscribe
+              selector={(state) => [state.canSubmit, state.isSubmitting]}
+              children={([canSubmit, isSubmitting]) => (
+                <Button
+                  type="submit"
+                  disabled={!canSubmit}
+                  loading={isSubmitting}
+                  loadingText="Sending code…"
+                  className="self-start"
+                >
+                  Send reset code
+                </Button>
+              )}
+            />
+          )}
+        </FieldGroup>
       </form>
 
       {submittedEmail && (

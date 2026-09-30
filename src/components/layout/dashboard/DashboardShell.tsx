@@ -1,9 +1,9 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { MobileNav } from "@/components/modules/dashboard/MobileNav";
-import { Sidebar } from "@/components/modules/dashboard/Sidebar";
-import { Topbar } from "@/components/modules/dashboard/Topbar";
+import { MobileNav } from "@/components/layout/dashboard/MobileNav";
+import { Sidebar } from "@/components/layout/dashboard/Sidebar";
+import { Topbar } from "@/components/layout/dashboard/Topbar";
 import { useGetMe } from "@/hooks/auth.hook";
 import { getPortalNav } from "@/lib/navigation";
 import { cn } from "@/lib/utils";

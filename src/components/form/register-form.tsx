@@ -1,6 +1,8 @@
 "use client";
 
 import { useForm } from "@tanstack/react-form";
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -8,13 +10,20 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldSeparator,
+} from "@/components/ui/field";
 import { useRegistration } from "@/hooks/auth.hook";
 import { type RegisterValues, registerCitizenFormSchema } from "@/validation";
 import GoogleLoginComponent from "@/components/modules/google-login/GoogleLogin";
 
 export function RegisterForm() {
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
   const { mutate: registration, isPending: registrationPending } = useRegistration();
 
   const form = useForm({
@@ -81,166 +90,150 @@ export function RegisterForm() {
           e.stopPropagation();
           form.handleSubmit();
         }}
-        className="flex flex-col gap-6"
         noValidate
       >
-        <div className="flex gap-3">
+        <FieldGroup>
+          <div className="flex gap-3">
+            <form.Field
+              name="firstName"
+              children={(field) => {
+                const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <Field data-invalid={isInvalid} className="flex-1">
+                    <FieldLabel htmlFor={field.name}>First name</FieldLabel>
+                    <Input
+                      id={field.name}
+                      autoComplete="given-name"
+                      placeholder="Ayesha"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={isInvalid}
+                    />
+                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                  </Field>
+                );
+              }}
+            />
+
+            <form.Field
+              name="lastName"
+              children={(field) => {
+                const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <Field data-invalid={isInvalid} className="flex-1">
+                    <FieldLabel htmlFor={field.name}>Last name</FieldLabel>
+                    <Input
+                      id={field.name}
+                      autoComplete="family-name"
+                      placeholder="Rahman"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={isInvalid}
+                    />
+                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                  </Field>
+                );
+              }}
+            />
+          </div>
+
           <form.Field
-            name="firstName"
+            name="email"
             children={(field) => {
               const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
               return (
-                <div className="flex-1 space-y-2">
-                  <Label htmlFor={field.name}>First name</Label>
+                <Field data-invalid={isInvalid}>
+                  <FieldLabel htmlFor={field.name}>Email address</FieldLabel>
                   <Input
                     id={field.name}
-                    autoComplete="given-name"
-                    placeholder="Ayesha"
+                    type="email"
+                    inputMode="email"
+                    autoComplete="email"
+                    placeholder="you@example.com"
                     value={field.state.value}
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(e.target.value)}
                     aria-invalid={isInvalid}
                   />
-                  {isInvalid && field.state.meta.errors ? (
-                    <p className="text-[0.8rem] font-medium text-destructive">
-                      {field.state.meta.errors.join(", ")}
-                    </p>
-                  ) : null}
-                </div>
+                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                </Field>
               );
             }}
           />
 
           <form.Field
-            name="lastName"
+            name="phone"
             children={(field) => {
               const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
               return (
-                <div className="flex-1 space-y-2">
-                  <Label htmlFor={field.name}>Last name</Label>
+                <Field data-invalid={isInvalid}>
+                  <FieldLabel htmlFor={field.name}>
+                    Phone <span className="text-ink/40">(optional)</span>
+                  </FieldLabel>
                   <Input
                     id={field.name}
-                    autoComplete="family-name"
-                    placeholder="Rahman"
-                    value={field.state.value}
+                    type="tel"
+                    inputMode="tel"
+                    autoComplete="tel"
+                    placeholder="+880 1XXX XXXXXX"
+                    value={field.state.value || ""}
                     onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
+                    onChange={(e) => field.handleChange(e.target.value || undefined)}
                     aria-invalid={isInvalid}
                   />
-                  {isInvalid && field.state.meta.errors ? (
-                    <p className="text-[0.8rem] font-medium text-destructive">
-                      {field.state.meta.errors.join(", ")}
-                    </p>
-                  ) : null}
-                </div>
+                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                </Field>
               );
             }}
           />
-        </div>
 
-        <form.Field
-          name="email"
-          children={(field) => {
-            const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
-            return (
-              <div className="space-y-2">
-                <Label htmlFor={field.name}>Email address</Label>
-                <Input
-                  id={field.name}
-                  type="email"
-                  inputMode="email"
-                  autoComplete="email"
-                  placeholder="you@example.com"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  aria-invalid={isInvalid}
-                />
-                {isInvalid && field.state.meta.errors ? (
-                  <p className="text-[0.8rem] font-medium text-destructive">
-                    {field.state.meta.errors.join(", ")}
-                  </p>
-                ) : null}
-              </div>
-            );
-          }}
-        />
+          <form.Field
+            name="password"
+            children={(field) => {
+              const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+              return (
+                <Field data-invalid={isInvalid}>
+                  <FieldLabel htmlFor={field.name}>Password</FieldLabel>
+                  <div className="relative">
+                    <Input
+                      id={field.name}
+                      type={showPassword ? "text" : "password"}
+                      autoComplete="new-password"
+                      placeholder="At least 6 characters"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={isInvalid}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-ink/50 hover:text-ink transition-colors cursor-pointer"
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                </Field>
+              );
+            }}
+          />
 
-        <form.Field
-          name="phone"
-          children={(field) => {
-            const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
-            return (
-              <div className="space-y-2">
-                <Label htmlFor={field.name}>
-                  Phone <span className="text-ink/40">(optional)</span>
-                </Label>
-                <Input
-                  id={field.name}
-                  type="tel"
-                  inputMode="tel"
-                  autoComplete="tel"
-                  placeholder="+880 1XXX XXXXXX"
-                  value={field.state.value || ""}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value || undefined)}
-                  aria-invalid={isInvalid}
-                />
-                {isInvalid && field.state.meta.errors ? (
-                  <p className="text-[0.8rem] font-medium text-destructive">
-                    {field.state.meta.errors.join(", ")}
-                  </p>
-                ) : null}
-              </div>
-            );
-          }}
-        />
-
-        <form.Field
-          name="password"
-          children={(field) => {
-            const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
-            return (
-              <div className="space-y-2">
-                <Label htmlFor={field.name}>Password</Label>
-                <Input
-                  id={field.name}
-                  type="password"
-                  autoComplete="new-password"
-                  placeholder="At least 6 characters"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  aria-invalid={isInvalid}
-                />
-                {isInvalid && field.state.meta.errors ? (
-                  <p className="text-[0.8rem] font-medium text-destructive">
-                    {field.state.meta.errors.join(", ")}
-                  </p>
-                ) : null}
-              </div>
-            );
-          }}
-        />
-
-        <Button
-          type="submit"
-          disabled={registrationPending}
-          loading={registrationPending}
-          loadingText="Creating account…"
-          className="mt-2 self-start"
-        >
-          Create account
-        </Button>
+          <Button
+            type="submit"
+            disabled={registrationPending}
+            loading={registrationPending}
+            loadingText="Creating account…"
+            className="mt-2 self-start"
+          >
+            Create account
+          </Button>
+        </FieldGroup>
       </form>
 
-      <div className="flex items-center gap-4">
-        <div className="h-px flex-1 bg-ink/10" />
-        <span className="font-mono text-[10px] uppercase tracking-wider text-ink/50">
-          Or continue with
-        </span>
-        <div className="h-px flex-1 bg-ink/10" />
-      </div>
+      <FieldSeparator>Or continue with</FieldSeparator>
       
       <div className="flex justify-center">
         <GoogleLoginComponent />

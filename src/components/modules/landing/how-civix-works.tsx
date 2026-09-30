@@ -3,7 +3,7 @@
 import { useCallback, useRef, useState } from "react";
 import { ProgressRail } from "@/components/ui/progress-rail";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { Container } from "./container";
+import { Container } from "@/components/layout/public/container";
 
 const steps = [
   {

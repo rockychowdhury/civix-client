@@ -3,8 +3,8 @@
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { DataTable, type DataTableColumn } from "@/components/modules/dashboard/DataTable";
-import { PriorityBadge } from "@/components/modules/dashboard/PriorityBadge";
+import { DataTable, type DataTableColumn } from "@/components/layout/dashboard/DataTable";
+import { PriorityBadge } from "@/components/layout/dashboard/PriorityBadge";
 import { Button } from "@/components/ui/button";
 import {
   Command,

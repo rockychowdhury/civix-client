@@ -1,44 +1,55 @@
 "use client";
 
 import { useForm } from "@tanstack/react-form";
-
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { toast } from "sonner";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useLogin } from "@/hooks/auth.hook";
-import { type LoginValues, loginFormSchema } from "@/validation";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldSeparator,
+} from "@/components/ui/field";
+import { loginFormSchema } from "@/validation";
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
+import { useLogin, useGoogleOAuth } from "@/hooks/auth.hook";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { GoogleLogin } from "@react-oauth/google";
+import Link from "next/link";
 import GoogleLoginComponent from "@/components/modules/google-login/GoogleLogin";
 
-export function LoginForm() {
+export default function LoginForm() {
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { mutate: login, isPending: loginPending } = useLogin();
 
   const form = useForm({
     defaultValues: {
-      email: "",
-      password: "",
+      email: "rocky20809@gmail.com",
+      password: "shahin567",
     },
     
     validators: {
       onSubmit: loginFormSchema,
     },
     onSubmit: ({ value }) => {
-      login(value, {
+      const loginData = {
+        email: value.email,
+        password: value.password,
+      };
+
+      login(loginData, {
         onSuccess: (res) => {
           toast.success("Welcome back", {
-            description: "You're signed in. Your tracked reports are up to date.",
+            description: `${res.data?.user?.displayName} you are logged in successfully`,
           });
-          // Force a hard navigation so the proxy can evaluate roles and redirect
-          window.location.assign(searchParams.get("redirectTo") || "/login");
+          router.push("/");
         },
-        onError: (error: any) => {
+        onError: (err) => {
           toast.error("Couldn't log you in", {
-            description: error.message || "Invalid credentials or network error.",
+            description: err?.message || "Invalid credentials or network error.",
           });
         },
       });
@@ -62,89 +73,84 @@ export function LoginForm() {
           e.stopPropagation();
           form.handleSubmit();
         }}
-        className="flex flex-col gap-6"
-        noValidate
       >
-        <form.Field
-          name="email"
-          children={(field) => {
-            const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
-            return (
-              <div className="space-y-2">
-                <Label htmlFor={field.name}>Email</Label>
-                <Input
-                  id={field.name}
-                  type="email"
-                  inputMode="email"
-                  autoComplete="email"
-                  placeholder="you@example.com"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  aria-invalid={isInvalid}
-                />
-                {isInvalid && field.state.meta.errors ? (
-                  <p className="text-[0.8rem] font-medium text-destructive">
-                    {field.state.meta.errors.join(", ")}
-                  </p>
-                ) : null}
-              </div>
-            );
-          }}
-        />
+        <FieldGroup>
+          <form.Field
+            name="email"
+            children={(field) => {
+              const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+              return (
+                <Field data-invalid={isInvalid}>
+                  <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+                  <Input
+                    id={field.name}
+                    type="email"
+                    inputMode="email"
+                    autoComplete="email"
+                    placeholder="you@example.com"
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    aria-invalid={isInvalid}
+                  />
+                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                </Field>
+              );
+            }}
+          />
 
-        <form.Field
-          name="password"
-          children={(field) => {
-            const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
-            return (
-              <div className="space-y-2">
-                <div className="flex items-center justify-between gap-4">
-                  <Label htmlFor={field.name}>Password</Label>
-                  <Link
-                    href="/forgot-password"
-                    className="font-body text-xs text-ink/60 underline-offset-4 transition-colors hover:text-ink hover:underline"
-                  >
-                    Forgot password?
-                  </Link>
-                </div>
-                <Input
-                  id={field.name}
-                  type="password"
-                  autoComplete="current-password"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  aria-invalid={isInvalid}
-                />
-                {isInvalid && field.state.meta.errors ? (
-                  <p className="text-[0.8rem] font-medium text-destructive">
-                    {field.state.meta.errors.join(", ")}
-                  </p>
-                ) : null}
-              </div>
-            );
-          }}
-        />
+          <form.Field
+            name="password"
+            children={(field) => {
+              const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+              return (
+                <Field data-invalid={isInvalid}>
+                  <div className="flex items-center justify-between gap-4">
+                    <FieldLabel htmlFor={field.name}>Password</FieldLabel>
+                    <Link
+                      href="/forgot-password"
+                      className="font-body text-xs text-ink/60 underline-offset-4 transition-colors hover:text-ink hover:underline"
+                    >
+                      Forgot password?
+                    </Link>
+                  </div>
+                  <div className="relative">
+                    <Input
+                      id={field.name}
+                      type={showPassword ? "text" : "password"}
+                      autoComplete="current-password"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={isInvalid}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-ink/50 hover:text-ink transition-colors cursor-pointer"
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                </Field>
+              );
+            }}
+          />
 
-        <Button
-          type="submit"
-          disabled={loginPending}
-          loading={loginPending}
-          loadingText="Signing in…"
-          className="mt-2 self-start"
-        >
-          Log in
-        </Button>
+          <Button
+            type="submit"
+            disabled={loginPending}
+            loading={loginPending}
+            loadingText="Signing in…"
+            className="mt-2 self-start"
+          >
+            Log in
+          </Button>
+        </FieldGroup>
       </form>
 
-      <div className="flex items-center gap-4">
-        <div className="h-px flex-1 bg-ink/10" />
-        <span className="font-mono text-[10px] uppercase tracking-wider text-ink/50">
-          Or continue with
-        </span>
-        <div className="h-px flex-1 bg-ink/10" />
-      </div>
+      <FieldSeparator>Or continue with</FieldSeparator>
       
       <div className="flex justify-center">
         <GoogleLoginComponent />

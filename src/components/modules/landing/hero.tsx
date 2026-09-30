@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import { Container } from "./container";
+import { Container } from "@/components/layout/public/container";
 import { StatusCard } from "./status-card";
 import { TrackReportForm } from "./track-report-form";
 

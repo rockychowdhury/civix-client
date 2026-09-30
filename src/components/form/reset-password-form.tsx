@@ -9,10 +9,9 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { useResetPassword } from "@/hooks/auth.hook";
 import { type ResetPasswordValues, resetPasswordFormSchema } from "@/validation";
-import { PasswordStrength } from "./password-strength";
 
 const REDIRECT_DELAY_MS = 1600;
 
@@ -79,117 +78,117 @@ export function ResetPasswordForm() {
             e.stopPropagation();
             form.handleSubmit();
           }}
-          className="flex flex-col gap-6"
           noValidate
         >
-          <form.Field
-            name="email"
-            children={(field) => (
-              <div className="space-y-2">
-                <Label htmlFor={field.name}>Email</Label>
-                <Input
-                  id={field.name}
-                  readOnly={Boolean(initialEmail)}
-                  type="email"
-                  inputMode="email"
-                  autoComplete="email"
-                  placeholder="you@example.com"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
-                {field.state.meta.errors ? (
-                  <p className="text-[0.8rem] font-medium text-destructive">
-                    {field.state.meta.errors.join(", ")}
-                  </p>
-                ) : null}
-              </div>
-            )}
-          />
+          <FieldGroup>
+            <form.Field
+              name="email"
+              children={(field) => {
+                const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+                    <Input
+                      id={field.name}
+                      readOnly={Boolean(initialEmail)}
+                      type="email"
+                      inputMode="email"
+                      autoComplete="email"
+                      placeholder="you@example.com"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={isInvalid}
+                    />
+                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                  </Field>
+                );
+              }}
+            />
 
-          <form.Field
-            name="otp"
-            children={(field) => (
-              <div className="space-y-2">
-                <Label htmlFor={field.name}>Reset code</Label>
-                <Input
-                  id={field.name}
-                  readOnly={Boolean(initialOtp)}
-                  inputMode="numeric"
-                  autoComplete="one-time-code"
-                  placeholder="Check your inbox for the 6-digit code"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
-                {field.state.meta.errors ? (
-                  <p className="text-[0.8rem] font-medium text-destructive">
-                    {field.state.meta.errors.join(", ")}
-                  </p>
-                ) : null}
-              </div>
-            )}
-          />
+            <form.Field
+              name="otp"
+              children={(field) => {
+                const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>Reset code</FieldLabel>
+                    <Input
+                      id={field.name}
+                      readOnly={Boolean(initialOtp)}
+                      inputMode="numeric"
+                      autoComplete="one-time-code"
+                      placeholder="Check your inbox for the 6-digit code"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={isInvalid}
+                    />
+                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                  </Field>
+                );
+              }}
+            />
 
-          <form.Field
-            name="newPassword"
-            children={(field) => (
-              <div className="space-y-2">
-                <Label htmlFor={field.name}>New password</Label>
-                <Input
-                  id={field.name}
-                  type="password"
-                  autoComplete="new-password"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
-                <PasswordStrength value={field.state.value} />
-                {field.state.meta.errors ? (
-                  <p className="text-[0.8rem] font-medium text-destructive">
-                    {field.state.meta.errors.join(", ")}
-                  </p>
-                ) : null}
-              </div>
-            )}
-          />
+            <form.Field
+              name="newPassword"
+              children={(field) => {
+                const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>New password</FieldLabel>
+                    <Input
+                      id={field.name}
+                      type="password"
+                      autoComplete="new-password"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={isInvalid}
+                    />
+                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                  </Field>
+                );
+              }}
+            />
 
-          <form.Field
-            name="confirmPassword"
-            children={(field) => (
-              <div className="space-y-2">
-                <Label htmlFor={field.name}>Confirm new password</Label>
-                <Input
-                  id={field.name}
-                  type="password"
-                  autoComplete="new-password"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
-                {field.state.meta.errors ? (
-                  <p className="text-[0.8rem] font-medium text-destructive">
-                    {field.state.meta.errors.join(", ")}
-                  </p>
-                ) : null}
-              </div>
-            )}
-          />
+            <form.Field
+              name="confirmPassword"
+              children={(field) => {
+                const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>Confirm new password</FieldLabel>
+                    <Input
+                      id={field.name}
+                      type="password"
+                      autoComplete="new-password"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={isInvalid}
+                    />
+                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                  </Field>
+                );
+              }}
+            />
 
-          <form.Subscribe
-            selector={(state) => [state.canSubmit, state.isSubmitting]}
-            children={([canSubmit, isSubmitting]) => (
-              <Button
-                type="submit"
-                disabled={!canSubmit}
-                loading={isSubmitting}
-                loadingText="Updating…"
-                className="mt-2 self-start"
-              >
-                Update password
-              </Button>
-            )}
-          />
+            <form.Subscribe
+              selector={(state) => [state.canSubmit, state.isSubmitting]}
+              children={([canSubmit, isSubmitting]) => (
+                <Button
+                  type="submit"
+                  disabled={!canSubmit}
+                  loading={isSubmitting}
+                  loadingText="Updating…"
+                  className="mt-2 self-start"
+                >
+                  Update password
+                </Button>
+              )}
+            />
+          </FieldGroup>
         </form>
       )}
 

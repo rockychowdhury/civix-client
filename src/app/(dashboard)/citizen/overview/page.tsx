@@ -2,7 +2,7 @@
 
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { StatusPill } from "@/components/modules/dashboard/StatusPill";
+import { StatusPill } from "@/components/layout/dashboard/StatusPill";
 import { Button } from "@/components/ui/button";
 import { useGetMe } from "@/hooks/auth.hook";
 

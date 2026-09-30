@@ -35,3 +35,4 @@ Please adhere to the following stack and architecture choices when working on th
 - **Reusability**: Ensure all components are modular and reusable.
 - **Styling Guidelines**: Use the global CSS theme. Do NOT use hardcoded colors.
 - Maintain existing UI designs exactly as they are when restructuring or refactoring parts of the codebase.
+- **Interactivity**: All actionable items (buttons, icons, toggles, links) MUST change the cursor on hover (e.g., using `cursor-pointer` utility) to clearly indicate interactivity.
