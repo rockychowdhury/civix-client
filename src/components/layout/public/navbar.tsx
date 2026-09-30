@@ -9,7 +9,6 @@ import { useGetMe, useLogout } from "@/hooks/auth.hook";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Container } from "./container";
-import { TrackReportDialog } from "@/components/modules/landing/track-report-dialog";
 import { getDashboardHref } from "@/lib/role-routing";
 
 const RESOLVED_THIS_MONTH = "14,208";
@@ -89,16 +88,14 @@ export function Navbar() {
         </Link>
 
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-          <TrackReportDialog>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="px-0 text-paper/80 hover:text-paper"
-            >
-              Track a Report
-            </Button>
-          </TrackReportDialog>
+          <Button
+            asChild
+            variant="ghost"
+            size="sm"
+            className="px-0 text-paper/80 hover:text-paper"
+          >
+            <Link href="/track">Track a Report</Link>
+          </Button>
 
           {navLinks.map((link) => (
             <Link

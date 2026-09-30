@@ -24,6 +24,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "cn": "^0.3.0",
+    "date-fns": "^4.4.0",
     "input-otp": "^1.5.0",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^1.47.0",

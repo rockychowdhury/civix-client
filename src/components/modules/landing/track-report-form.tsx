@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-const MOCK_RESULT = "Pothole on 4th Avenue — technician assigned, updated 15 min ago.";
+import { useRouter } from "next/navigation";
 
 export function TrackReportForm({
   className,
@@ -18,8 +18,8 @@ export function TrackReportForm({
   id?: string;
   autoFocus?: boolean;
 }) {
+  const router = useRouter();
   const [value, setValue] = React.useState("");
-  const [loading, setLoading] = React.useState(false);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -27,18 +27,13 @@ export function TrackReportForm({
     const trackingNumber = value.trim();
     if (!trackingNumber) {
       toast.error("Enter a tracking number", {
-        description: "Tracking numbers look like CVX-2026-004821.",
+        description: "Tracking numbers look like ISS-260923-0001.",
       });
       return;
     }
 
-    setLoading(true);
-    window.setTimeout(() => {
-      setLoading(false);
-      toast.success("Report found", {
-        description: MOCK_RESULT,
-      });
-    }, 700);
+    const params = new URLSearchParams({ issueNumber: trackingNumber });
+    router.push(`/track?${params.toString()}`);
   }
 
   return (
@@ -63,8 +58,6 @@ export function TrackReportForm({
         type="submit"
         variant="secondary"
         size="sm"
-        loading={loading}
-        loadingText="Looking up…"
         className="shrink-0 py-2"
       >
         Track
