@@ -10,9 +10,7 @@ function requireEnv(name: string): string {
 
 export const env = {
   get apiUrl() {
-    return typeof window !== "undefined"
-      ? "/api/proxy"
-      : (process.env.NEXT_PUBLIC_API_URL ?? process.env.API_URL ?? API_URL_FALLBACK);
+    return process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.NEXT_PUBLIC_API_URL ?? API_URL_FALLBACK;
   },
   jwt: {
     get accessSecret() {

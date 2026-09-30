@@ -58,7 +58,7 @@ export function VerifyOtpForm() {
         },
         onError: (error: any) => {
           toast.error("Couldn't verify that code", {
-            description: error.message || "Invalid OTP code.",
+            description: error?.data?.message || "Invalid OTP code.",
           });
         }
       });

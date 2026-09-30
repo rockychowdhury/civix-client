@@ -1,5 +1,5 @@
 import apiClient from "@/lib/apiClient";
-import type { LoginPayload, RegistrationPayload, VerifyAccountPayload } from "@/types";
+import type { LoginPayload, RegistrationPayload, VerifyAccountPayload, IForgotPassword, IResetPassword } from "@/types";
 
 export function userLogin(payload: LoginPayload) {
   return apiClient("/auth/login", { method: "POST", body: payload });
@@ -10,7 +10,7 @@ export function verifyAccount(payload: VerifyAccountPayload) {
 }
 
 export function userRegistration(payload: RegistrationPayload) {
-  return apiClient("/auth/register", { method: "POST", body: payload });
+  return apiClient("/auth/register-citizen", { method: "POST", body: payload });
 }
 
 export function userLogout() {
@@ -25,11 +25,11 @@ export function googleOAuth(payload: { idToken: string }) {
   return apiClient("/auth/google", { method: "POST", body: payload });
 }
 
-export function userForgotPassword(payload: { email: string }) {
+export function userForgotPassword(payload: IForgotPassword) {
   return apiClient("/auth/forgot-password", { method: "POST", body: payload });
 }
 
-export function userResetPassword(payload: { email: string; otp: string; password: string }) {
+export function userResetPassword(payload: IResetPassword) {
   return apiClient("/auth/reset-password", { method: "POST", body: payload });
 }
 

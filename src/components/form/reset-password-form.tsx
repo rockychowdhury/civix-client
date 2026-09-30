@@ -39,7 +39,7 @@ export function ResetPasswordForm() {
         await resetPasswordMutation.mutateAsync({
           email: value.email,
           otp: value.otp,
-          password: value.newPassword,
+          newPassword: value.newPassword,
         });
         setDone(true);
         toast.success("Password updated", {
@@ -48,7 +48,7 @@ export function ResetPasswordForm() {
         window.setTimeout(() => router.push("/login"), REDIRECT_DELAY_MS);
       } catch (error: any) {
         toast.error("Couldn't update your password", {
-          description: error.message || "Failed to reset password.",
+          description: error?.data?.message || "Failed to reset password. Please try again.",
         });
       }
     },

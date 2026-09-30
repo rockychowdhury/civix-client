@@ -47,9 +47,9 @@ export default function LoginForm() {
           });
           router.push("/");
         },
-        onError: (err) => {
+        onError: (err: any) => {
           toast.error("Couldn't log you in", {
-            description: err?.message || "Invalid credentials or network error.",
+            description: err?.data?.message || "Invalid credentials or network error.",
           });
         },
       });

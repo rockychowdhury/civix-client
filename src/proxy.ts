@@ -65,7 +65,6 @@ export async function proxy(request: NextRequest) {
   const isPublicRoute = PUBLIC_ROUTES.some(
     (route) => pathname === route || pathname.startsWith(route + "/"),
   );
-  const isApiProxy = pathname.startsWith("/api/proxy");
 
   let finalResponse: NextResponse;
 
@@ -78,8 +77,7 @@ export async function proxy(request: NextRequest) {
   else if (
     (!accessToken || !decodedAccessToken?.success) &&
     !isPublicRoute &&
-    !isAuthRoute &&
-    !isApiProxy
+    !isAuthRoute
   ) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("redirectTo", pathname);
@@ -109,26 +107,7 @@ export async function proxy(request: NextRequest) {
   } else if (pathname.startsWith(ROLE_PORTAL_MAP["CITIZEN"]) && !userRoles.includes("CITIZEN")) {
     finalResponse = NextResponse.redirect(new URL(getDashboardHref(userRoles) || "/", request.url));
   } else {
-    // Forward cookies if they were refreshed during an API proxy request
-    if (newlyRefreshedTokens && isApiProxy) {
-      const requestHeaders = new Headers(request.headers);
-      requestHeaders.set(
-        "Cookie",
-        request.cookies
-          .getAll()
-          .map((c) => {
-            if (c.name === accessTokenCookie)
-              return `${c.name}=${newlyRefreshedTokens!.accessToken}`;
-            if (c.name === refreshTokenCookie)
-              return `${c.name}=${newlyRefreshedTokens!.refreshToken}`;
-            return `${c.name}=${c.value}`;
-          })
-          .join("; "),
-      );
-      finalResponse = NextResponse.next({ request: { headers: requestHeaders } });
-    } else {
-      finalResponse = NextResponse.next();
-    }
+    finalResponse = NextResponse.next();
   }
 
   // Apply cookie changes to the response

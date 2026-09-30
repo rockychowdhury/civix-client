@@ -40,12 +40,11 @@ export function RegisterForm() {
     onSubmit: ({ value }) => {
       // Create payload according to API expectation
       const registrationData = {
-        name: `${value.firstName} ${value.lastName}`,
+        firstName: value.firstName,
+        lastName: value.lastName,
         email: value.email,
         password: value.password,
-        patient: {
-          contactNumber: value.phone || "",
-        },
+        phone: value.phone || undefined,
       };
 
       registration(registrationData as any, {
@@ -65,7 +64,7 @@ export function RegisterForm() {
         },
         onError: (error: any) => {
           toast.error("Couldn't create your account", {
-            description: error.message || "Something went wrong.",
+            description: error?.data?.message || "Something went wrong. Please try again.",
           });
         },
       });
