@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { PortalNav, PortalNavItem } from "@/lib/navigation";
+import { Logo } from "@/components/shared/logo";
 import { cn } from "@/lib/utils";
 
 export function Sidebar({ nav }: { nav: PortalNav }) {
@@ -10,14 +11,10 @@ export function Sidebar({ nav }: { nav: PortalNav }) {
 
   return (
     <aside className="hidden w-60 shrink-0 flex-col border-r border-line bg-paper md:flex">
-      <Link
-        href="/"
-        className="flex h-14 items-center gap-2 border-b border-line px-6"
-        aria-label="Civix home"
-      >
-        <span className="font-display text-lg tracking-tight text-ink">Civix</span>
-        <span className="font-mono text-xs text-ink/30">portal</span>
-      </Link>
+      <div className="flex h-14 items-center gap-2 border-b border-line px-6">
+        <Logo className="text-ink" href="/" textClassName="text-lg" />
+        <span className="font-mono text-xs text-ink/30 mt-1">portal</span>
+      </div>
 
       <div className="flex-1 overflow-y-auto px-3 py-6">
         <p className="px-3 font-mono text-[0.6875rem] font-medium uppercase tracking-[0.1em] text-ink/40">

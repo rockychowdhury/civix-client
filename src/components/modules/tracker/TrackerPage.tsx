@@ -89,32 +89,37 @@ export function TrackerPage() {
   // Success state with data
   if (data) {
     return (
-      <div className="flex h-dvh w-full flex-col lg:flex-row bg-paper">
+      <div className="relative flex h-dvh w-full flex-col lg:flex-row bg-paper">
         {/* Left pane: Fixed, 40% width on desktop */}
-        <div className="flex shrink-0 flex-col bg-paper p-6 sm:p-8 lg:w-2/5 lg:border-r lg:border-ink/10">
-          <div className="mb-6 flex flex-wrap items-center gap-4">
-            <Link
-              href="/"
-              className="flex items-center gap-1.5 font-body text-xs font-medium text-ink/50 hover:text-ink transition-colors"
-            >
-              <MoveLeft size={14} />
-              Home
-            </Link>
-            <div className="h-3 w-px bg-ink/20" />
-            <Link
-              href="/track"
-              className="font-body text-xs font-medium text-ink/50 hover:text-ink transition-colors"
-            >
-              Track another issue
-            </Link>
+        <div className="flex shrink-0 flex-col bg-paper p-6 sm:p-8 lg:w-2/5 lg:border-r lg:border-ink/10 lg:items-end">
+          <div className="relative w-full pt-16 sm:pt-20 lg:pt-28 lg:max-w-md xl:max-w-lg lg:pr-8 xl:pr-12">
+            {/* Navigation Action Links (Absolute positioned to detach from column alignment but align with text) */}
+            <div className="absolute left-0 top-0 flex flex-wrap items-center gap-4 z-20">
+              <Link
+                href="/"
+                className="flex items-center gap-1.5 font-body text-xs font-medium text-ink/50 hover:text-ink transition-colors cursor-pointer"
+              >
+                <MoveLeft size={14} />
+                Home
+              </Link>
+              <div className="h-3 w-px bg-ink/20" />
+              <Link
+                href="/track"
+                className="font-body text-xs font-medium text-ink/50 hover:text-ink transition-colors cursor-pointer"
+              >
+                Track another issue
+              </Link>
+            </div>
+            
+            <CurrentStatusPanel issue={data} />
           </div>
-          
-          <CurrentStatusPanel issue={data} />
         </div>
 
         {/* Right pane: Scrollable, 60% width on desktop */}
-        <div className="flex-1 overflow-hidden bg-paper/50">
-          <StatusHistoryLedger history={data.statusHistory} />
+        <div className="flex-1 overflow-hidden bg-paper/50 p-6 sm:p-8 flex justify-start">
+          <div className="w-full h-full pt-8 sm:pt-12 lg:pt-20 lg:max-w-3xl lg:pl-8 xl:pl-12">
+            <StatusHistoryLedger history={data.statusHistory} />
+          </div>
         </div>
       </div>
     );

@@ -12,7 +12,7 @@ interface DescriptionStepProps {
 export function DescriptionStep({ form, selectedCategory }: DescriptionStepProps) {
   return (
     <form.Field
-      name="description"
+      name="request.description"
       children={(field: any) => {
         const description = field.state.value || "";
         const charCount = description.length;

@@ -67,7 +67,7 @@ export function StatusHistoryLedger({ history }: { history: StatusHistoryEntry[]
       {/* Top fade/gradient scroll affordance */}
       <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-8 bg-gradient-to-b from-paper to-transparent" />
       
-      <div className="h-full overflow-y-auto overflow-x-hidden pt-4 pb-12 scrollbar-none">
+      <div className="h-full overflow-y-auto overflow-x-hidden pt-8 pb-12 scrollbar-none">
         <div className="flex flex-col">
           {sortedHistory.map((entry, index) => {
             const isNewest = index === 0;

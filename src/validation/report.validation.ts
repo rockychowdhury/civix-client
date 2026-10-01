@@ -3,19 +3,22 @@ import { z } from "zod";
 export const locationSchema = z.object({
   latitude: z.number().nullable().optional(),
   longitude: z.number().nullable().optional(),
-  address: z.string().min(5, "Address is too short").max(255).optional(),
+  address: z.string().min(5, "Address is too short").max(255),
   landmark: z.string().max(255).optional().nullable(),
   postalCode: z.string().max(20).optional().nullable(),
-  wardId: z.string().uuid("Invalid ward").optional(),
-  zoneId: z.string().uuid("Invalid zone").optional(),
+  wardId: z.string().uuid("Invalid ward").optional().nullable(),
+  zoneId: z.string().uuid("Invalid zone").optional().nullable(),
+  municipalityId: z.string().uuid("Invalid municipality"),
 });
 
 export const serviceRequestSchema = z.object({
-  categoryId: z.string().uuid("Please select a category"),
-  description: z
-    .string()
-    .min(10, "Please provide more details")
-    .max(1000, "Description is too long"),
+  request: z.object({
+    categoryId: z.string().uuid("Please select a category"),
+    description: z
+      .string()
+      .min(10, "Please provide more details")
+      .max(1000, "Description is too long"),
+  }),
   location: locationSchema,
 });
 

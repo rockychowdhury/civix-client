@@ -3,7 +3,7 @@ import type { CivicIssue } from "@/types";
 
 export function CurrentStatusPanel({ issue }: { issue: CivicIssue }) {
   return (
-    <div className="flex flex-col gap-6 pt-4 pb-8 lg:py-8 lg:pr-8">
+    <div className="flex flex-col gap-6 pb-8 lg:pb-0">
       {/* Status section prominently displayed */}
       <div className="flex flex-col items-start gap-4">
         <StatusPill

@@ -1,30 +1,19 @@
 import apiClient from "@/lib/apiClient";
 import type { ICreateServiceRequestPayload } from "@/validation";
+import type { ServiceRequestResponse, IUploadAttachmentPayload } from "@/types";
 
-export type ServiceRequestResponse = {
-  id: string;
-  trackingNumber: string;
-  civicIssue: {
-    reportedCount?: number;
-    category?: {
-      name: string;
-    };
-  };
-  category?: {
-    name: string;
-  };
-  status: string;
-};
-
-export function createServiceRequest(payload: ICreateServiceRequestPayload) {
-  return apiClient<ServiceRequestResponse>("/reports", { method: "POST", body: payload });
+export async function createServiceRequest(payload: ICreateServiceRequestPayload) {
+  const res = await apiClient<{ data: ServiceRequestResponse }>("/service-requests", { method: "POST", body: payload });
+  return res.data;
 }
 
-export function uploadAttachments(id: string, files: File[]) {
+export async function uploadAttachments(id: string, files: File[], payload: IUploadAttachmentPayload = { purpose: "REPORT_EVIDENCE" }) {
   const formData = new FormData();
   files.forEach((file) => formData.append("files", file));
-  return apiClient<{ urls: string[] }>(`/reports/${id}/media`, {
+  formData.append("purpose", payload.purpose);
+  const res = await apiClient<{ data: { urls: string[] } }>(`/attachments/service-request/${id}`, {
     method: "POST",
     body: formData,
   });
+  return res.data;
 }

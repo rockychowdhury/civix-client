@@ -1,4 +1,5 @@
 import { ThemeToggle } from "@/components/shared/theme-toggle";
+import { Logo } from "@/components/shared/logo";
 import type { PortalNav } from "@/lib/navigation";
 
 function initials(name: string): string {
@@ -23,7 +24,7 @@ export function Topbar({
   return (
     <header className="flex h-14 shrink-0 items-center justify-between gap-4 border-b border-line bg-paper px-4 sm:px-6">
       <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-2">
-        <span className="font-display text-base tracking-tight text-ink">Civix</span>
+        <Logo className="text-ink" href={null} iconClassName="w-4 h-4" textClassName="text-base" />
         <span aria-hidden="true" className="text-ink/30">
           /
         </span>

@@ -4,27 +4,29 @@ import type { ICreateServiceRequestPayload } from "@/validation";
 const DRAFT_KEY = "civix_report_draft";
 
 export function useReportDraft() {
-  const [hasDraft, setHasDraft] = useState(false);
-
-  useEffect(() => {
+  const [hasDraft, setHasDraft] = useState(() => {
+    if (typeof window === 'undefined') return false;
     const draft = localStorage.getItem(DRAFT_KEY);
     if (draft) {
       try {
         const parsed = JSON.parse(draft);
-        if (Object.keys(parsed).length > 0) {
-          setHasDraft(true);
+        if (parsed && typeof parsed === 'object') {
+          if (parsed.values && Object.keys(parsed.values).length > 0) {
+            return true;
+          }
         }
       } catch {
         // Ignore JSON parse errors
       }
     }
-  }, []);
+    return false;
+  });
 
-  const saveDraft = (data: Partial<ICreateServiceRequestPayload>) => {
-    localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
+  const saveDraft = (data: Partial<ICreateServiceRequestPayload>, step: number) => {
+    localStorage.setItem(DRAFT_KEY, JSON.stringify({ values: data, step }));
   };
 
-  const loadDraft = (): Partial<ICreateServiceRequestPayload> | null => {
+  const loadDraft = (): { values: Partial<ICreateServiceRequestPayload>, step: number } | null => {
     const draft = localStorage.getItem(DRAFT_KEY);
     if (!draft) return null;
     try {

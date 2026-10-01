@@ -4,7 +4,7 @@ import { ArrowRight, RotateCcw, Share2 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import type { ServiceRequestResponse } from "@/api/report.api";
+import type { ServiceRequestResponse } from "@/types";
 
 interface ConfirmationStepProps {
   response: ServiceRequestResponse | null;
@@ -24,6 +24,9 @@ export function ConfirmationStep({
   const { trackingNumber, civicIssue, category } = response;
   const reportedCount = civicIssue?.reportedCount || 1;
 
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || (typeof window !== "undefined" ? window.location.origin : "");
+  const trackUrl = `${appUrl}/track?issueNumber=${trackingNumber}`;
+
   const handleShare = async () => {
     const summary = `I reported "${category?.name ?? "a civic issue"}" on Civix (Ref ${trackingNumber}).`;
     try {
@@ -31,15 +34,24 @@ export function ConfirmationStep({
         await navigator.share({
           title: "Civix report",
           text: summary,
-          url: `/track/${trackingNumber}`,
+          url: trackUrl,
         });
       } else {
-        const copyText = `${summary} Track it: ${window.location.origin}/track/${trackingNumber}`;
+        const copyText = `${summary} Track it: ${trackUrl}`;
         await navigator.clipboard.writeText(copyText);
         toast.success("Share details copied to clipboard");
       }
     } catch {
       // User closed the share sheet or clipboard was unavailable — low-stakes, skip silently.
+    }
+  };
+
+  const handleCopyTrackingNumber = async () => {
+    try {
+      await navigator.clipboard.writeText(trackingNumber);
+      toast.success("Tracking number copied to clipboard");
+    } catch {
+      toast.error("Failed to copy tracking number");
     }
   };
 
@@ -82,9 +94,31 @@ export function ConfirmationStep({
             <p className="font-mono text-xs uppercase tracking-[0.1em] text-ink/50">
               Official Reference
             </p>
-            <h2 className="font-mono text-2xl sm:text-3xl tracking-tight text-ink border-y border-line py-4">
-              {trackingNumber}
-            </h2>
+            <div className="flex items-center justify-center border-y border-line py-4">
+              <h2 className="font-mono text-2xl sm:text-3xl tracking-tight text-ink">
+                {trackingNumber}
+              </h2>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleCopyTrackingNumber}
+                className="ml-2 h-8 w-8 text-ink/50 hover:text-ink cursor-pointer"
+                title="Copy tracking number"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  className="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+              </Button>
+            </div>
           </div>
 
           <div className="space-y-4 text-ink/80 font-body text-sm">
@@ -128,8 +162,8 @@ export function ConfirmationStep({
 
         <div className="flex flex-col gap-3">
           {/* Typically navigates to a real tracking page, using href="#" for now */}
-          <Link href={`/track/${trackingNumber}`} className="w-full">
-            <Button size="lg" className="w-full gap-2">
+          <Link href={`/track?issueNumber=${trackingNumber}`} className="w-full">
+            <Button size="lg" className="w-full gap-2 cursor-pointer">
               Track this report <ArrowRight className="w-4 h-4" />
             </Button>
           </Link>

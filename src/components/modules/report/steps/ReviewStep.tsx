@@ -38,7 +38,7 @@ export function ReviewStep({ form, selectedCategory, files, onEditStep }: Review
               <div className="p-5 flex justify-between items-start gap-4">
                 <div className="space-y-1">
                   <p className="text-xs font-mono text-ink/50 uppercase tracking-wider">Description</p>
-                  <p className="text-sm text-ink/80 whitespace-pre-wrap">{data.description}</p>
+                  <p className="text-sm text-ink/80 whitespace-pre-wrap">{data.request?.description}</p>
                 </div>
                 <button
                   type="button"

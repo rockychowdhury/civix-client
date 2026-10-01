@@ -114,7 +114,7 @@ export function CategoryStep({ categories, onSelect, selectedCategoryId }: Categ
                 onClick={() => handleParentClick(parent.id)}
                 onKeyDown={(e) => handleTileKeyDown(e, index)}
                 className={cn(
-                  "flex flex-col items-start gap-1 rounded-xs border p-5 text-left transition-all hover:border-ink hover:bg-ink/[0.02] focus-visible:outline-signal-open",
+                  "flex flex-col items-start gap-1 rounded-xs border p-5 text-left transition-all hover:border-ink hover:bg-ink/[0.02] focus-visible:outline-signal-open cursor-pointer",
                   isExpanded ? "border-ink bg-ink/[0.02]" : "border-line bg-paper",
                   selectedCategoryId &&
                     categories.find((c) => c.id === selectedCategoryId)?.parentId === parent.id
@@ -148,7 +148,7 @@ export function CategoryStep({ categories, onSelect, selectedCategoryId }: Categ
                         tabIndex={0}
                         onClick={() => onSelect(child.id)}
                         className={cn(
-                          "flex items-center justify-between gap-2 rounded-xs p-3 text-left transition-colors hover:bg-line/50 focus-visible:outline-signal-open",
+                          "flex items-center justify-between gap-2 rounded-xs p-3 text-left transition-colors hover:bg-line/50 focus-visible:outline-signal-open cursor-pointer",
                           selectedCategoryId === child.id
                             ? "bg-ledger/[0.08] text-ledger font-medium"
                             : "text-ink/80",

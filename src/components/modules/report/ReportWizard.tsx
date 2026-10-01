@@ -9,28 +9,32 @@ import { useReportDraft } from "@/hooks/useReportDraft";
 import { type ICreateServiceRequestPayload, serviceRequestSchema } from "@/validation";
 import {
   createServiceRequest,
-  type ServiceRequestResponse,
   uploadAttachments,
 } from "@/api/report.api";
+import type { ServiceRequestResponse } from "@/types";
 import { DraftResumeBanner } from "./DraftResumeBanner";
 import { AttachmentsStep } from "./steps/AttachmentsStep";
 import { CategoryStep, type ReportCategory } from "./steps/CategoryStep";
 import { ConfirmationStep } from "./steps/ConfirmationStep";
+import { useGetCategories } from "@/hooks/category.hook";
 import { DescriptionStep } from "./steps/DescriptionStep";
 import { LocationStep } from "./steps/LocationStep";
 import { ReviewStep } from "./steps/ReviewStep";
 
 interface ReportWizardProps {
-  categories: ReportCategory[];
+  categories?: ReportCategory[];
 }
 
 const TOTAL_STEPS = 5;
 
-export function ReportWizard({ categories }: ReportWizardProps) {
+export function ReportWizard({ categories: initialCategories = [] }: ReportWizardProps) {
+  const { data: categoryData, isLoading: isCategoriesLoading } = useGetCategories();
+  const categories = categoryData?.data || initialCategories;
+
   const [currentStep, setCurrentStep] = useState(0);
   const [files, setFiles] = useState<File[]>([]);
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmittingLocal, setIsSubmittingLocal] = useState(false);
   const [submissionResponse, setSubmissionResponse] = useState<ServiceRequestResponse | null>(null);
   const [attachmentStatus, setAttachmentStatus] = useState<
     "idle" | "uploading" | "success" | "error"
@@ -38,20 +42,26 @@ export function ReportWizard({ categories }: ReportWizardProps) {
 
   const { hasDraft, saveDraft, loadDraft, clearDraft } = useReportDraft();
   const [showDraftBanner, setShowDraftBanner] = useState(false);
+  const [isDraftChecked, setIsDraftChecked] = useState(false);
   const [draftContext, setDraftContext] = useState<string | null>(null);
 
   const form = useForm({
     defaultValues: {
-      categoryId: undefined as unknown as string,
-      description: "",
-      location: {},
+      request: {
+        categoryId: undefined as unknown as string,
+        description: "",
+      },
+      location: {
+        address: "",
+        municipalityId: undefined as unknown as string,
+      },
     } as unknown as ICreateServiceRequestPayload,
     validators: {
       onChange: serviceRequestSchema,
     },
     onSubmit: async ({ value }) => {
       try {
-        setIsSubmitting(true);
+        setIsSubmittingLocal(true);
 
         // Step 1: Create request
         const response = await createServiceRequest(value);
@@ -74,7 +84,7 @@ export function ReportWizard({ categories }: ReportWizardProps) {
       } catch (_error) {
         toast.error("Failed to submit report. Please try again.");
       } finally {
-        setIsSubmitting(false);
+        setIsSubmittingLocal(false);
       }
     },
   });
@@ -82,12 +92,13 @@ export function ReportWizard({ categories }: ReportWizardProps) {
   // Handle draft check on mount
   useEffect(() => {
     if (hasDraft) {
-      const draft = loadDraft();
-      if (draft) {
-        const category = categories.find((c) => c.id === draft.categoryId);
+      const draftState = loadDraft();
+      if (draftState && draftState.values) {
+        const draft = draftState.values;
+        const category = categories.find((c) => c.id === draft.request?.categoryId);
         const subject =
           draft.location?.address?.trim() ||
-          draft.description?.trim().split("\n")[0]?.trim().slice(0, 48);
+          draft.request?.description?.trim().split("\n")[0]?.trim().slice(0, 48);
 
         if (category?.name && subject) {
           setDraftContext(
@@ -105,15 +116,17 @@ export function ReportWizard({ categories }: ReportWizardProps) {
       }
       setShowDraftBanner(true);
     }
+    setIsDraftChecked(true);
   }, [hasDraft, categories, loadDraft]);
 
   // Debounced autosave using store subscription
   useEffect(() => {
+    if (!isDraftChecked) return;
     const subscription = form.store.subscribe(() => {
-      if (submissionResponse) return;
+      if (submissionResponse || showDraftBanner) return;
       const values = form.state.values;
       const timeoutId = setTimeout(() => {
-        saveDraft(values as Partial<ICreateServiceRequestPayload>);
+        saveDraft(values as Partial<ICreateServiceRequestPayload>, currentStep);
       }, 800);
       return () => clearTimeout(timeoutId);
     });
@@ -124,23 +137,38 @@ export function ReportWizard({ categories }: ReportWizardProps) {
         (subscription as any).unsubscribe();
       }
     };
-  }, [form, saveDraft, submissionResponse]);
+  }, [form, saveDraft, submissionResponse, currentStep, showDraftBanner, isDraftChecked]);
 
   const handleResumeDraft = () => {
-    const draft = loadDraft();
-    if (draft) {
-      form.reset(draft as any);
+    const draftState = loadDraft();
+    if (draftState && draftState.values) {
+      const draft = draftState.values;
+      if (draft.request) {
+        if (draft.request.categoryId) form.setFieldValue("request.categoryId" as any, draft.request.categoryId);
+        if (draft.request.description) form.setFieldValue("request.description" as any, draft.request.description);
+      }
+      if (draft.location) {
+        if (draft.location.address) form.setFieldValue("location.address" as any, draft.location.address);
+        if (draft.location.municipalityId) form.setFieldValue("location.municipalityId" as any, draft.location.municipalityId);
+        if (draft.location.zoneId) form.setFieldValue("location.zoneId" as any, draft.location.zoneId);
+        if (draft.location.wardId) form.setFieldValue("location.wardId" as any, draft.location.wardId);
+        if (draft.location.latitude) form.setFieldValue("location.latitude" as any, draft.location.latitude);
+        if (draft.location.longitude) form.setFieldValue("location.longitude" as any, draft.location.longitude);
+        if (draft.location.landmark) form.setFieldValue("location.landmark" as any, draft.location.landmark);
+        if (draft.location.postalCode) form.setFieldValue("location.postalCode" as any, draft.location.postalCode);
+      }
 
-      // Attempt to guess current step based on what's filled
-      if (draft.location?.address || draft.location?.latitude) setCurrentStep(3);
-      else if (draft.description) setCurrentStep(2);
-      else if (draft.categoryId) setCurrentStep(1);
+      // Resume exactly where they left off
+      if (typeof draftState.step === 'number') {
+        setCurrentStep(draftState.step);
+      }
     }
     setShowDraftBanner(false);
   };
 
   const handleClearDraft = () => {
     clearDraft();
+    resetFlow();
     setShowDraftBanner(false);
   };
 
@@ -149,12 +177,12 @@ export function ReportWizard({ categories }: ReportWizardProps) {
     let isValid = false;
 
     if (currentStep === 0) {
-      const field = form.getFieldMeta("categoryId");
-      isValid = !!form.state.values.categoryId && !field?.errors?.length;
+      const field = form.getFieldMeta("request.categoryId");
+      isValid = !!form.state.values.request?.categoryId && !field?.errors?.length;
     } else if (currentStep === 1) {
       await form.validateAllFields("change");
-      const field = form.getFieldMeta("description");
-      isValid = !!form.state.values.description && !field?.errors?.length;
+      const field = form.getFieldMeta("request.description");
+      isValid = !!form.state.values.request?.description && !field?.errors?.length;
     } else if (currentStep === 2) {
       await form.validateAllFields("change");
       const field = form.getFieldMeta("location");
@@ -192,9 +220,14 @@ export function ReportWizard({ categories }: ReportWizardProps) {
 
   const resetFlow = () => {
     form.reset({
-      categoryId: undefined,
-      description: "",
-      location: {},
+      request: {
+        categoryId: undefined,
+        description: "",
+      },
+      location: {
+        address: "",
+        municipalityId: undefined as unknown as string,
+      },
     } as any);
     setFiles([]);
     setSubmissionResponse(null);
@@ -203,7 +236,14 @@ export function ReportWizard({ categories }: ReportWizardProps) {
   };
 
   return (
-    <div className="mx-auto max-w-2xl w-full">
+    <form 
+      className="mx-auto max-w-2xl w-full"
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
       {showDraftBanner && currentStep === 0 && (
         <DraftResumeBanner
           context={draftContext}
@@ -217,7 +257,7 @@ export function ReportWizard({ categories }: ReportWizardProps) {
       )}
 
       <form.Subscribe
-        selector={(state) => [state.values.categoryId]}
+        selector={(state) => [state.values.request?.categoryId]}
         children={([selectedCategoryId]) => {
           const selectedCategory = categories.find((c) => c.id === selectedCategoryId);
 
@@ -226,17 +266,28 @@ export function ReportWizard({ categories }: ReportWizardProps) {
               {currentStep === 0 && (
                 <div className="space-y-4">
                   <h2 className="font-display text-2xl text-ink">What's wrong?</h2>
-                  <CategoryStep
-                    categories={categories}
-                    selectedCategoryId={selectedCategoryId}
-                    onSelect={(id) => {
-                      form.setFieldValue("categoryId", id);
-                      // Auto-advance
-                      setTimeout(() => nextStep(), 150);
-                    }}
-                  />
+                  {isCategoriesLoading ? (
+                    <div className="animate-pulse space-y-4">
+                      <div className="h-11 bg-line/50 rounded-xs" />
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        {[1, 2, 3, 4].map((i) => (
+                          <div key={i} className="h-[76px] bg-line/50 rounded-xs" />
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <CategoryStep
+                      categories={categories}
+                      selectedCategoryId={selectedCategoryId}
+                      onSelect={(id) => {
+                        form.setFieldValue("request.categoryId", id);
+                        // Auto-advance
+                        setTimeout(() => nextStep(), 150);
+                      }}
+                    />
+                  )}
                   <form.Field
-                    name="categoryId"
+                    name="request.categoryId"
                     children={(field) =>
                       field.state.meta.errors.length > 0 ? (
                         <p className="text-sm font-medium text-red-500 mt-2">
@@ -308,23 +359,20 @@ export function ReportWizard({ categories }: ReportWizardProps) {
           ) : (
             <form.Subscribe
               selector={(state) => [state.isSubmitting]}
-              children={([isSubmitting]) => (
+              children={([isSubmittingForm]) => (
                 <Button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    form.handleSubmit();
-                  }}
-                  disabled={isSubmitting || isSubmitting}
+                  type="submit"
+                  disabled={isSubmittingLocal || isSubmittingForm}
                   size="lg"
                   className="min-w-[140px]"
                 >
-                  {isSubmitting ? "Submitting..." : "Submit Report"}
+                  {isSubmittingLocal || isSubmittingForm ? "Submitting..." : "Submit Report"}
                 </Button>
               )}
             />
           )}
         </div>
       )}
-    </div>
+    </form>
   );
 }

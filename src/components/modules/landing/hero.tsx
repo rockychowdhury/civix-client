@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/layout/public/container";
 import { StatusCard } from "./status-card";
-import { TrackReportForm } from "./track-report-form";
+import { IssueSearchForm } from "@/components/form/issue-search-form";
 
 export function Hero() {
   return (
@@ -27,8 +27,8 @@ export function Hero() {
             </div>
 
             <div className="mt-10 max-w-[380px] border-t border-line pt-5">
-              <p className="font-body text-sm text-ink/55">Already reported something? Track it.</p>
-              <TrackReportForm className="mt-3" id="tracking-number-hero" />
+              <p className="font-body text-sm text-ink/55 mb-3">Already reported something? Track it.</p>
+              <IssueSearchForm />
             </div>
           </div>
 

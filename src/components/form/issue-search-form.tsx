@@ -39,7 +39,7 @@ export function IssueSearchForm({ defaultIssueNumber = "" }: { defaultIssueNumbe
         <form.Field
           name="issueNumber"
           children={(field) => {
-            const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+            const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid && field.state.value.length > 0;
             return (
               <Field data-invalid={isInvalid}>
                 <FieldLabel htmlFor={field.name} className="sr-only">
@@ -64,7 +64,7 @@ export function IssueSearchForm({ defaultIssueNumber = "" }: { defaultIssueNumbe
                       children={([canSubmit, isSubmitting]) => (
                         <Button
                           type="submit"
-                          disabled={!canSubmit || !field.state.value}
+                          disabled={!field.state.value || !field.state.meta.isValid || isSubmitting}
                           loading={isSubmitting}
                           size="sm"
                           className="h-7 text-xs"

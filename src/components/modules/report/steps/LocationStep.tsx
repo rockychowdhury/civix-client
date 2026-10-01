@@ -16,17 +16,13 @@ import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
-const LAST_USED_WARD_KEY = "civix_last_used_ward";
+import {
+  useGetMunicipalities,
+  useGetZones,
+  useGetWards,
+} from "@/hooks";
 
-// Mock data for wards and zones
-const wards = [
-  { id: "98590cbd-fbc8-4b0e-9439-76b23e1b9caa", name: "Ward 1" },
-  { id: "ward2-id", name: "Ward 2" },
-];
-const zones = [
-  { id: "d64a977b-3333-401d-956f-0ff0edc40131", name: "Zone 1" },
-  { id: "zone2-id", name: "Zone 2" },
-];
+const LAST_USED_WARD_KEY = "civix_last_used_ward";
 
 interface LocationStepProps {
   form: any;
@@ -45,17 +41,28 @@ export function LocationStep({ form }: LocationStepProps) {
     return window.localStorage.getItem(LAST_USED_WARD_KEY);
   });
 
-  const sortedWards = useMemo(() => {
-    if (!lastUsedWardId) return wards;
-    return [...wards].sort((a, b) =>
-      a.id === lastUsedWardId ? -1 : b.id === lastUsedWardId ? 1 : 0,
-    );
-  }, [lastUsedWardId]);
+  const [openMunicipality, setOpenMunicipality] = useState(false);
+
+  const { data: municipalitiesData, isLoading: isLoadingMunicipalities } = useGetMunicipalities();
+  const municipalities = municipalitiesData?.data || [];
 
   return (
     <form.Subscribe
       selector={(state: any) => state.values.location}
       children={(location: any) => {
+        const { data: zonesData, isLoading: isLoadingZones } = useGetZones(location?.municipalityId);
+        const zones = zonesData?.data || [];
+
+        const { data: wardsData, isLoading: isLoadingWards } = useGetWards(location?.zoneId);
+        const wards = wardsData?.data || [];
+
+        const sortedWards = useMemo(() => {
+          if (!lastUsedWardId) return wards;
+          return [...wards].sort((a, b) =>
+            a.id === lastUsedWardId ? -1 : b.id === lastUsedWardId ? 1 : 0,
+          );
+        }, [lastUsedWardId, wards]);
+
         const watchLat = location?.latitude;
         const watchLng = location?.longitude;
         const hasCoordinates = watchLat != null && watchLng != null;
@@ -77,8 +84,9 @@ export function LocationStep({ form }: LocationStepProps) {
               // Mock reverse geocode
               setTimeout(() => {
                 form.setFieldValue("location.address", "123 Civic Way, City Center");
-                form.setFieldValue("location.wardId", wards[0].id);
-                form.setFieldValue("location.zoneId", zones[0].id);
+                if (municipalities.length > 0) {
+                  form.setFieldValue("location.municipalityId", municipalities[0].id);
+                }
                 setIsLocating(false);
                 setShowManual(true);
               }, 800);
@@ -200,22 +208,134 @@ export function LocationStep({ form }: LocationStepProps) {
                   </div>
 
                   <div className="space-y-2 flex flex-col">
+                    <Label>Municipality</Label>
+                    <Popover open={openMunicipality} onOpenChange={setOpenMunicipality}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          role="combobox"
+                          aria-expanded={openMunicipality}
+                          className="justify-between bg-field border border-line text-ink font-normal w-full h-11 hover:border-ink/45 hover:-translate-y-0 shadow-none px-3.5"
+                        >
+                          {location?.municipalityId
+                            ? municipalities.find((m) => m.id === location.municipalityId)?.name
+                            : isLoadingMunicipalities
+                              ? "Loading..."
+                              : "Select municipality..."}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                        <Command>
+                          <CommandInput placeholder="Search municipality..." />
+                          <CommandList>
+                            <CommandEmpty>No municipality found.</CommandEmpty>
+                            <CommandGroup>
+                              {municipalities.map((municipality) => (
+                                <CommandItem
+                                  key={municipality.id}
+                                  value={municipality.name}
+                                  className="cursor-pointer"
+                                  onSelect={() => {
+                                    form.setFieldValue("location.municipalityId", municipality.id);
+                                    // Reset zone and ward when municipality changes
+                                    form.setFieldValue("location.zoneId", undefined);
+                                    form.setFieldValue("location.wardId", undefined);
+                                    setOpenMunicipality(false);
+                                  }}
+                                >
+                                  <CheckCircle2
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      location?.municipalityId === municipality.id
+                                        ? "opacity-100 text-ledger"
+                                        : "opacity-0",
+                                    )}
+                                  />
+                                  {municipality.name}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  <div className="space-y-2 flex flex-col">
+                    <Label>Zone</Label>
+                    <Popover open={openZone} onOpenChange={setOpenZone}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          role="combobox"
+                          aria-expanded={openZone}
+                          disabled={!location?.municipalityId}
+                          className="justify-between bg-field border border-line text-ink font-normal w-full h-11 hover:border-ink/45 hover:-translate-y-0 shadow-none px-3.5"
+                        >
+                          {location?.zoneId
+                            ? zones.find((z) => z.id === location.zoneId)?.name
+                            : isLoadingZones
+                              ? "Loading..."
+                              : "Select zone..."}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                        <Command>
+                          <CommandInput placeholder="Search zone..." />
+                          <CommandList>
+                            <CommandEmpty>No zone found.</CommandEmpty>
+                            <CommandGroup>
+                              {zones.map((zone) => (
+                                <CommandItem
+                                  key={zone.id}
+                                  value={zone.name}
+                                  className="cursor-pointer"
+                                  onSelect={() => {
+                                    form.setFieldValue("location.zoneId", zone.id);
+                                    form.setFieldValue("location.wardId", undefined);
+                                    setOpenZone(false);
+                                  }}
+                                >
+                                  <CheckCircle2
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      location?.zoneId === zone.id
+                                        ? "opacity-100 text-ledger"
+                                        : "opacity-0",
+                                    )}
+                                  />
+                                  {zone.name}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  <div className="space-y-2 flex flex-col">
                     <Label>Ward</Label>
                     <Popover open={openWard} onOpenChange={setOpenWard}>
                       <PopoverTrigger asChild>
                         <Button
-                          variant="secondary"
+                          variant="ghost"
                           role="combobox"
                           aria-expanded={openWard}
-                          className="justify-between bg-paper font-normal"
+                          disabled={!location?.zoneId}
+                          className="justify-between bg-field border border-line text-ink font-normal w-full h-11 hover:border-ink/45 hover:-translate-y-0 shadow-none px-3.5"
                         >
                           {location?.wardId
                             ? wards.find((w) => w.id === location.wardId)?.name
-                            : "Select ward..."}
+                            : isLoadingWards
+                              ? "Loading..."
+                              : "Select ward..."}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-[200px] p-0">
+                      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
                         <Command>
                           <CommandInput placeholder="Search ward..." />
                           <CommandList>
@@ -225,6 +345,7 @@ export function LocationStep({ form }: LocationStepProps) {
                                 <CommandItem
                                   key={ward.id}
                                   value={ward.name}
+                                  className="cursor-pointer"
                                   onSelect={() => {
                                     form.setFieldValue("location.wardId", ward.id);
                                     setLastUsedWardId(ward.id);
@@ -241,55 +362,6 @@ export function LocationStep({ form }: LocationStepProps) {
                                     )}
                                   />
                                   {ward.name}
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-
-                  <div className="space-y-2 flex flex-col">
-                    <Label>Zone</Label>
-                    <Popover open={openZone} onOpenChange={setOpenZone}>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="secondary"
-                          role="combobox"
-                          aria-expanded={openZone}
-                          className="justify-between bg-paper font-normal"
-                        >
-                          {location?.zoneId
-                            ? zones.find((z) => z.id === location.zoneId)?.name
-                            : "Select zone..."}
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-[200px] p-0">
-                        <Command>
-                          <CommandInput placeholder="Search zone..." />
-                          <CommandList>
-                            <CommandEmpty>No zone found.</CommandEmpty>
-                            <CommandGroup>
-                              {zones.map((zone) => (
-                                <CommandItem
-                                  key={zone.id}
-                                  value={zone.name}
-                                  onSelect={() => {
-                                    form.setFieldValue("location.zoneId", zone.id);
-                                    setOpenZone(false);
-                                  }}
-                                >
-                                  <CheckCircle2
-                                    className={cn(
-                                      "mr-2 h-4 w-4",
-                                      location?.zoneId === zone.id
-                                        ? "opacity-100 text-ledger"
-                                        : "opacity-0",
-                                    )}
-                                  />
-                                  {zone.name}
                                 </CommandItem>
                               ))}
                             </CommandGroup>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
+import { Logo } from "@/components/shared/logo";
 import { Button } from "@/components/ui/button";
 import { useGetMe, useLogout } from "@/hooks/auth.hook";
 import { useQueryClient } from "@tanstack/react-query";
@@ -72,12 +73,8 @@ export function Navbar() {
       }`}
     >
       <Container className="flex h-full max-w-[1400px] items-center justify-between gap-4">
-        <Link
-          href="/"
-          aria-label="Civix home"
-          className="flex shrink-0 items-center gap-2 font-display text-[clamp(0.875rem,2vw,1rem)] tracking-[0.025em] text-paper"
-        >
-          Civix
+        <div className="flex shrink-0 items-center gap-4">
+          <Logo className="text-paper" textClassName="text-[clamp(0.875rem,2vw,1rem)]" />
           <span className="inline-flex items-center gap-1.5 font-body text-xs font-medium text-signal-resolved">
             <span
               className="size-1.5 shrink-0 animate-dot rounded-full bg-signal-resolved motion-reduce:animate-none"
@@ -85,7 +82,7 @@ export function Navbar() {
             />
             {RESOLVED_THIS_MONTH} resolved this month
           </span>
-        </Link>
+        </div>
 
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
           <Button
