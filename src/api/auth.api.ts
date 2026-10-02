@@ -33,20 +33,3 @@ export function userResetPassword(payload: IResetPassword) {
   return apiClient("/auth/reset-password", { method: "POST", body: payload });
 }
 
-type AuthTokens = {
-  accessToken: string;
-  refreshToken: string;
-};
-
-export async function getNewAccessToken(refreshToken: string): Promise<AuthTokens | null> {
-  try {
-    return await apiClient<AuthTokens>("/auth/refresh-token", {
-      method: "POST",
-      headers: {
-        Cookie: `refreshToken=${encodeURIComponent(refreshToken)}`,
-      },
-    });
-  } catch {
-    return null;
-  }
-}

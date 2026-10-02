@@ -1,12 +1,12 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { MobileNav } from "@/components/layout/dashboard/MobileNav";
-import { Sidebar } from "@/components/layout/dashboard/Sidebar";
 import { Topbar } from "@/components/layout/dashboard/Topbar";
 import { useGetMe } from "@/hooks/auth.hook";
 import { getPortalNav } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/layout/dashboard/AppSidebar";
 
 const ROLE_LABELS: Record<string, string> = {
   CITIZEN: "Citizen",
@@ -19,21 +19,20 @@ const ROLE_LABELS: Record<string, string> = {
 };
 
 export function DashboardShell({ children }: { children: ReactNode }) {
-  const { data: user, isLoading } = useGetMe();
+  const { data, isLoading } = useGetMe();
+  const user = data?.data;
 
   if (isLoading || !user) {
-    return <div className="min-h-screen bg-paper flex items-center justify-center">Loading...</div>;
+    return <div className="min-h-screen bg-paper flex items-center justify-center"></div>;
   }
 
   const roles: string[] = [];
-  if (user.roles) {
-    roles.push(
-      ...user.roles
-        .map((r: any) => (typeof r === "string" ? r : r.role?.name || r.name))
-        .filter(Boolean),
-    );
+  if (user.userRoles && Array.isArray(user.userRoles)) {
+    roles.push(...user.userRoles.map((ur: any) => ur?.role?.code || ur?.role?.name?.toUpperCase()).filter(Boolean));
+  } else if (user.roles) {
+    roles.push(...user.roles.map((r: any) => (typeof r === "string" ? r.toUpperCase() : r.role?.code || r.role?.name?.toUpperCase() || r.name?.toUpperCase())).filter(Boolean));
   } else if (user.role) {
-    roles.push(user.role);
+    roles.push(typeof user.role === "string" ? user.role.toUpperCase() : user.role?.code || user.role?.name?.toUpperCase());
   }
   const roleLabel = roles.length > 0 ? (ROLE_LABELS[roles[0]] ?? roles[0]) : undefined;
 
@@ -43,25 +42,21 @@ export function DashboardShell({ children }: { children: ReactNode }) {
 
   const nav = getPortalNav(roles);
 
-  if (!nav) return null;
-
   return (
-    <div className="flex min-h-screen bg-paper text-ink">
-      <Sidebar nav={nav} />
-
-      <div className="flex min-w-0 flex-1 flex-col">
-        <Topbar nav={nav} userName={userName} roleLabel={roleLabel} />
-        <MobileNav nav={nav} />
+    <SidebarProvider>
+      <AppSidebar userRoleCodes={roles} />
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden bg-paper text-ink">
+        {nav && <Topbar nav={nav} userName={userName} roleLabel={roleLabel} />}
 
         <main
           className={cn(
-            "flex-1 px-4 py-6 sm:px-8 sm:py-8",
-            nav.portalId === "technician" && "pb-24 md:pb-8",
+            "flex-1 overflow-y-auto w-full px-4 md:px-8 py-6 md:py-8",
+            nav?.portalId === "technician" && "pb-24 md:pb-8"
           )}
         >
           {children}
         </main>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }

@@ -16,8 +16,8 @@ import { cn } from "@/lib/utils";
 import { type OtpValues, otpFormSchema } from "@/validation";
 
 const TOTAL_DIGITS = 6;
-const EXPIRY_SECONDS = 600;
-const RESEND_AFTER_SECONDS = 45;
+const EXPIRY_SECONDS = 300;
+const RESEND_AFTER_SECONDS = 60;
 const OTP_SLOTS = Array.from({ length: TOTAL_DIGITS }, (_, index) => index);
 
 function formatCountdown(totalSeconds: number) {
@@ -29,13 +29,20 @@ function formatCountdown(totalSeconds: number) {
 export function VerifyOtpForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialEmail = searchParams.get("email") || "";
+  const email = searchParams.get("email");
+
+  useEffect(()=> {
+    if(!email){
+      router.push("/");
+    }
+  },[email]);
+
   const [elapsed, setElapsed] = useState(0);
   const { mutate: verify, isPending: verifyPending } = useVerifyAccount();
 
   const form = useForm({
     defaultValues: {
-      email: initialEmail,
+      email: email || "",
       otp: "",
     },
     
@@ -65,10 +72,13 @@ export function VerifyOtpForm() {
     },
   });
 
+  const hasExpired = elapsed >= EXPIRY_SECONDS;
+
   useEffect(() => {
+    if (hasExpired) return;
     const id = setInterval(() => setElapsed((value) => value + 1), 1000);
     return () => clearInterval(id);
-  }, []);
+  }, [hasExpired]);
 
   const expiresIn = Math.max(0, EXPIRY_SECONDS - elapsed);
   const resendIn = Math.max(0, RESEND_AFTER_SECONDS - elapsed);
