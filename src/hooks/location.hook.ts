@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { getMunicipalities, getZones, getWards } from "@/api/location.api";
-import type { PaginatedResponse, Municipality, Zone, Ward } from "@/types";
+import { getMunicipalities, getWards, getZones } from "@/api/location.api";
+import type { Municipality, PaginatedResponse, Ward, Zone } from "@/types";
 
 export const useGetMunicipalities = () => {
   return useQuery<PaginatedResponse<Municipality>, Error>({

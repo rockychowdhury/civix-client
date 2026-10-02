@@ -1,12 +1,8 @@
 import type { ReactNode } from "react";
-import { DashboardShell } from "@/components/layout/dashboard/DashboardShell";
 import RoleGuard from "@/components/auth/role.guard";
+import { DashboardShell } from "@/components/layout/dashboard/DashboardShell";
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <RoleGuard>
       <DashboardShell>{children}</DashboardShell>

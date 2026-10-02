@@ -1,12 +1,12 @@
 "use client";
 
 import { useForm } from "@tanstack/react-form";
-import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
-import { trackerSearchSchema, type TrackerSearchValues } from "@/validation";
+import { Input } from "@/components/ui/input";
+import { type TrackerSearchValues, trackerSearchSchema } from "@/validation";
 
 export function IssueSearchForm({ defaultIssueNumber = "" }: { defaultIssueNumber?: string }) {
   const router = useRouter();
@@ -39,7 +39,10 @@ export function IssueSearchForm({ defaultIssueNumber = "" }: { defaultIssueNumbe
         <form.Field
           name="issueNumber"
           children={(field) => {
-            const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid && field.state.value.length > 0;
+            const isInvalid =
+              field.state.meta.isTouched &&
+              !field.state.meta.isValid &&
+              field.state.value.length > 0;
             return (
               <Field data-invalid={isInvalid}>
                 <FieldLabel htmlFor={field.name} className="sr-only">
@@ -61,7 +64,7 @@ export function IssueSearchForm({ defaultIssueNumber = "" }: { defaultIssueNumbe
                   <div className="absolute right-1.5 top-1/2 -translate-y-1/2">
                     <form.Subscribe
                       selector={(state) => [state.canSubmit, state.isSubmitting]}
-                      children={([canSubmit, isSubmitting]) => (
+                      children={([_canSubmit, isSubmitting]) => (
                         <Button
                           type="submit"
                           disabled={!field.state.value || !field.state.meta.isValid || isSubmitting}

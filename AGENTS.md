@@ -36,3 +36,7 @@ Please adhere to the following stack and architecture choices when working on th
 - **Styling Guidelines**: Use the global CSS theme. Do NOT use hardcoded colors.
 - Maintain existing UI designs exactly as they are when restructuring or refactoring parts of the codebase.
 - **Interactivity**: All actionable items (buttons, icons, toggles, links) MUST change the cursor on hover (e.g., using `cursor-pointer` utility) to clearly indicate interactivity.
+
+### 5. Code Conventions
+- **Strict Equality**: Always use `===` and `!==`. The ONLY exception is when checking if API data is null or undefined, where `data == null` is permitted.
+- **Variable Declarations**: NEVER use `var`. Always use `const` by default. Only use `let` when you explicitly need to reassign the variable.

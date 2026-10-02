@@ -1,24 +1,17 @@
 "use client";
 
 import { useForm } from "@tanstack/react-form";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-  FieldSeparator,
-} from "@/components/ui/field";
-import { loginFormSchema } from "@/validation";
-import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { useLogin, useGoogleOAuth } from "@/hooks/auth.hook";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { GoogleLogin } from "@react-oauth/google";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 import GoogleLoginComponent from "@/components/modules/google-login/GoogleLogin";
+import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldGroup, FieldLabel, FieldSeparator } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { useLogin } from "@/hooks/auth.hook";
+import { loginFormSchema } from "@/validation";
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -30,7 +23,7 @@ export default function LoginForm() {
       email: "rocky20809@gmail.com",
       password: "shahin567",
     },
-    
+
     validators: {
       onSubmit: loginFormSchema,
     },
@@ -151,7 +144,7 @@ export default function LoginForm() {
       </form>
 
       <FieldSeparator>Or continue with</FieldSeparator>
-      
+
       <div className="flex justify-center">
         <GoogleLoginComponent />
       </div>

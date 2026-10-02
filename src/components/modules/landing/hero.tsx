@@ -1,9 +1,8 @@
 import Link from "next/link";
-
-import { Button } from "@/components/ui/button";
-import { Container } from "@/components/layout/public/container";
-import { StatusCard } from "./status-card";
 import { IssueSearchForm } from "@/components/form/issue-search-form";
+import { Container } from "@/components/layout/public/container";
+import { Button } from "@/components/ui/button";
+import { StatusCard } from "./status-card";
 
 export function Hero() {
   return (
@@ -27,7 +26,9 @@ export function Hero() {
             </div>
 
             <div className="mt-10 max-w-[380px] border-t border-line pt-5">
-              <p className="font-body text-sm text-ink/55 mb-3">Already reported something? Track it.</p>
+              <p className="font-body text-sm text-ink/55 mb-3">
+                Already reported something? Track it.
+              </p>
               <IssueSearchForm />
             </div>
           </div>

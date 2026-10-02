@@ -1,22 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useForm } from "@tanstack/react-form";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { createServiceRequest, uploadAttachments } from "@/api/report.api";
 import { Button } from "@/components/ui/button";
 import { ProgressRail } from "@/components/ui/progress-rail";
+import { useGetCategories } from "@/hooks/category.hook";
 import { useReportDraft } from "@/hooks/useReportDraft";
-import { type ICreateServiceRequestPayload, serviceRequestSchema } from "@/validation";
-import {
-  createServiceRequest,
-  uploadAttachments,
-} from "@/api/report.api";
 import type { ServiceRequestResponse } from "@/types";
+import { type ICreateServiceRequestPayload, serviceRequestSchema } from "@/validation";
 import { DraftResumeBanner } from "./DraftResumeBanner";
 import { AttachmentsStep } from "./steps/AttachmentsStep";
 import { CategoryStep, type ReportCategory } from "./steps/CategoryStep";
 import { ConfirmationStep } from "./steps/ConfirmationStep";
-import { useGetCategories } from "@/hooks/category.hook";
 import { DescriptionStep } from "./steps/DescriptionStep";
 import { LocationStep } from "./steps/LocationStep";
 import { ReviewStep } from "./steps/ReviewStep";
@@ -93,7 +90,7 @@ export function ReportWizard({ categories: initialCategories = [] }: ReportWizar
   useEffect(() => {
     if (hasDraft) {
       const draftState = loadDraft();
-      if (draftState && draftState.values) {
+      if (draftState?.values) {
         const draft = draftState.values;
         const category = categories.find((c) => c.id === draft.request?.categoryId);
         const subject =
@@ -131,9 +128,9 @@ export function ReportWizard({ categories: initialCategories = [] }: ReportWizar
       return () => clearTimeout(timeoutId);
     });
     return () => {
-      if (typeof subscription === 'function') {
+      if (typeof subscription === "function") {
         (subscription as any)();
-      } else if (subscription && typeof (subscription as any).unsubscribe === 'function') {
+      } else if (subscription && typeof (subscription as any).unsubscribe === "function") {
         (subscription as any).unsubscribe();
       }
     };
@@ -141,25 +138,35 @@ export function ReportWizard({ categories: initialCategories = [] }: ReportWizar
 
   const handleResumeDraft = () => {
     const draftState = loadDraft();
-    if (draftState && draftState.values) {
+    if (draftState?.values) {
       const draft = draftState.values;
       if (draft.request) {
-        if (draft.request.categoryId) form.setFieldValue("request.categoryId" as any, draft.request.categoryId);
-        if (draft.request.description) form.setFieldValue("request.description" as any, draft.request.description);
+        if (draft.request.categoryId)
+          form.setFieldValue("request.categoryId" as any, draft.request.categoryId);
+        if (draft.request.description)
+          form.setFieldValue("request.description" as any, draft.request.description);
       }
       if (draft.location) {
-        if (draft.location.address) form.setFieldValue("location.address" as any, draft.location.address);
-        if (draft.location.municipalityId) form.setFieldValue("location.municipalityId" as any, draft.location.municipalityId);
-        if (draft.location.zoneId) form.setFieldValue("location.zoneId" as any, draft.location.zoneId);
-        if (draft.location.wardId) form.setFieldValue("location.wardId" as any, draft.location.wardId);
-        if (draft.location.latitude) form.setFieldValue("location.latitude" as any, draft.location.latitude);
-        if (draft.location.longitude) form.setFieldValue("location.longitude" as any, draft.location.longitude);
-        if (draft.location.landmark) form.setFieldValue("location.landmark" as any, draft.location.landmark);
-        if (draft.location.postalCode) form.setFieldValue("location.postalCode" as any, draft.location.postalCode);
+        if (draft.location.address)
+          form.setFieldValue("location.address" as any, draft.location.address);
+        if (draft.location.municipalityId)
+          form.setFieldValue("location.municipalityId" as any, draft.location.municipalityId);
+        if (draft.location.zoneId)
+          form.setFieldValue("location.zoneId" as any, draft.location.zoneId);
+        if (draft.location.wardId)
+          form.setFieldValue("location.wardId" as any, draft.location.wardId);
+        if (draft.location.latitude)
+          form.setFieldValue("location.latitude" as any, draft.location.latitude);
+        if (draft.location.longitude)
+          form.setFieldValue("location.longitude" as any, draft.location.longitude);
+        if (draft.location.landmark)
+          form.setFieldValue("location.landmark" as any, draft.location.landmark);
+        if (draft.location.postalCode)
+          form.setFieldValue("location.postalCode" as any, draft.location.postalCode);
       }
 
       // Resume exactly where they left off
-      if (typeof draftState.step === 'number') {
+      if (typeof draftState.step === "number") {
         setCurrentStep(draftState.step);
       }
     }
@@ -236,7 +243,7 @@ export function ReportWizard({ categories: initialCategories = [] }: ReportWizar
   };
 
   return (
-    <form 
+    <form
       className="mx-auto max-w-2xl w-full"
       onSubmit={(e) => {
         e.preventDefault();

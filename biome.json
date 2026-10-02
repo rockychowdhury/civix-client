@@ -18,8 +18,25 @@
     "enabled": true,
     "rules": {
       "preset": "recommended",
+      "correctness": {
+        "noChildrenProp": "off",
+        "useExhaustiveDependencies": "off"
+      },
+      "a11y": {
+        "noSvgWithoutTitle": "off"
+      },
+      "security": {
+        "noDangerouslySetInnerHtml": "off"
+      },
       "suspicious": {
-        "noDocumentCookie": "off"
+        "noDocumentCookie": "off",
+        "noArrayIndexKey": "off",
+        "noExplicitAny": "off",
+        "noDoubleEquals": "error",
+        "noVar": "error"
+      },
+      "style": {
+        "useConst": "error"
       }
     }
   },

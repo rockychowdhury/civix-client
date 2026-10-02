@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { PortalNav, PortalNavItem } from "@/lib/navigation";
 import { Logo } from "@/components/shared/logo";
+import type { PortalNav, PortalNavItem } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
 export function Sidebar({ nav }: { nav: PortalNav }) {

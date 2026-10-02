@@ -25,14 +25,14 @@ export function getDashboardHref(roles: string[]): string {
   const normalizedRoles = roles.map((r) => r.toUpperCase());
 
   // Prioritize higher-level roles if a user has multiple
-  if (normalizedRoles.includes("SUPER_ADMIN")) return ROLE_DEFAULT_LANDING["SUPER_ADMIN"];
-  if (normalizedRoles.includes("PLATFORM_ADMIN")) return ROLE_DEFAULT_LANDING["PLATFORM_ADMIN"];
-  if (normalizedRoles.includes("CITY_ADMIN")) return ROLE_DEFAULT_LANDING["CITY_ADMIN"];
+  if (normalizedRoles.includes("SUPER_ADMIN")) return ROLE_DEFAULT_LANDING.SUPER_ADMIN;
+  if (normalizedRoles.includes("PLATFORM_ADMIN")) return ROLE_DEFAULT_LANDING.PLATFORM_ADMIN;
+  if (normalizedRoles.includes("CITY_ADMIN")) return ROLE_DEFAULT_LANDING.CITY_ADMIN;
   if (normalizedRoles.includes("DEPARTMENT_MANAGER"))
-    return ROLE_DEFAULT_LANDING["DEPARTMENT_MANAGER"];
-  if (normalizedRoles.includes("DISPATCHER")) return ROLE_DEFAULT_LANDING["DISPATCHER"];
-  if (normalizedRoles.includes("TECHNICIAN")) return ROLE_DEFAULT_LANDING["TECHNICIAN"];
-  if (normalizedRoles.includes("CITIZEN")) return ROLE_DEFAULT_LANDING["CITIZEN"];
+    return ROLE_DEFAULT_LANDING.DEPARTMENT_MANAGER;
+  if (normalizedRoles.includes("DISPATCHER")) return ROLE_DEFAULT_LANDING.DISPATCHER;
+  if (normalizedRoles.includes("TECHNICIAN")) return ROLE_DEFAULT_LANDING.TECHNICIAN;
+  if (normalizedRoles.includes("CITIZEN")) return ROLE_DEFAULT_LANDING.CITIZEN;
 
   return "/";
 }

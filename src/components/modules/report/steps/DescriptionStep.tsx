@@ -1,7 +1,6 @@
 "use client";
 
 import { Textarea } from "@/components/ui/textarea";
-import type { ICreateServiceRequestPayload } from "@/validation";
 import type { ReportCategory } from "./CategoryStep";
 
 interface DescriptionStepProps {

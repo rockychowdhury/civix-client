@@ -8,10 +8,10 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { useResetPassword } from "@/hooks/auth.hook";
-import { type ResetPasswordValues, resetPasswordFormSchema } from "@/validation";
+import { resetPasswordFormSchema } from "@/validation";
 
 const REDIRECT_DELAY_MS = 1600;
 
@@ -30,7 +30,7 @@ export function ResetPasswordForm() {
       newPassword: "",
       confirmPassword: "",
     },
-    
+
     validators: {
       onChange: resetPasswordFormSchema,
     },

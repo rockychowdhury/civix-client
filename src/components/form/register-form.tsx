@@ -1,25 +1,17 @@
 "use client";
 
 import { useForm } from "@tanstack/react-form";
-import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { toast } from "sonner";
-
+import GoogleLoginComponent from "@/components/modules/google-login/GoogleLogin";
 import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldGroup, FieldLabel, FieldSeparator } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-  FieldSeparator,
-} from "@/components/ui/field";
 import { useRegistration } from "@/hooks/auth.hook";
 import { type RegisterValues, registerCitizenFormSchema } from "@/validation";
-import GoogleLoginComponent from "@/components/modules/google-login/GoogleLogin";
 
 export function RegisterForm() {
   const router = useRouter();
@@ -233,7 +225,7 @@ export function RegisterForm() {
       </form>
 
       <FieldSeparator>Or continue with</FieldSeparator>
-      
+
       <div className="flex justify-center">
         <GoogleLoginComponent />
       </div>

@@ -7,10 +7,10 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { useForgotPassword } from "@/hooks/auth.hook";
-import { type ForgotPasswordValues, forgotPasswordFormSchema } from "@/validation";
+import { forgotPasswordFormSchema } from "@/validation";
 
 export function ForgotPasswordForm() {
   const router = useRouter();
@@ -18,7 +18,7 @@ export function ForgotPasswordForm() {
 
   const form = useForm({
     defaultValues: { email: "" },
-    
+
     validators: {
       onChange: forgotPasswordFormSchema,
     },
@@ -99,8 +99,6 @@ export function ForgotPasswordForm() {
           />
         </FieldGroup>
       </form>
-
-
 
       <p className="font-body text-sm text-ink/60">
         Remembered it?{" "}

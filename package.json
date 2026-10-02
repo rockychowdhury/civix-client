@@ -10,6 +10,7 @@
     "format:fix": "npx @biomejs/biome format --write ./src",
     "lint:check": "npx @biomejs/biome lint ./src",
     "lint:fix": "npx @biomejs/biome lint --write ./src",
+    "fix": "npx @biomejs/biome check --write --unsafe ./src",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

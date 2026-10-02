@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 interface LogoProps {
   className?: string;
@@ -27,18 +27,17 @@ export function Logo({ className, iconClassName, textClassName, href = "/" }: Lo
   );
 
   if (!href) {
-    return (
-      <div className={cn("flex items-center gap-2 shrink-0", className)}>
-        {content}
-      </div>
-    );
+    return <div className={cn("flex items-center gap-2 shrink-0", className)}>{content}</div>;
   }
 
   return (
     <Link
       href={href}
       aria-label="Civix home"
-      className={cn("flex items-center gap-2 shrink-0 transition-opacity hover:opacity-80", className)}
+      className={cn(
+        "flex items-center gap-2 shrink-0 transition-opacity hover:opacity-80",
+        className,
+      )}
     >
       {content}
     </Link>

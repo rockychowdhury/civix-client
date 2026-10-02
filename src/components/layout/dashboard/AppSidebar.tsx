@@ -1,24 +1,35 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import {
+  Activity,
+  BarChart3,
+  Building2,
+  CheckSquare,
+  FileText,
+  History,
+  Home,
+  ListTodo,
+  Map,
+  Settings,
+  ShieldAlert,
+  User,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Logo } from "@/components/shared/logo";
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarHeader,
 } from "@/components/ui/sidebar";
 import { ROLE_PORTAL_MAP } from "@/lib/role-routing";
-import { Logo } from "@/components/shared/logo";
-import { 
-  Home, FileText, Bell, User, ListTodo, History, CheckSquare, 
-  Users, BarChart3, Building2, Map, ShieldAlert, Settings, Activity 
-} from "lucide-react";
 
 // Config matches the design instructions
 const NAV_CONFIG = {
@@ -36,8 +47,18 @@ const NAV_CONFIG = {
     { title: "Overview", url: "/department/overview", icon: Home, roles: ["DEPARTMENT_MANAGER"] },
     { title: "Work Orders", url: "/department/work-orders", icon: CheckSquare },
     { title: "Issue Queue", url: "/department/issues", icon: ListTodo },
-    { title: "Technician Roster", url: "/department/technicians", icon: Users, roles: ["DEPARTMENT_MANAGER"] },
-    { title: "Analytics", url: "/department/reports", icon: BarChart3, roles: ["DEPARTMENT_MANAGER"] },
+    {
+      title: "Technician Roster",
+      url: "/department/technicians",
+      icon: Users,
+      roles: ["DEPARTMENT_MANAGER"],
+    },
+    {
+      title: "Analytics",
+      url: "/department/reports",
+      icon: BarChart3,
+      roles: ["DEPARTMENT_MANAGER"],
+    },
   ],
   "/municipality": [
     { title: "Overview", url: "/municipality/overview", icon: Home },
@@ -61,7 +82,9 @@ export function AppSidebar({ userRoleCodes }: { userRoleCodes: string[] }) {
   const pathname = usePathname();
 
   // Find which portal we're in
-  const currentPortal = Object.values(ROLE_PORTAL_MAP).find(portal => pathname.startsWith(portal));
+  const currentPortal = Object.values(ROLE_PORTAL_MAP).find((portal) =>
+    pathname.startsWith(portal),
+  );
   const navItems = currentPortal ? NAV_CONFIG[currentPortal as keyof typeof NAV_CONFIG] : [];
 
   // Filter items by role (for department manager vs dispatcher)
@@ -73,7 +96,10 @@ export function AppSidebar({ userRoleCodes }: { userRoleCodes: string[] }) {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="h-14 flex items-center justify-center border-b border-sidebar-border px-4 py-2 overflow-hidden">
-        <Logo className="text-sidebar-foreground w-full justify-start overflow-hidden" textClassName="group-data-[collapsible=icon]:hidden text-[clamp(0.875rem,1.5vw,1rem)]" />
+        <Logo
+          className="text-sidebar-foreground w-full justify-start overflow-hidden"
+          textClassName="group-data-[collapsible=icon]:hidden text-[clamp(0.875rem,1.5vw,1rem)]"
+        />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>

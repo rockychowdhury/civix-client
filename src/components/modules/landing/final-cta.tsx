@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Container } from "@/components/layout/public/container";
+import { Button } from "@/components/ui/button";
 
 export function FinalCTA() {
   return (

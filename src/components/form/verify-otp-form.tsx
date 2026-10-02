@@ -8,12 +8,12 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { useVerifyAccount } from "@/hooks/auth.hook";
 import { cn } from "@/lib/utils";
-import { type OtpValues, otpFormSchema } from "@/validation";
+import { otpFormSchema } from "@/validation";
 
 const TOTAL_DIGITS = 6;
 const EXPIRY_SECONDS = 300;
@@ -31,11 +31,11 @@ export function VerifyOtpForm() {
   const searchParams = useSearchParams();
   const email = searchParams.get("email");
 
-  useEffect(()=> {
-    if(!email){
+  useEffect(() => {
+    if (!email) {
       router.push("/");
     }
-  },[email]);
+  }, [email]);
 
   const [elapsed, setElapsed] = useState(0);
   const { mutate: verify, isPending: verifyPending } = useVerifyAccount();
@@ -45,7 +45,7 @@ export function VerifyOtpForm() {
       email: email || "",
       otp: "",
     },
-    
+
     validators: {
       onChange: otpFormSchema,
     },
@@ -53,10 +53,10 @@ export function VerifyOtpForm() {
       verify(value, {
         onSuccess: (res: any) => {
           if (res && res.success === false) {
-             toast.error("Couldn't verify that code", {
-               description: "Invalid OTP code.",
-             });
-             return;
+            toast.error("Couldn't verify that code", {
+              description: "Invalid OTP code.",
+            });
+            return;
           }
           toast.success("Account verified", {
             description: "Your reports now get priority in duplicate detection.",
@@ -67,7 +67,7 @@ export function VerifyOtpForm() {
           toast.error("Couldn't verify that code", {
             description: error?.data?.message || "Invalid OTP code.",
           });
-        }
+        },
       });
     },
   });

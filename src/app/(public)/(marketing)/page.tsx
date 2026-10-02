@@ -1,10 +1,10 @@
+import { Footer } from "@/components/layout/public/footer";
+import { Navbar } from "@/components/layout/public/navbar";
 import { AccountabilityPromise } from "@/components/modules/landing/accountability-promise";
 import { BrokenLoop } from "@/components/modules/landing/broken-loop";
 import { FinalCTA } from "@/components/modules/landing/final-cta";
-import { Footer } from "@/components/layout/public/footer";
 import { Hero } from "@/components/modules/landing/hero";
 import { HowCivixWorks } from "@/components/modules/landing/how-civix-works";
-import { Navbar } from "@/components/layout/public/navbar";
 import { ResolvedStories } from "@/components/modules/landing/resolved-stories";
 import { SplitFlapBoard } from "@/components/modules/landing/split-flap-board";
 import { TransparencyDashboard } from "@/components/modules/landing/transparency-dashboard";

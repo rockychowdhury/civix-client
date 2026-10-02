@@ -1,7 +1,7 @@
-import { StatusPill } from "@/components/layout/dashboard/StatusPill";
-import { MoveRight } from "lucide-react";
-import type { StatusHistoryEntry } from "@/types";
 import { format } from "date-fns";
+import { MoveRight } from "lucide-react";
+import { StatusPill } from "@/components/layout/dashboard/StatusPill";
+import type { StatusHistoryEntry } from "@/types";
 
 function LedgerEntry({
   entry,
@@ -27,7 +27,7 @@ function LedgerEntry({
         {!isFirstEntry && (
           <div className="absolute bottom-0 right-0 top-0 w-px -translate-x-1/2 bg-ink/10" />
         )}
-        
+
         {/* Very first entry distinct marker */}
         {isFirstEntry && (
           <div className="absolute right-0 top-0 h-full w-[2px] -translate-x-1/2 bg-ink/20" />
@@ -39,17 +39,18 @@ function LedgerEntry({
         <div className="flex flex-wrap items-center gap-2">
           {entry.previousStatus && (
             <>
-              <StatusPill status={entry.previousStatus} className="bg-transparent border-dashed text-ink/50 border-ink/20" />
+              <StatusPill
+                status={entry.previousStatus}
+                className="bg-transparent border-dashed text-ink/50 border-ink/20"
+              />
               <MoveRight className="text-ink/30" size={14} />
             </>
           )}
           <StatusPill status={entry.newStatus} />
         </div>
-        
+
         {entry.notes && (
-          <div className="mt-3 font-body text-sm leading-relaxed text-ink/70">
-            {entry.notes}
-          </div>
+          <div className="mt-3 font-body text-sm leading-relaxed text-ink/70">{entry.notes}</div>
         )}
       </div>
     </div>
@@ -59,20 +60,20 @@ function LedgerEntry({
 export function StatusHistoryLedger({ history }: { history: StatusHistoryEntry[] }) {
   // Ensure array is reverse chronological (newest at top)
   const sortedHistory = [...history].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
 
   return (
     <div className="relative h-full overflow-hidden">
       {/* Top fade/gradient scroll affordance */}
       <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-8 bg-gradient-to-b from-paper to-transparent" />
-      
+
       <div className="h-full overflow-y-auto overflow-x-hidden pt-8 pb-12 scrollbar-none">
         <div className="flex flex-col">
           {sortedHistory.map((entry, index) => {
             const isNewest = index === 0;
             const isOldest = index === sortedHistory.length - 1;
-            
+
             return (
               <LedgerEntry
                 key={entry.id}
@@ -84,7 +85,7 @@ export function StatusHistoryLedger({ history }: { history: StatusHistoryEntry[]
           })}
         </div>
       </div>
-      
+
       {/* Bottom fade/gradient scroll affordance */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-12 bg-gradient-to-t from-paper to-transparent" />
     </div>

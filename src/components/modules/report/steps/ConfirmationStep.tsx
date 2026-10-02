@@ -24,7 +24,9 @@ export function ConfirmationStep({
   const { trackingNumber, civicIssue, category } = response;
   const reportedCount = civicIssue?.reportedCount || 1;
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || (typeof window !== "undefined" ? window.location.origin : "");
+  const appUrl =
+    process.env.NEXT_PUBLIC_APP_URL ||
+    (typeof window !== "undefined" ? window.location.origin : "");
   const trackUrl = `${appUrl}/track?issueNumber=${trackingNumber}`;
 
   const handleShare = async () => {

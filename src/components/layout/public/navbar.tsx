@@ -1,16 +1,14 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
+import { ChevronDown, LayoutDashboard, LogOut } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ThemeToggle } from "@/components/shared/theme-toggle";
-import { Logo } from "@/components/shared/logo";
-import { Button } from "@/components/ui/button";
-import { useGetMe, useLogout } from "@/hooks/auth.hook";
-import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Container } from "./container";
-import { getDashboardHref } from "@/lib/role-routing";
+import { Logo } from "@/components/shared/logo";
+import { ThemeToggle } from "@/components/shared/theme-toggle";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,7 +17,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, LayoutDashboard, ChevronDown } from "lucide-react";
+import { useGetMe, useLogout } from "@/hooks/auth.hook";
+import { getDashboardHref } from "@/lib/role-routing";
+import { Container } from "./container";
 
 const RESOLVED_THIS_MONTH = "14,208";
 
@@ -56,19 +56,25 @@ export function Navbar() {
     });
   };
 
-  const userName = user?.citizenProfile?.firstName 
+  const userName = user?.citizenProfile?.firstName
     ? `${user.citizenProfile.firstName} ${user.citizenProfile.lastName}`
     : user?.email;
 
-  let dashboardHref = undefined;
+  let dashboardHref;
   if (user) {
     const roles: string[] = [];
-    
+
     // The backend provides "userRoles" for this user schema
     if (user.userRoles && Array.isArray(user.userRoles)) {
-      roles.push(...user.userRoles.map((ur: any) => ur?.role?.name || ur?.role?.code).filter(Boolean));
+      roles.push(
+        ...user.userRoles.map((ur: any) => ur?.role?.name || ur?.role?.code).filter(Boolean),
+      );
     } else if (user.roles) {
-      roles.push(...user.roles.map((r: any) => typeof r === "string" ? r : (r.role?.name || r.name)).filter(Boolean));
+      roles.push(
+        ...user.roles
+          .map((r: any) => (typeof r === "string" ? r : r.role?.name || r.name))
+          .filter(Boolean),
+      );
     } else if (user.role) {
       roles.push(user.role);
     }
@@ -95,12 +101,7 @@ export function Navbar() {
         </div>
 
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-          <Button
-            asChild
-            variant="ghost"
-            size="sm"
-            className="px-0 text-paper/80 hover:text-paper"
-          >
+          <Button asChild variant="ghost" size="sm" className="px-0 text-paper/80 hover:text-paper">
             <Link href="/track">Track a Report</Link>
           </Button>
 
@@ -111,7 +112,11 @@ export function Navbar() {
           {!isLoading && user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="gap-2 px-2 text-paper hover:bg-paper/10 hover:text-paper focus:ring-0 focus-visible:ring-0 focus-visible:outline-none border-0 outline-none ring-0">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="gap-2 px-2 text-paper hover:bg-paper/10 hover:text-paper focus:ring-0 focus-visible:ring-0 focus-visible:outline-none border-0 outline-none ring-0"
+                >
                   <span className="font-body text-sm font-medium">{userName}</span>
                   <ChevronDown className="size-4 text-paper/70" />
                 </Button>
@@ -125,15 +130,18 @@ export function Navbar() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {dashboardHref && dashboardHref !== "/" && (
-                  <DropdownMenuItem asChild className="cursor-pointer transition-colors focus:bg-ink/5">
+                  <DropdownMenuItem
+                    asChild
+                    className="cursor-pointer transition-colors focus:bg-ink/5"
+                  >
                     <Link href={dashboardHref} className="flex items-center w-full">
                       <LayoutDashboard className="mr-2 size-4 text-ink/70" />
                       <span>Dashboard</span>
                     </Link>
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuItem 
-                  onClick={handleLogout} 
+                <DropdownMenuItem
+                  onClick={handleLogout}
                   disabled={logoutMutation.isPending}
                   className="cursor-pointer text-red-600 transition-colors focus:text-red-700 focus:bg-red-50 dark:focus:bg-red-950/50"
                 >
@@ -143,10 +151,13 @@ export function Navbar() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : !isLoading && !user ? (
-            <Button asChild variant="ghost" size="sm" className="px-0 text-paper/80 hover:text-paper">
-              <Link href="/login">
-                Log in
-              </Link>
+            <Button
+              asChild
+              variant="ghost"
+              size="sm"
+              className="px-0 text-paper/80 hover:text-paper"
+            >
+              <Link href="/login">Log in</Link>
             </Button>
           ) : null}
 

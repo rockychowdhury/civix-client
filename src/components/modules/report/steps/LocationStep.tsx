@@ -14,13 +14,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useGetMunicipalities, useGetWards, useGetZones } from "@/hooks";
 import { cn } from "@/lib/utils";
-
-import {
-  useGetMunicipalities,
-  useGetZones,
-  useGetWards,
-} from "@/hooks";
 
 const LAST_USED_WARD_KEY = "civix_last_used_ward";
 
@@ -50,7 +45,9 @@ export function LocationStep({ form }: LocationStepProps) {
     <form.Subscribe
       selector={(state: any) => state.values.location}
       children={(location: any) => {
-        const { data: zonesData, isLoading: isLoadingZones } = useGetZones(location?.municipalityId);
+        const { data: zonesData, isLoading: isLoadingZones } = useGetZones(
+          location?.municipalityId,
+        );
         const zones = zonesData?.data || [];
 
         const { data: wardsData, isLoading: isLoadingWards } = useGetWards(location?.zoneId);

@@ -26,11 +26,11 @@ export interface IResetPassword {
   newPassword: string;
 }
 
-export type UserRole = 
-  | "CITIZEN" 
-  | "TECHNICIAN" 
-  | "DISPATCHER" 
-  | "DEPARTMENT_MANAGER" 
-  | "CITY_ADMIN" 
-  | "PLATFORM_ADMIN" 
+export type UserRole =
+  | "CITIZEN"
+  | "TECHNICIAN"
+  | "DISPATCHER"
+  | "DEPARTMENT_MANAGER"
+  | "CITY_ADMIN"
+  | "PLATFORM_ADMIN"
   | "SUPER_ADMIN";

@@ -1,13 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-export default function AuthLayout({
-  children,
-  panel,
-}: {
-  children: ReactNode;
-  panel: ReactNode;
-}) {
+export default function AuthLayout({ children, panel }: { children: ReactNode; panel: ReactNode }) {
   return (
     <div className="grid min-h-screen lg:grid-cols-[45fr_55fr]">
       <div className="flex flex-col bg-paper px-5 py-10 sm:px-8 lg:px-12 lg:py-14">

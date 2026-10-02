@@ -1,9 +1,9 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import { Container } from "@/components/layout/public/container";
 import { ProgressRail } from "@/components/ui/progress-rail";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { Container } from "@/components/layout/public/container";
 
 const steps = [
   {

@@ -1,14 +1,13 @@
 "use client";
 
-import { useCivicIssueTracking } from "@/hooks/issue.hook";
-import { IssueSearchForm } from "@/components/form/issue-search-form";
-import { CurrentStatusPanel } from "./CurrentStatusPanel";
-import { StatusHistoryLedger } from "./StatusHistoryLedger";
 import { Loader2, MoveLeft } from "lucide-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-
 import { useSearchParams } from "next/navigation";
+import { IssueSearchForm } from "@/components/form/issue-search-form";
+import { Button } from "@/components/ui/button";
+import { useCivicIssueTracking } from "@/hooks/issue.hook";
+import { CurrentStatusPanel } from "./CurrentStatusPanel";
+import { StatusHistoryLedger } from "./StatusHistoryLedger";
 
 export function TrackerPage() {
   const searchParams = useSearchParams();
@@ -45,7 +44,8 @@ export function TrackerPage() {
 
   // Error/Not found state
   if (isError) {
-    const isNotFound = (error as any)?.response?.status === 404 || (error as any)?.statusCode === 404;
+    const isNotFound =
+      (error as any)?.response?.status === 404 || (error as any)?.statusCode === 404;
     return (
       <div className="relative flex h-dvh w-full flex-col items-center justify-center p-6 text-center bg-paper">
         <div className="absolute left-6 top-6 sm:left-8 sm:top-8">
@@ -110,7 +110,7 @@ export function TrackerPage() {
                 Track another issue
               </Link>
             </div>
-            
+
             <CurrentStatusPanel issue={data} />
           </div>
         </div>

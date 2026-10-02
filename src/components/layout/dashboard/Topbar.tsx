@@ -1,10 +1,10 @@
 "use client";
 
-import { ThemeToggle } from "@/components/shared/theme-toggle";
-import type { PortalNav } from "@/lib/navigation";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import { NotificationCenter } from "./NotificationCenter";
 import { usePathname } from "next/navigation";
+import { ThemeToggle } from "@/components/shared/theme-toggle";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import type { PortalNav } from "@/lib/navigation";
+import { NotificationCenter } from "./NotificationCenter";
 
 function initials(name: string): string {
   return name
@@ -27,8 +27,8 @@ export function Topbar({
 }) {
   const pathname = usePathname();
   // Get current page name from pathname
-  const segments = pathname.split('/').filter(Boolean);
-  const currentPage = segments[1] ? segments[1].replace('-', ' ') : 'Overview';
+  const segments = pathname.split("/").filter(Boolean);
+  const currentPage = segments[1] ? segments[1].replace("-", " ") : "Overview";
   const pageTitle = currentPage.charAt(0).toUpperCase() + currentPage.slice(1);
 
   return (

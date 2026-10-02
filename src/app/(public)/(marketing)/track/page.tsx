@@ -1,5 +1,5 @@
-import { TrackerPage } from "@/components/modules/tracker/TrackerPage";
 import { Suspense } from "react";
+import { TrackerPage } from "@/components/modules/tracker/TrackerPage";
 
 export default function Page() {
   return (

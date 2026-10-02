@@ -1,5 +1,11 @@
 import apiClient from "@/lib/apiClient";
-import type { LoginPayload, RegistrationPayload, VerifyAccountPayload, IForgotPassword, IResetPassword } from "@/types";
+import type {
+  IForgotPassword,
+  IResetPassword,
+  LoginPayload,
+  RegistrationPayload,
+  VerifyAccountPayload,
+} from "@/types";
 
 export function userLogin(payload: LoginPayload) {
   return apiClient("/auth/login", { method: "POST", body: payload });
@@ -32,4 +38,3 @@ export function userForgotPassword(payload: IForgotPassword) {
 export function userResetPassword(payload: IResetPassword) {
   return apiClient("/auth/reset-password", { method: "POST", body: payload });
 }
-

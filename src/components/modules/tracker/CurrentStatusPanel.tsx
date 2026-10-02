@@ -33,7 +33,11 @@ export function CurrentStatusPanel({ issue }: { issue: CivicIssue }) {
         {issue.reportedCount > 1 && (
           <div className="mt-2 flex items-start gap-2 border-l-2 border-signal-resolved pl-4 text-sm">
             <p>
-              Reported by <strong className="font-medium">{issue.reportedCount - 1} other neighbor{issue.reportedCount - 1 > 1 ? "s" : ""}</strong>. You are not alone in tracking this.
+              Reported by{" "}
+              <strong className="font-medium">
+                {issue.reportedCount - 1} other neighbor{issue.reportedCount - 1 > 1 ? "s" : ""}
+              </strong>
+              . You are not alone in tracking this.
             </p>
           </div>
         )}

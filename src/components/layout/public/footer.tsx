@@ -41,7 +41,10 @@ export function Footer() {
 
           <div className="grid gap-12">
             <div>
-              <Logo className="mb-4 text-paper" textClassName="text-[clamp(1.25rem,3vw,1.5rem)] leading-tight" />
+              <Logo
+                className="mb-4 text-paper"
+                textClassName="text-[clamp(1.25rem,3vw,1.5rem)] leading-tight"
+              />
               <p className="max-w-[320px] font-body text-[0.9375rem] leading-relaxed text-paper/70">
                 A public record for problems that get fixed, not filed away.
               </p>

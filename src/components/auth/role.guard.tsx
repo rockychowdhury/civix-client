@@ -1,13 +1,13 @@
 "use client";
 
-import { useGetMe } from "@/hooks";
-import { useRouter, usePathname } from "next/navigation";
-import { ReactNode, useEffect, useMemo } from "react";
-import { UserRole } from "@/types";
-import Loading from "@/app/loading";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { type ReactNode, useEffect, useMemo } from "react";
+import Loading from "@/app/loading";
 import { Button } from "@/components/ui/button";
-import { ROLE_PORTAL_MAP, getDashboardHref } from "@/lib/role-routing";
+import { useGetMe } from "@/hooks";
+import { getDashboardHref, ROLE_PORTAL_MAP } from "@/lib/role-routing";
+import type { UserRole } from "@/types";
 
 interface IProps {
   children: ReactNode;
@@ -26,19 +26,35 @@ export default function RoleGuard({ children, roles }: IProps) {
 
   const isAuthorized = useMemo(() => {
     if (!user) return false;
-    
+
     // Parse roles based on the API payload structure
     const userRoleCodes: string[] = [];
     if (user.userRoles && Array.isArray(user.userRoles)) {
-      userRoleCodes.push(...user.userRoles.map((ur: any) => ur?.role?.code || ur?.role?.name?.toUpperCase()).filter(Boolean));
+      userRoleCodes.push(
+        ...user.userRoles
+          .map((ur: any) => ur?.role?.code || ur?.role?.name?.toUpperCase())
+          .filter(Boolean),
+      );
     } else if (user.roles) {
-      userRoleCodes.push(...user.roles.map((r: any) => typeof r === "string" ? r.toUpperCase() : (r.role?.code || r.role?.name?.toUpperCase() || r.name?.toUpperCase())).filter(Boolean));
+      userRoleCodes.push(
+        ...user.roles
+          .map((r: any) =>
+            typeof r === "string"
+              ? r.toUpperCase()
+              : r.role?.code || r.role?.name?.toUpperCase() || r.name?.toUpperCase(),
+          )
+          .filter(Boolean),
+      );
     } else if (user.role) {
-      userRoleCodes.push(typeof user.role === "string" ? user.role.toUpperCase() : user.role?.code || user.role?.name?.toUpperCase());
+      userRoleCodes.push(
+        typeof user.role === "string"
+          ? user.role.toUpperCase()
+          : user.role?.code || user.role?.name?.toUpperCase(),
+      );
     }
 
     if (roles && roles.length > 0) {
-      return roles.some(role => userRoleCodes.includes(role));
+      return roles.some((role) => userRoleCodes.includes(role));
     }
 
     // Auto-detect from pathname using the portal map
@@ -47,26 +63,42 @@ export default function RoleGuard({ children, roles }: IProps) {
         return true;
       }
     }
-    
+
     return false;
   }, [user, roles, pathname]);
 
   useEffect(() => {
     if (isLoadingAuth) return;
-    
+
     if (isError || !user) {
       router.replace("/login");
     } else if (!isAuthorized) {
       // If they are logged in but unauthorized for this specific dashboard, redirect them to their actual one
       const userRoleCodes: string[] = [];
       if (user.userRoles && Array.isArray(user.userRoles)) {
-        userRoleCodes.push(...user.userRoles.map((ur: any) => ur?.role?.code || ur?.role?.name?.toUpperCase()).filter(Boolean));
+        userRoleCodes.push(
+          ...user.userRoles
+            .map((ur: any) => ur?.role?.code || ur?.role?.name?.toUpperCase())
+            .filter(Boolean),
+        );
       } else if (user.roles) {
-        userRoleCodes.push(...user.roles.map((r: any) => typeof r === "string" ? r.toUpperCase() : (r.role?.code || r.role?.name?.toUpperCase() || r.name?.toUpperCase())).filter(Boolean));
+        userRoleCodes.push(
+          ...user.roles
+            .map((r: any) =>
+              typeof r === "string"
+                ? r.toUpperCase()
+                : r.role?.code || r.role?.name?.toUpperCase() || r.name?.toUpperCase(),
+            )
+            .filter(Boolean),
+        );
       } else if (user.role) {
-        userRoleCodes.push(typeof user.role === "string" ? user.role.toUpperCase() : user.role?.code || user.role?.name?.toUpperCase());
+        userRoleCodes.push(
+          typeof user.role === "string"
+            ? user.role.toUpperCase()
+            : user.role?.code || user.role?.name?.toUpperCase(),
+        );
       }
-      
+
       const correctDashboard = getDashboardHref(userRoleCodes);
       if (pathname !== correctDashboard) {
         router.replace(correctDashboard);
@@ -93,7 +125,7 @@ export default function RoleGuard({ children, roles }: IProps) {
         You do not have the required permissions to view this area.
       </p>
       <div className="mt-8">
-        <Button asChild >
+        <Button asChild>
           <Link href="/">Return to Homepage</Link>
         </Button>
       </div>
