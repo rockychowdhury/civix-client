@@ -40,7 +40,7 @@ export function NotificationCenter() {
         <Button
           variant="ghost"
           size="icon"
-          className="relative text-ink/60 hover:text-ink rounded-full"
+          className="relative text-ink/60 hover:text-ink rounded-full cursor-pointer"
         >
           <Bell className="h-5 w-5" />
           {unreadCount > 0 && (

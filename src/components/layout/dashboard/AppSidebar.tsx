@@ -16,7 +16,7 @@ import {
   Users,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { Logo } from "@/components/shared/logo";
 import {
   Sidebar,
@@ -46,7 +46,18 @@ const NAV_CONFIG = {
   "/department": [
     { title: "Overview", url: "/department/overview", icon: Home, roles: ["DEPARTMENT_MANAGER"] },
     { title: "Work Orders", url: "/department/work-orders", icon: CheckSquare },
-    { title: "Issue Queue", url: "/department/issues", icon: ListTodo },
+    { 
+      title: "Issue Queue", 
+      url: "/department/issues", 
+      icon: ListTodo,
+      items: [
+        { title: "On Queue", url: "/department/issues?status=on-queue" },
+        { title: "Scheduled", url: "/department/issues?status=scheduled" },
+        { title: "Pending", url: "/department/issues?status=pending" },
+        { title: "All", url: "/department/issues?status=all" }
+      ]
+    },
+    { title: "Citizen Reports", url: "/department/citizen-reports", icon: FileText },
     {
       title: "Technician Roster",
       url: "/department/technicians",
@@ -80,6 +91,7 @@ const NAV_CONFIG = {
 
 export function AppSidebar({ userRoleCodes }: { userRoleCodes: string[] }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   // Find which portal we're in
   const currentPortal = Object.values(ROLE_PORTAL_MAP).find((portal) =>
@@ -106,14 +118,37 @@ export function AppSidebar({ userRoleCodes }: { userRoleCodes: string[] }) {
           <SidebarGroupLabel>Menu</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {visibleItems?.map((item) => (
+              {visibleItems?.map((item: any) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={pathname.startsWith(item.url)}>
+                  <SidebarMenuButton asChild isActive={pathname === item.url || (item.items && pathname.startsWith(item.url))}>
                     <Link href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
+                  {item.items && pathname.startsWith(item.url) && (
+                    <div className="pl-6 pt-2 pb-1 space-y-1 group-data-[collapsible=icon]:hidden overflow-hidden transition-all duration-200">
+                      {item.items.map((subItem: any) => {
+                        const currentStatus = searchParams.get("status") || "on-queue";
+                        const subItemStatus = new URLSearchParams(subItem.url.split('?')[1]).get("status");
+                        const isSubActive = currentStatus === subItemStatus;
+                          
+                        return (
+                          <Link 
+                            key={subItem.title} 
+                            href={subItem.url}
+                            className={`block text-sm px-2 py-1.5 rounded-md transition-colors ${
+                              isSubActive 
+                                ? 'bg-sidebar-accent text-sidebar-accent-foreground font-medium' 
+                                : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+                            }`}
+                          >
+                            {subItem.title}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>

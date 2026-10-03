@@ -12,11 +12,20 @@ export interface CivicIssue {
   title: string;
   description: string;
   status: string;
+  priority?: string;
+  priorityOverriddenBy?: string;
+  priorityOverrideReason?: string;
+  slaDeadline?: string;
   reportedCount: number;
   firstReportedAt: string;
   lastReportedAt: string;
   createdAt: string;
   updatedAt: string;
+  responseDeadlineAt?: string;
+  resolutionDeadlineAt?: string;
+  resolvedAt?: string;
+  closedAt?: string;
+  hasWorkOrder?: boolean;
   location: {
     address: string;
     latitude: number | null;
@@ -30,4 +39,11 @@ export interface CivicIssue {
     name: string;
   };
   statusHistory: StatusHistoryEntry[];
+}
+
+export interface ICreateWorkOrderPayload {
+  civicIssueId: string;
+  title?: string;
+  description?: string;
+  scheduledAt?: string;
 }

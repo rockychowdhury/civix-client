@@ -56,13 +56,15 @@ export function DashboardShell({ children }: { children: ReactNode }) {
     ? `${user.citizenProfile.firstName} ${user.citizenProfile.lastName}`
     : user.email || "User";
 
+  const departmentName = user.staffProfile?.departmentMembers?.[0]?.department?.name;
+
   const nav = getPortalNav(roles);
 
   return (
     <SidebarProvider>
       <AppSidebar userRoleCodes={roles} />
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden bg-paper text-ink">
-        {nav && <Topbar nav={nav} userName={userName} roleLabel={roleLabel} />}
+        {nav && <Topbar nav={nav} userName={userName} roleLabel={roleLabel} departmentName={departmentName} />}
 
         <main
           className={cn(
