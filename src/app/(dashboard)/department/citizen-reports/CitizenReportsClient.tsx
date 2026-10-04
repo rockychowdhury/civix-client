@@ -6,6 +6,8 @@ import { useServiceRequests } from "@/hooks";
 import { ServiceRequestsTable } from "@/components/tables/ServiceRequestsTable";
 import { ServiceRequestFilters } from "@/components/service-requests/ServiceRequestFilters";
 import { ServiceRequestDetailSheet } from "@/components/service-requests/ServiceRequestDetailSheet";
+import { ServiceRequestContextMenu } from "@/components/tables/columns/ServiceRequestContextMenu";
+import type { ServiceRequest } from "@/types";
 
 export function CitizenReportsClient() {
   const router = useRouter();
@@ -16,6 +18,11 @@ export function CitizenReportsClient() {
   
   // Detail sheet state
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
+
+  // Context Menu state
+  const [contextMenuOpen, setContextMenuOpen] = useState(false);
+  const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
+  const [contextMenuRequest, setContextMenuRequest] = useState<ServiceRequest | null>(null);
 
   // Fetch data
   const { data: requests, isLoading, isError } = useServiceRequests({ status: currentStatus });
@@ -53,7 +60,15 @@ export function CitizenReportsClient() {
       ) : (
         <ServiceRequestsTable 
           data={requests || []} 
-          onRowClick={(row) => setSelectedRequestId(row.id)}
+          onRowClick={(row, event) => {
+            if (event.type === 'contextmenu') {
+              setContextMenuRequest(row);
+              setContextMenuPosition({ x: event.clientX, y: event.clientY });
+              setContextMenuOpen(true);
+            } else {
+              setSelectedRequestId(row.id);
+            }
+          }}
           selectedId={selectedRequestId || undefined}
         />
       )}
@@ -61,6 +76,17 @@ export function CitizenReportsClient() {
       <ServiceRequestDetailSheet 
         requestId={selectedRequestId} 
         onClose={() => setSelectedRequestId(null)} 
+      />
+      
+      <ServiceRequestContextMenu
+        request={contextMenuRequest}
+        isOpen={contextMenuOpen}
+        onClose={() => setContextMenuOpen(false)}
+        position={contextMenuPosition}
+        onViewDetails={() => setSelectedRequestId(contextMenuRequest?.id || null)}
+        onOpenReclassify={() => setSelectedRequestId(contextMenuRequest?.id || null)} // Ideally opens sheet directly to reclassify
+        onOpenLinkIssue={() => setSelectedRequestId(contextMenuRequest?.id || null)}
+        onOpenFlagInvalid={() => setSelectedRequestId(contextMenuRequest?.id || null)}
       />
     </div>
   );

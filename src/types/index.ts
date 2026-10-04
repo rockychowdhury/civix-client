@@ -5,3 +5,4 @@ export * from "./issue.type";
 export * from "./location.type";
 export * from "./report.type";
 export * from "./service-request.type";
+export * from "./work-order.type";

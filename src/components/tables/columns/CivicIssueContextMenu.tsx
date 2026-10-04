@@ -146,6 +146,7 @@ export function CivicIssueContextMenu({ issue, isOpen, onClose, position }: Civi
                   key={status}
                   onClick={() => handleStatusChange(status)}
                   disabled={updateStatus.isPending || issue.status === status}
+                  className="cursor-pointer"
                 >
                   {status.replace(/_/g, ' ')}
                   {issue.status === status && <CheckCircle className="ml-auto h-4 w-4 opacity-50" />}
@@ -159,6 +160,7 @@ export function CivicIssueContextMenu({ issue, isOpen, onClose, position }: Civi
           <DropdownMenuItem 
             onClick={handleAutoCreateWorkOrder}
             disabled={issue.hasWorkOrder || createWorkOrder.isPending}
+            className="cursor-pointer"
           >
             <RefreshCw className="mr-2 h-4 w-4" />
             <span>Auto Create Work Order</span>
@@ -167,6 +169,7 @@ export function CivicIssueContextMenu({ issue, isOpen, onClose, position }: Civi
           <DropdownMenuItem 
             onClick={openWorkOrderModal}
             disabled={issue.hasWorkOrder || createWorkOrder.isPending}
+            className="cursor-pointer"
           >
             <CalendarPlus className="mr-2 h-4 w-4" />
             <span>Custom Work Order</span>
@@ -174,8 +177,8 @@ export function CivicIssueContextMenu({ issue, isOpen, onClose, position }: Civi
           
           <DropdownMenuSeparator />
           
-          <DropdownMenuItem asChild>
-            <Link href={`/track?issueNumber=${issue.issueNumber}`} className="cursor-pointer w-full">
+          <DropdownMenuItem asChild className="cursor-pointer">
+            <Link href={`/track?issueNumber=${issue.issueNumber}`} className="w-full">
               <History className="mr-2 h-4 w-4" />
               <span>View Full History</span>
             </Link>

@@ -11,12 +11,6 @@ import {
 } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 import {
   Table,
@@ -26,18 +20,27 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { columns } from "./columns/service-request-columns";
-import type { ServiceRequest } from "@/types";
+import { columns } from "./columns/work-order-columns";
+import type { WorkOrder } from "@/types";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-interface ServiceRequestsTableProps {
-  data: ServiceRequest[];
-  onRowClick?: (request: ServiceRequest, event: React.MouseEvent) => void;
+interface WorkOrdersTableProps {
+  data: WorkOrder[];
+  currentTab: string;
+  onRowClick?: (workOrder: WorkOrder, event: React.MouseEvent) => void;
   selectedId?: string;
+  onAccept?: (workOrderId: string, e: React.MouseEvent) => void;
+  isAccepting?: boolean;
 }
 
-export function ServiceRequestsTable({ data, onRowClick, selectedId }: ServiceRequestsTableProps) {
+export function WorkOrdersTable({ data, currentTab, onRowClick, selectedId, onAccept, isAccepting }: WorkOrdersTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
-
+  
   const table = useReactTable({
     data,
     columns,
@@ -46,6 +49,11 @@ export function ServiceRequestsTable({ data, onRowClick, selectedId }: ServiceRe
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     state: { sorting },
+    meta: {
+      currentTab,
+      onAccept,
+      isAccepting,
+    }
   });
 
   return (
@@ -116,8 +124,7 @@ export function ServiceRequestsTable({ data, onRowClick, selectedId }: ServiceRe
                   <div className="h-12 w-12 rounded-full bg-ink/5 flex items-center justify-center mb-2">
                     <span className="text-ink/20 text-xl font-display">?</span>
                   </div>
-                  <p className="text-ink/50 font-body text-lg">No reports found.</p>
-                  <p className="text-ink/30 font-body text-sm">Adjust your filters to see more results.</p>
+                  <p className="text-ink/50 font-body text-lg">No work orders found.</p>
                 </div>
               </TableCell>
             </TableRow>
