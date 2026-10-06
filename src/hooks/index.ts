@@ -7,3 +7,6 @@ export * from "./use-mobile";
 export * from "./useReducedMotion";
 export * from "./useReportDraft";
 export * from "./useStoredValue";
+export * from "./staff.hook";
+export * from "./team.hook";
+export * from "./department.hook";

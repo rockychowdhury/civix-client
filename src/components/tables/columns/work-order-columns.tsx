@@ -17,17 +17,30 @@ export const columns: ColumnDef<WorkOrder, any>[] = [
     ),
   },
   {
-    id: "issue",
-    header: "Issue",
+    id: "details",
+    header: "Details",
     cell: ({ row }: { row: any }) => {
       const issue = row.original.civicIssue;
-      if (!issue) return <span className="text-ink/40">No issue attached</span>;
       return (
-        <div className="flex flex-col">
-          <Link href={`/track?issueNumber=${issue.issueNumber}`} className="font-mono text-sm text-ink hover:text-ledger transition-colors cursor-pointer" onClick={(e) => e.stopPropagation()}>
-            {issue.issueNumber}
-          </Link>
-          <span className="text-xs text-ink/60 max-w-[200px] truncate">{row.original.title}</span>
+        <div className="flex flex-col gap-1 max-w-[280px]">
+          <span className="text-sm font-medium text-ink truncate" title={row.original.title}>
+            {row.original.title}
+          </span>
+          {issue ? (
+            <div className="flex items-center gap-2 text-xs text-ink/60">
+              <Link href={`/track?issueNumber=${issue.issueNumber}`} className="font-mono hover:text-ledger transition-colors cursor-pointer" onClick={(e) => e.stopPropagation()}>
+                {issue.issueNumber}
+              </Link>
+              {issue.location?.address && (
+                <>
+                  <span>•</span>
+                  <span className="truncate">{issue.location.address}</span>
+                </>
+              )}
+            </div>
+          ) : (
+            <span className="text-xs text-ink/40">No issue attached</span>
+          )}
         </div>
       );
     }
@@ -36,31 +49,45 @@ export const columns: ColumnDef<WorkOrder, any>[] = [
     accessorKey: "priority",
     header: "Priority",
     cell: ({ row }: { row: any }) => {
-      const priority = row.original.priority || "Normal";
+      const priorityObj = row.original.priority || row.original.civicIssue?.priority;
+      const priority = typeof priorityObj === 'object' && priorityObj !== null ? (priorityObj?.code || priorityObj?.name || "Normal") : (priorityObj || "Normal");
+      const normalizedPriority = typeof priority === 'string' ? priority.toUpperCase() : "";
       return (
-        <Badge variant={priority === "HIGH" || priority === "URGENT" || priority === "CRITICAL" ? "destructive" : "secondary"} className="text-[10px] uppercase tracking-wider">
+        <Badge variant={normalizedPriority === "HIGH" || normalizedPriority === "URGENT" || normalizedPriority === "CRITICAL" ? "destructive" : "secondary"} className="text-[10px] uppercase tracking-wider">
           {priority}
         </Badge>
       );
     },
   },
   {
-    accessorKey: "slaDeadlineAt",
-    header: "SLA",
+    accessorKey: "status",
+    header: "Status",
     cell: ({ row }: { row: any }) => {
-      const deadline = row.original.slaDeadlineAt;
-      if (!deadline) return <span className="text-ink/40 text-xs">No SLA</span>;
-      const isPast = new Date(deadline) < new Date();
+      const status = row.original.status || "UNKNOWN";
       return (
-        <span className={`text-xs font-mono ${isPast ? 'text-signal-open font-semibold' : 'text-ink/70'}`}>
-          {formatDistanceToNow(new Date(deadline), { addSuffix: true })}
-        </span>
+        <Badge variant="outline" className="text-[10px] uppercase tracking-wider bg-paper font-medium">
+          {status.replace(/_/g, ' ')}
+        </Badge>
+      );
+    }
+  },
+  {
+    id: "timing",
+    header: "Timing",
+    cell: ({ row }: { row: any }) => {
+      const created = row.original.createdAt;
+      const scheduled = row.original.scheduledAt;
+      return (
+        <div className="flex flex-col text-xs text-ink/70 space-y-0.5">
+          {created && <span>Created: {formatDistanceToNow(new Date(created), { addSuffix: true })}</span>}
+          {scheduled && <span className="text-ledger font-medium">Sched: {formatDistanceToNow(new Date(scheduled), { addSuffix: true })}</span>}
+        </div>
       );
     }
   },
   {
     id: "assignment",
-    header: "Assignment",
+    header: "Assignment & Actions",
     cell: ({ row, table }: { row: any, table: any }) => {
       const meta = table.options.meta as any;
       const currentTab = meta?.currentTab;
@@ -99,7 +126,7 @@ export const columns: ColumnDef<WorkOrder, any>[] = [
         );
       }
       
-      return <span className="text-ink/50 text-sm">Unassigned</span>;
+      return <span className="text-ink/50 text-sm italic">Unassigned</span>;
     }
   }
 ];

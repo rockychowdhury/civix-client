@@ -40,7 +40,9 @@ export function TechnicianWorkOrderDetailClient({ id }: TechnicianWorkOrderDetai
 
   const workOrder = workOrderData.data;
   const updates = updatesData?.data || [];
-  const priority = workOrder.priority || "Normal";
+  const priorityObj = workOrder.priority || workOrder.civicIssue?.priority;
+  const priority = typeof priorityObj === 'object' ? (priorityObj?.code || priorityObj?.name || "Normal") : (priorityObj || "Normal");
+  const normalizedPriority = typeof priority === 'string' ? priority.toUpperCase() : "";
   
   const isCompleted = workOrder.status === "RESOLVED" || workOrder.status === "CLOSED" || workOrder.status === "PENDING_VERIFICATION";
 
@@ -57,7 +59,7 @@ export function TechnicianWorkOrderDetailClient({ id }: TechnicianWorkOrderDetai
             {workOrder.id.split('-')[0].toUpperCase()}
           </h1>
           <div className="flex items-center gap-3">
-            <Badge variant={priority === "HIGH" || priority === "URGENT" || priority === "CRITICAL" ? "destructive" : "secondary"} className="text-xs uppercase tracking-wider">
+            <Badge variant={normalizedPriority === "HIGH" || normalizedPriority === "URGENT" || normalizedPriority === "CRITICAL" ? "destructive" : "secondary"} className="text-xs uppercase tracking-wider">
               {priority}
             </Badge>
             <StatusPill status={workOrder.status} />

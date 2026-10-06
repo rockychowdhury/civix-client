@@ -48,6 +48,7 @@ const PORTAL_NAV: Record<PortalId, PortalNav> = {
     items: [
       { label: "Overview", href: "/department/overview", permission: "department:read" },
       { label: "Work Orders", href: "/department/work-orders", permission: "workorder:read" },
+      { label: "Technicians", href: "/department/technicians", permission: "technician:read" },
     ],
   },
   municipality: {

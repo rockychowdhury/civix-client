@@ -33,9 +33,16 @@ export function WorkOrderDetailSheet({ workOrderId, isOpen, onOpenChange }: Work
                     <Badge variant="outline" className="font-mono text-xs text-ink/70">
                       {workOrder.id.split('-')[0].toUpperCase()}
                     </Badge>
-                    <Badge variant={workOrder.priority === "HIGH" ? "destructive" : "secondary"}>
-                      {workOrder.priority}
-                    </Badge>
+                    {(() => {
+                      const priorityObj = workOrder.priority || workOrder.civicIssue?.priority;
+                      const priority = typeof priorityObj === 'object' ? (priorityObj?.code || priorityObj?.name || "Normal") : (priorityObj || "Normal");
+                      const normalizedPriority = typeof priority === 'string' ? priority.toUpperCase() : "";
+                      return (
+                        <Badge variant={normalizedPriority === "HIGH" || normalizedPriority === "URGENT" || normalizedPriority === "CRITICAL" ? "destructive" : "secondary"}>
+                          {priority}
+                        </Badge>
+                      );
+                    })()}
                     <Badge variant="default" className="bg-ledger text-paper">
                       {workOrder.status.replace(/_/g, ' ')}
                     </Badge>

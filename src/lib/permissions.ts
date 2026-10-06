@@ -38,7 +38,7 @@ export type Permission =
 export const PERMISSION_MATRIX: Record<Role, Permission[]> = {
   CITIZEN: ["issue:read"],
   TECHNICIAN: ["workorder:read", "workorder:update", "issue:read"],
-  DISPATCHER: ["workorder:assign", "workorder:read", "issue:read", "issue:update"],
+  DISPATCHER: ["workorder:assign", "workorder:read", "issue:read", "issue:update", "technician:read", "technician:manage", "department:read"],
   DEPARTMENT_MANAGER: [
     "workorder:assign",
     "workorder:read",

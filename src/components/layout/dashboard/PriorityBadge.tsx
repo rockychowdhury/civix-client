@@ -9,8 +9,9 @@ const PRIORITY_CLASSES: Record<Priority, string> = {
   CRITICAL: "border-signal-open bg-signal-open/[0.12] text-signal-open font-semibold",
 };
 
-export function PriorityBadge({ priority, className }: { priority: string; className?: string }) {
-  const normalized = priority.toUpperCase() as Priority;
+export function PriorityBadge({ priority, className }: { priority: any; className?: string }) {
+  const priorityStr = typeof priority === 'object' ? (priority?.code || priority?.name || "NORMAL") : priority;
+  const normalized = (typeof priorityStr === 'string' ? priorityStr.toUpperCase() : "NORMAL") as Priority;
   const toneClass = PRIORITY_CLASSES[normalized] ?? PRIORITY_CLASSES.LOW;
   return (
     <span
@@ -20,7 +21,7 @@ export function PriorityBadge({ priority, className }: { priority: string; class
         className,
       )}
     >
-      {priority}
+      {priorityStr}
     </span>
   );
 }

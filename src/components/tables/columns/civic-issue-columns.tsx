@@ -27,11 +27,13 @@ export const columns: ColumnDef<CivicIssue, any>[] = [
     accessorKey: "priority",
     header: "Priority",
     cell: ({ row }: { row: any }) => {
-      const priority = row.original.priority || "Normal";
+      const priorityObj = row.original.priority;
+      const priority = typeof priorityObj === 'object' ? (priorityObj?.code || priorityObj?.name || "Normal") : (priorityObj || "Normal");
       const overridden = !!row.original.priorityOverriddenBy;
+      const normalizedPriority = (typeof priority === 'string' ? priority.toUpperCase() : "");
       return (
         <div className="flex items-center gap-2">
-          <Badge variant={priority === "High" || priority === "Urgent" ? "destructive" : "secondary"} className="text-[10px] uppercase tracking-wider">
+          <Badge variant={normalizedPriority === "HIGH" || normalizedPriority === "URGENT" || normalizedPriority === "CRITICAL" ? "destructive" : "secondary"} className="text-[10px] uppercase tracking-wider">
             {priority}
           </Badge>
           {overridden && (
