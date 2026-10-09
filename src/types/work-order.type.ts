@@ -1,13 +1,62 @@
 // Removed StaffProfile import to fix type error
 
-export type AssignmentStatus = "SUGGESTED" | "PENDING_ASSIGNMENT" | "CONFIRMED" | "REASSIGNED";
+export type AssignmentStatus = "PENDING" | "ACCEPTED" | "REJECTED" | "UNASSIGNED";
 export type WorkOrderStatus =
   | "WORK_ORDER_CREATED"
   | "ASSIGNED"
+  | "ACCEPTED"
   | "IN_PROGRESS"
-  | "COMPLETED"
+  | "PENDING_VERIFICATION"
+  | "RESOLVED"
+  | "CLOSED"
   | "CANCELLED"
   | "ON_HOLD";
+
+export type WorkUpdateType =
+  | "ACCEPTED"
+  | "ON_SITE"
+  | "PROGRESS"
+  | "BLOCKED"
+  | "DELAYED"
+  | "PAUSED"
+  | "RESUMED"
+  | "COMPLETED";
+
+export interface Assignment {
+  id: string;
+  workOrderId: string;
+  assignedToId?: string;
+  assignedById?: string;
+  teamId?: string | null;
+  status: AssignmentStatus | string;
+  reason?: string | null;
+  notes?: string | null;
+  assignedAt?: string;
+  acceptedAt?: string | null;
+  createdAt?: string;
+  team?: { name?: string } | null;
+  workOrder?: WorkOrder | null;
+}
+
+export interface WorkUpdate {
+  id: string;
+  workOrderId: string;
+  technicianId?: string;
+  updateType: WorkUpdateType | string;
+  note?: string | null;
+  createdAt: string;
+  attachments?: { id: string; url?: string }[];
+}
+
+export interface WorkResolution {
+  id: string;
+  workOrderId: string;
+  summary: string;
+  submittedByUserId?: string;
+  approvedAt?: string | null;
+  rejectedAt?: string | null;
+  createdAt: string;
+}
 
 export interface WorkOrder {
   id: string;
@@ -46,6 +95,9 @@ export interface WorkOrder {
     team?: { name: string } | null;
   }>;
 
+  updates?: WorkUpdate[];
+  resolution?: WorkResolution | null;
+
   scheduledAt?: string | null;
   startedAt?: string | null;
   completedAt?: string | null;
@@ -62,4 +114,14 @@ export interface IUpdateWorkOrderPayload {
 export interface IAssignTechnicianPayload {
   technicianId: string;
   reason?: string;
+}
+
+export interface ISubmitWorkUpdatePayload {
+  updateType: string;
+  notes?: string;
+  attachmentIds?: string[];
+}
+
+export interface ISubmitResolutionPayload {
+  summary: string;
 }

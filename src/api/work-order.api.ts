@@ -1,5 +1,10 @@
 import apiClient from "@/lib/apiClient";
-import type { ICreateWorkOrderPayload } from "@/types";
+import type {
+  ICreateWorkOrderPayload,
+  ISubmitResolutionPayload,
+  ISubmitWorkUpdatePayload,
+} from "@/types";
+import { cleanParams } from "@/utils";
 
 export async function createWorkOrder(payload: ICreateWorkOrderPayload): Promise<any> {
   const res = await apiClient(`/work-orders`, {
@@ -60,10 +65,22 @@ export async function confirmSuggestedTechnician(id: string): Promise<any> {
   return res.data;
 }
 
-export async function getMyQueue(filters?: Record<string, string>): Promise<{ data: any[] }> {
-  const query = filters ? `?${new URLSearchParams(filters).toString()}` : "";
-  const res = await apiClient(`/assignments/my-assignments${query}`);
-  return res as { data: any[] };
+export interface MyQueueFilter {
+  status?: string;
+  workOrderId?: string;
+  searchTerm?: string;
+  page?: number;
+  limit?: number;
+}
+
+export async function getMyQueue(filters?: MyQueueFilter): Promise<{
+  data: any[];
+  meta?: { page: number; limit: number; total: number; totalPages: number };
+}> {
+  const res = await apiClient<{ data: any[]; meta?: any }>(`/assignments/my-assignments`, {
+    params: cleanParams(filters),
+  });
+  return res as { data: any[]; meta?: any };
 }
 
 export async function getAssignmentById(id: string): Promise<any> {
@@ -82,14 +99,14 @@ export async function acceptWorkOrder(id: string): Promise<any> {
 export async function rejectAssignment(id: string, reason?: string): Promise<any> {
   const res = await apiClient(`/assignments/${id}/status`, {
     method: "PATCH",
-    body: JSON.stringify({ status: "REJECTED", ...(reason ? { reason } : {}) }),
+    body: JSON.stringify({ status: "REJECTED", ...(reason ? { notes: reason } : {}) }),
   });
   return res.data;
 }
 
 export async function updateAssignmentStatus(
   id: string,
-  payload: { status: "ACCEPTED" | "REJECTED"; reason?: string },
+  payload: { status: "ACCEPTED" | "REJECTED"; notes?: string },
 ): Promise<any> {
   const res = await apiClient(`/assignments/${id}/status`, {
     method: "PATCH",
@@ -108,7 +125,7 @@ export async function startWorkOrder(id: string, notes?: string): Promise<any> {
 
 export async function submitWorkUpdate(
   id: string,
-  payload: { updateText: string; attachments?: string[] },
+  payload: ISubmitWorkUpdatePayload,
 ): Promise<any> {
   const res = await apiClient(`/work-orders/${id}/updates`, {
     method: "POST",
@@ -119,7 +136,7 @@ export async function submitWorkUpdate(
 
 export async function submitResolution(
   id: string,
-  payload: { resolutionNotes: string; afterPhotos?: string[] },
+  payload: ISubmitResolutionPayload,
 ): Promise<any> {
   const res = await apiClient(`/work-orders/${id}/resolutions`, {
     method: "POST",

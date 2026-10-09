@@ -9,6 +9,7 @@ import {
   getMyQueue,
   getWorkOrderById,
   getWorkOrderUpdates,
+  type MyQueueFilter,
   rejectAssignment,
   startWorkOrder,
   submitResolution,
@@ -16,7 +17,11 @@ import {
   updateAssignmentStatus,
   updateWorkOrderStatus,
 } from "@/api/work-order.api";
-import type { ICreateWorkOrderPayload } from "@/types";
+import type {
+  ICreateWorkOrderPayload,
+  ISubmitResolutionPayload,
+  ISubmitWorkUpdatePayload,
+} from "@/types";
 
 export function useDepartmentWorkOrders(departmentId?: string, filters?: Record<string, string>) {
   return useQuery({
@@ -106,7 +111,7 @@ export function useCreateWorkOrder() {
   });
 }
 
-export function useMyQueue(filters?: Record<string, string>) {
+export function useMyQueue(filters?: MyQueueFilter) {
   return useQuery({
     queryKey: ["technician-queue", filters],
     queryFn: () => getMyQueue(filters),
@@ -156,7 +161,7 @@ export function useUpdateAssignmentStatus() {
       payload,
     }: {
       id: string;
-      payload: { status: "ACCEPTED" | "REJECTED"; reason?: string };
+      payload: { status: "ACCEPTED" | "REJECTED"; notes?: string };
     }) => updateAssignmentStatus(id, payload),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["work-order"] });
@@ -182,16 +187,12 @@ export function useStartWorkOrder() {
 export function useSubmitWorkUpdate() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({
-      id,
-      payload,
-    }: {
-      id: string;
-      payload: { updateText: string; attachments?: string[] };
-    }) => submitWorkUpdate(id, payload),
+    mutationFn: ({ id, payload }: { id: string; payload: ISubmitWorkUpdatePayload }) =>
+      submitWorkUpdate(id, payload),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["work-order", variables.id] });
       queryClient.invalidateQueries({ queryKey: ["work-order-updates", variables.id] });
+      queryClient.invalidateQueries({ queryKey: ["technician-queue"] });
     },
   });
 }
@@ -199,13 +200,8 @@ export function useSubmitWorkUpdate() {
 export function useSubmitResolution() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({
-      id,
-      payload,
-    }: {
-      id: string;
-      payload: { resolutionNotes: string; afterPhotos?: string[] };
-    }) => submitResolution(id, payload),
+    mutationFn: ({ id, payload }: { id: string; payload: ISubmitResolutionPayload }) =>
+      submitResolution(id, payload),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["work-order", variables.id] });
       queryClient.invalidateQueries({ queryKey: ["work-order-updates", variables.id] });

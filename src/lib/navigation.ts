@@ -31,13 +31,19 @@ const PORTAL_NAV: Record<PortalId, PortalNav> = {
     portalLabel: "Technician",
     items: [
       {
-        label: "My Queue",
+        label: "Inbox",
+        href: "/technician/inbox",
+        permission: "workorder:read",
+        mobileTab: true,
+      },
+      {
+        label: "My Work",
         href: "/technician/queue",
         permission: "workorder:read",
         mobileTab: true,
       },
       {
-        label: "Completed",
+        label: "History",
         href: "/technician/history",
         permission: "workorder:read",
         mobileTab: true,
