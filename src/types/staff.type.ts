@@ -33,6 +33,8 @@ export interface IStaffProfile {
   phone: string | null;
   designation: string | null;
   municipalityId: string | null;
+  currentWorkload?: number;
+  maxWorkload?: number;
   createdAt: string;
   updatedAt: string;
   user?: {

@@ -4,8 +4,7 @@ import { toast } from "sonner";
 import type { WorkOrder } from "@/types";
 import { AlertCircle, CheckCircle, RefreshCw } from "lucide-react";
 import { useState } from "react";
-// We would import ReassignTechnicianForm here
-
+import { AssignTechnicianSelect } from "./AssignTechnicianSelect";
 export function TechnicianSuggestionInline({ workOrder }: { workOrder: WorkOrder }) {
   const confirmSuggestion = useConfirmSuggestedTechnician();
   const [isAssigning, setIsAssigning] = useState(false);
@@ -13,6 +12,10 @@ export function TechnicianSuggestionInline({ workOrder }: { workOrder: WorkOrder
   const isPendingAssignment = !workOrder.currentAssigneeId && !workOrder.suggestedAssigneeId;
   const hasSuggestion = !workOrder.currentAssigneeId && !!workOrder.suggestedAssigneeId;
   const isConfirmed = !!workOrder.currentAssigneeId;
+
+  if (isAssigning) {
+    return <AssignTechnicianSelect workOrder={workOrder} onCancel={() => setIsAssigning(false)} />;
+  }
 
   if (isConfirmed) {
     return (

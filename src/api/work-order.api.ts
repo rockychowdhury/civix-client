@@ -43,9 +43,12 @@ export async function assignTechnician(
   id: string, 
   payload: { technicianId: string; reason?: string }
 ): Promise<any> {
-  const res = await apiClient(`/work-orders/${id}/assign`, {
-    method: "PATCH",
-    body: JSON.stringify(payload),
+  const res = await apiClient(`/assignments`, {
+    method: "POST",
+    body: JSON.stringify({
+      workOrderId: id,
+      assignedToId: payload.technicianId
+    }),
   });
   return res.data;
 }
