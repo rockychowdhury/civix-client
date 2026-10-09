@@ -71,10 +71,16 @@ export interface WorkOrder {
   civicIssue?: {
     id: string;
     issueNumber: string;
+    title?: string;
+    description?: string;
     location: any;
     priority?: { code: string; name: string };
     resolutionDeadlineAt?: string | null;
+    attachments?: Array<{ id: string; url: string; fileType?: string }>;
+    category?: { id: string; name: string };
   };
+
+  department?: { id: string; name: string } | null;
 
   currentAssigneeId?: string | null;
   currentAssignee?: { employeeId?: string; firstName: string; lastName: string; user?: any } | null;

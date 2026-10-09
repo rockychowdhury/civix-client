@@ -1,4 +1,4 @@
-import { type ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import type { ITeam } from "@/types";
 import { TeamRowActions } from "./team-row-actions";
@@ -19,11 +19,7 @@ export const teamColumns: ColumnDef<ITeam>[] = [
     accessorKey: "name",
     header: "Name",
     cell: ({ row }) => {
-      return (
-        <span className="font-medium text-ink">
-          {row.original.name}
-        </span>
-      );
+      return <span className="font-medium text-ink">{row.original.name}</span>;
     },
   },
   {
@@ -59,10 +55,13 @@ export const teamColumns: ColumnDef<ITeam>[] = [
     cell: ({ row }) => {
       const status = row.original.status || "UNKNOWN";
       let colorClass = "bg-line/20 text-ink/70";
-      if (status === "ACTIVE") colorClass = "bg-signal-resolved/20 text-signal-resolved border-signal-resolved/30";
-      if (status === "INACTIVE") colorClass = "bg-signal-progress/20 text-signal-progress border-signal-progress/30";
-      if (status === "DISBANDED") colorClass = "bg-signal-open/20 text-signal-open border-signal-open/30";
-      
+      if (status === "ACTIVE")
+        colorClass = "bg-signal-resolved/20 text-signal-resolved border-signal-resolved/30";
+      if (status === "INACTIVE")
+        colorClass = "bg-signal-progress/20 text-signal-progress border-signal-progress/30";
+      if (status === "DISBANDED")
+        colorClass = "bg-signal-open/20 text-signal-open border-signal-open/30";
+
       return (
         <Badge variant="outline" className={`capitalize font-medium rounded-full ${colorClass}`}>
           {status.toLowerCase()}

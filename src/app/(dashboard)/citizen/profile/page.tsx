@@ -1,14 +1,23 @@
-export default function Page() {
+import { Suspense } from "react";
+import { CitizenProfileView } from "@/components/modules/citizen";
+
+export const dynamic = "force-static";
+
+export const metadata = {
+  title: "Profile | Citizen Portal",
+  description: "Manage your personal profile and citizen trust score standing.",
+};
+
+export default function CitizenProfilePage() {
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-semibold text-ink">Profile</h1>
-      </div>
-      <div className="rounded-lg border border-line/20 bg-field/20 p-12 text-center border-dashed">
-        <p className="font-body text-sm text-ink/60">
-          This section is currently being constructed.
-        </p>
-      </div>
-    </div>
+    <Suspense
+      fallback={
+        <div className="h-64 flex items-center justify-center text-ink/40 font-body animate-pulse">
+          Loading citizen profile...
+        </div>
+      }
+    >
+      <CitizenProfileView />
+    </Suspense>
   );
 }

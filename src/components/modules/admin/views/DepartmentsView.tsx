@@ -71,16 +71,18 @@ const FIELDS: AdminFormField[] = [
   },
 ];
 
-export function DepartmentsView() {
-  const { search, setSearch, debouncedSearch } = useAdminListParams();
+export function DepartmentsView({ municipalityId }: { municipalityId?: string } = {}) {
+  const { search, setSearch, debouncedSearch } = useAdminListParams(municipalityId);
   const [dialog, setDialog] = useState<{ mode: "create" | "edit"; row?: DepartmentRow } | null>(
     null,
   );
   const [attachFor, setAttachFor] = useState<DepartmentRow | null>(null);
   const [pickedWards, setPickedWards] = useState<string[]>([]);
 
-  const query = useGetDepartments();
-  const wardsQuery = useGetAdminWards({ limit: 100 });
+  const query = useGetDepartments(municipalityId ? { municipalityId } : undefined);
+  const wardsQuery = useGetAdminWards(
+    municipalityId ? { municipalityId, limit: 100 } : { limit: 100 },
+  );
   const createMutation = useCreateDepartment();
   const updateMutation = useUpdateDepartment();
   const attachMutation = useAttachDepartmentServiceAreas();
@@ -231,7 +233,10 @@ export function DepartmentsView() {
               { onSuccess: () => setDialog(null) },
             );
           } else {
-            createMutation.mutate(payload, { onSuccess: () => setDialog(null) });
+            createMutation.mutate(
+              municipalityId ? { ...payload, municipalityId } : payload,
+              { onSuccess: () => setDialog(null) },
+            );
           }
         }}
       />

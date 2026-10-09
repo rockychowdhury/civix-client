@@ -24,7 +24,7 @@ export function ResolutionPanel({
   const mutation = useSubmitResolution();
 
   const form = useForm({
-    defaultValues: { summary: "" },
+    defaultValues: { summary: resolution?.summary || "" },
     validators: { onSubmit: resolutionFormSchema },
     onSubmit: ({ value }) => {
       mutation.mutate(

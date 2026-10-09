@@ -71,14 +71,14 @@ const FIELDS: AdminFormField[] = [
   { name: "priorityId", label: "Priority ID", type: "text", placeholder: "UUID", optional: true },
 ];
 
-export function SlaPoliciesView() {
-  const { search, setSearch } = useAdminListParams();
+export function SlaPoliciesView({ municipalityId }: { municipalityId?: string } = {}) {
+  const { search, setSearch } = useAdminListParams(municipalityId);
   const [dialog, setDialog] = useState<{ mode: "create" | "edit"; row?: AdminSlaPolicy } | null>(
     null,
   );
   const [deleting, setDeleting] = useState<AdminSlaPolicy | null>(null);
 
-  const query = useGetAdminSlaPolicies();
+  const query = useGetAdminSlaPolicies(municipalityId ? { municipalityId } : undefined);
   const categoriesQuery = useGetAdminCategories({ limit: 100 });
   const createMutation = useCreateSlaPolicy();
   const updateMutation = useUpdateSlaPolicy();
@@ -254,7 +254,10 @@ export function SlaPoliciesView() {
               { onSuccess: () => setDialog(null) },
             );
           } else {
-            createMutation.mutate(payload as never, { onSuccess: () => setDialog(null) });
+            createMutation.mutate(
+              (municipalityId ? { ...payload, municipalityId } : payload) as never,
+              { onSuccess: () => setDialog(null) },
+            );
           }
         }}
       />

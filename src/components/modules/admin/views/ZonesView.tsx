@@ -33,13 +33,19 @@ import { useGetAdminMunicipalities } from "@/hooks/municipality.hook";
 import type { AdminZone } from "@/types";
 import { zoneFormSchema } from "@/validation";
 
-export function ZonesView() {
-  const { search, setSearch, debouncedSearch, page, setPage, limit } = useAdminListParams();
+export function ZonesView({ municipalityId }: { municipalityId?: string } = {}) {
+  const { search, setSearch, debouncedSearch, page, setPage, limit } =
+    useAdminListParams(municipalityId);
   const [dialog, setDialog] = useState<{ mode: "create" | "edit"; row?: AdminZone } | null>(null);
   const [deleting, setDeleting] = useState<AdminZone | null>(null);
   const [coverageFor, setCoverageFor] = useState<AdminZone | null>(null);
 
-  const query = useGetAdminZones({ searchTerm: debouncedSearch || undefined, page, limit });
+  const query = useGetAdminZones({
+    searchTerm: debouncedSearch || undefined,
+    municipalityId,
+    page,
+    limit,
+  });
   const municipalitiesQuery = useGetAdminMunicipalities({ limit: 100 });
   const coverageQuery = useGetWardsByZone(coverageFor?.id ?? "");
   const createMutation = useCreateZone();
@@ -72,12 +78,16 @@ export function ZonesView() {
 
   const FIELDS: AdminFormField[] = [
     { name: "name", label: "Name", type: "text", placeholder: "e.g. Zone 4" },
-    {
-      name: "municipalityId",
-      label: "Municipality",
-      type: "select",
-      options: municipalities.map((m) => ({ value: m.id, label: `${m.name} (${m.code})` })),
-    },
+    ...(municipalityId
+      ? []
+      : [
+          {
+            name: "municipalityId",
+            label: "Municipality",
+            type: "select" as const,
+            options: municipalities.map((m) => ({ value: m.id, label: `${m.name} (${m.code})` })),
+          },
+        ]),
     {
       name: "coverageStatus",
       label: "Coverage status",
@@ -217,7 +227,10 @@ export function ZonesView() {
               { onSuccess: () => setDialog(null) },
             );
           } else {
-            createMutation.mutate(payload as never, { onSuccess: () => setDialog(null) });
+            createMutation.mutate(
+              (municipalityId ? { ...payload, municipalityId } : payload) as never,
+              { onSuccess: () => setDialog(null) },
+            );
           }
         }}
       />

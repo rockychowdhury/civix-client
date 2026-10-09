@@ -1,7 +1,12 @@
 import apiClient from "@/lib/apiClient";
 import { cleanParams } from "@/utils";
 
-export function getDepartments(params?: { searchTerm?: string; page?: number; limit?: number }) {
+export function getDepartments(params?: {
+  searchTerm?: string;
+  municipalityId?: string;
+  page?: number;
+  limit?: number;
+}) {
   return apiClient<{ data: any[]; meta?: unknown }>("/departments", {
     method: "GET",
     params: cleanParams(params),

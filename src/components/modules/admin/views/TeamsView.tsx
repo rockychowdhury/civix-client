@@ -27,13 +27,14 @@ import { useCreateTeam, useDeleteTeam, useGetTeams, useUpdateTeam } from "@/hook
 import type { ITeam } from "@/types";
 import { adminTeamFormSchema } from "@/validation";
 
-export function TeamsView() {
-  const { search, setSearch, debouncedSearch, page, setPage, limit } = useAdminListParams();
+export function TeamsView({ municipalityId }: { municipalityId?: string } = {}) {
+  const { search, setSearch, debouncedSearch, page, setPage, limit } =
+    useAdminListParams(municipalityId);
   const [dialog, setDialog] = useState<{ mode: "create" | "edit"; row?: ITeam } | null>(null);
   const [deleting, setDeleting] = useState<ITeam | null>(null);
 
   const query = useGetTeams({ searchTerm: debouncedSearch || undefined, page, limit });
-  const departmentsQuery = useGetDepartments();
+  const departmentsQuery = useGetDepartments(municipalityId ? { municipalityId } : undefined);
   const staffQuery = useGetAllStaff({ limit: 100 });
   const createMutation = useCreateTeam();
   const updateMutation = useUpdateTeam();

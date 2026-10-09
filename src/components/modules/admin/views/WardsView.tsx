@@ -33,14 +33,20 @@ import {
 import type { AdminWard } from "@/types";
 import { wardFormSchema } from "@/validation";
 
-export function WardsView() {
-  const { search, setSearch, debouncedSearch, page, setPage, limit } = useAdminListParams();
+export function WardsView({ municipalityId }: { municipalityId?: string } = {}) {
+  const { search, setSearch, debouncedSearch, page, setPage, limit } =
+    useAdminListParams(municipalityId);
   const [dialog, setDialog] = useState<{ mode: "create" | "edit"; row?: AdminWard } | null>(null);
   const [deleting, setDeleting] = useState<AdminWard | null>(null);
   const [coverageFor, setCoverageFor] = useState<AdminWard | null>(null);
 
-  const query = useGetAdminWards({ searchTerm: debouncedSearch || undefined, page, limit });
-  const zonesQuery = useGetAdminZones({ limit: 100 });
+  const query = useGetAdminWards({
+    searchTerm: debouncedSearch || undefined,
+    municipalityId,
+    page,
+    limit,
+  });
+  const zonesQuery = useGetAdminZones(municipalityId ? { municipalityId, limit: 100 } : { limit: 100 });
   const coverageQuery = useGetWardDepartments(coverageFor?.id ?? "");
   const createMutation = useCreateWard();
   const updateMutation = useUpdateWard();

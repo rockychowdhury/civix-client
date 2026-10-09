@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
+import { Edit2, FileText, Flag, Link as LinkIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { FileText, Flag, Link as LinkIcon, Edit2 } from "lucide-react";
-import type { ServiceRequest } from "@/types";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,6 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import type { ServiceRequest } from "@/types";
 
 interface ServiceRequestContextMenuProps {
   request: ServiceRequest | null;
@@ -22,17 +22,16 @@ interface ServiceRequestContextMenuProps {
   onOpenFlagInvalid?: () => void;
 }
 
-export function ServiceRequestContextMenu({ 
-  request, 
-  isOpen, 
-  onClose, 
-  position, 
+export function ServiceRequestContextMenu({
+  request,
+  isOpen,
+  onClose,
+  position,
   onViewDetails,
   onOpenReclassify,
   onOpenLinkIssue,
-  onOpenFlagInvalid
+  onOpenFlagInvalid,
 }: ServiceRequestContextMenuProps) {
-  
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -46,24 +45,24 @@ export function ServiceRequestContextMenu({
       {mounted && typeof document !== "undefined"
         ? createPortal(
             <DropdownMenuTrigger asChild>
-              <div 
+              <div
                 className="fixed z-50 pointer-events-none"
-                style={{ 
-                  left: position.x, 
+                style={{
+                  left: position.x,
                   top: position.y,
-                  width: 1, 
-                  height: 1 
-                }} 
+                  width: 1,
+                  height: 1,
+                }}
               />
             </DropdownMenuTrigger>,
-            document.body
+            document.body,
           )
         : null}
       <DropdownMenuContent align="start" sideOffset={5} collisionPadding={10} className="w-56">
         <DropdownMenuLabel>Report {request.trackingNumber}</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        
-        <DropdownMenuItem 
+
+        <DropdownMenuItem
           onClick={() => {
             onViewDetails?.();
             onClose();
@@ -75,8 +74,8 @@ export function ServiceRequestContextMenu({
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
-        
-        <DropdownMenuItem 
+
+        <DropdownMenuItem
           onClick={() => {
             onOpenReclassify?.();
             onClose();
@@ -86,9 +85,9 @@ export function ServiceRequestContextMenu({
           <Edit2 className="mr-2 h-4 w-4" />
           <span>Reclassify Category</span>
         </DropdownMenuItem>
-        
+
         {(!request.linkedIssueId || request.needsReview) && (
-          <DropdownMenuItem 
+          <DropdownMenuItem
             onClick={() => {
               onOpenLinkIssue?.();
               onClose();
@@ -101,8 +100,8 @@ export function ServiceRequestContextMenu({
         )}
 
         <DropdownMenuSeparator />
-        
-        <DropdownMenuItem 
+
+        <DropdownMenuItem
           onClick={() => {
             onOpenFlagInvalid?.();
             onClose();
@@ -112,7 +111,6 @@ export function ServiceRequestContextMenu({
           <Flag className="mr-2 h-4 w-4" />
           <span>Flag as Invalid</span>
         </DropdownMenuItem>
-
       </DropdownMenuContent>
     </DropdownMenu>
   );

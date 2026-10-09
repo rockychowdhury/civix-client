@@ -1,5 +1,27 @@
 import apiClient from "@/lib/apiClient";
 import type { CivicIssue } from "@/types";
+import { cleanParams } from "@/utils";
+
+export async function getMunicipalityIssues(
+  municipalityId: string,
+  params?: {
+    searchTerm?: string;
+    status?: string;
+    priority?: string;
+    departmentId?: string;
+    wardId?: string;
+    page?: number;
+    limit?: number;
+  },
+): Promise<{
+  data: CivicIssue[];
+  meta?: { page: number; limit: number; total: number; totalPages: number };
+}> {
+  const res = await apiClient(`/civic-issues/municipality/${municipalityId}`, {
+    params: cleanParams(params),
+  });
+  return res as { data: CivicIssue[]; meta?: any };
+}
 
 export async function getPublicCivicIssue(issueNumber: string): Promise<CivicIssue> {
   const res = await apiClient(`/civic-issues/public/${issueNumber}`);

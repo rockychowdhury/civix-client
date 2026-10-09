@@ -17,7 +17,11 @@ export function AttachmentGallery({ attachments }: { attachments: Attachment[] }
           <DialogTrigger asChild>
             <div className="h-20 w-20 relative rounded-md overflow-hidden cursor-pointer border border-line hover:opacity-80 transition-opacity">
               {file.type.startsWith("image/") ? (
-                <img src={file.url} alt="Attachment thumbnail" className="object-cover w-full h-full" />
+                <img
+                  src={file.url}
+                  alt="Attachment thumbnail"
+                  className="object-cover w-full h-full"
+                />
               ) : (
                 <div className="flex items-center justify-center w-full h-full bg-field">
                   <span className="text-xs text-ink/50">Doc</span>
@@ -28,7 +32,11 @@ export function AttachmentGallery({ attachments }: { attachments: Attachment[] }
           <DialogContent className="max-w-3xl border-line bg-paper p-0 overflow-hidden">
             <div className="w-full h-full bg-black/5 dark:bg-white/5 flex items-center justify-center min-h-[50vh]">
               {file.type.startsWith("image/") ? (
-                <img src={file.url} alt="Attachment preview" className="max-w-full max-h-[80vh] object-contain" />
+                <img
+                  src={file.url}
+                  alt="Attachment preview"
+                  className="max-w-full max-h-[80vh] object-contain"
+                />
               ) : (
                 <div className="p-8 text-ink">Unsupported preview for this file type.</div>
               )}

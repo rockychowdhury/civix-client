@@ -14,8 +14,11 @@ export const TECH_WO_STATUSES = [
   "CANCELLED",
 ] as const;
 
-/** Statuses that mark a job done from the technician's perspective. */
-export const TECH_DONE_WO_STATUSES = ["PENDING_VERIFICATION", "RESOLVED", "CLOSED"] as const;
+/** Statuses that mark a job fully completed from the technician's perspective. */
+export const TECH_DONE_WO_STATUSES = ["RESOLVED", "CLOSED"] as const;
+
+/** Statuses indicating the work is submitted and awaiting supervisor/dispatcher verification. */
+export const TECH_VERIFICATION_STATUSES = ["PENDING_VERIFICATION"] as const;
 
 /** Update types a technician can log (ACCEPTED is system-created on accept). */
 export const WORK_UPDATE_TYPES = [

@@ -15,6 +15,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Textarea } from "@/components/ui/textarea";
 import { WORK_UPDATE_TYPE_LABEL, WORK_UPDATE_TYPES } from "@/constant/technician.constant";
 import { useSubmitWorkUpdate } from "@/hooks/work-order.hook";
+import { cn } from "@/lib/utils";
 import { workUpdateFormSchema } from "@/validation";
 
 /**
@@ -59,7 +60,7 @@ export function QuickUpdateSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="bottom"
-        className="border-t border-line/40 bg-paper px-5 pt-6 pb-6 text-ink sm:mx-auto sm:mb-8 sm:max-w-sm sm:rounded-xs sm:border"
+        className="border-t border-line/40 bg-paper px-5 pt-6 pb-6 text-ink sm:mx-auto sm:mb-8 sm:max-w-md sm:rounded-xs sm:border"
       >
         <SheetHeader className="text-left">
           <p className="font-mono text-[0.6875rem] uppercase tracking-widest text-ink/45">
@@ -90,6 +91,23 @@ export function QuickUpdateSheet({
                   >
                     Status
                   </FieldLabel>
+                  <div className="flex flex-wrap gap-1.5 pb-2">
+                    {WORK_UPDATE_TYPES.map((t) => (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() => field.handleChange(t)}
+                        className={cn(
+                          "cursor-pointer rounded-xs px-2.5 py-1 text-xs font-medium transition-colors border",
+                          field.state.value === t
+                            ? "bg-ledger border-ledger text-paper shadow-xs"
+                            : "bg-field/40 border-line/40 text-ink/70 hover:bg-field/70 hover:text-ink",
+                        )}
+                      >
+                        {WORK_UPDATE_TYPE_LABEL[t]}
+                      </button>
+                    ))}
+                  </div>
                   <Select
                     value={field.state.value || undefined}
                     onValueChange={(value) => field.handleChange(value)}
@@ -97,12 +115,16 @@ export function QuickUpdateSheet({
                       if (!open) field.handleBlur();
                     }}
                   >
-                    <SelectTrigger id={field.name} aria-invalid={isInvalid}>
-                      <SelectValue placeholder="Select status" />
+                    <SelectTrigger
+                      id={field.name}
+                      aria-invalid={isInvalid}
+                      className="cursor-pointer"
+                    >
+                      <SelectValue placeholder="Or select from dropdown..." />
                     </SelectTrigger>
                     <SelectContent>
                       {WORK_UPDATE_TYPES.map((t) => (
-                        <SelectItem key={t} value={t}>
+                        <SelectItem key={t} value={t} className="cursor-pointer">
                           {WORK_UPDATE_TYPE_LABEL[t]}
                         </SelectItem>
                       ))}

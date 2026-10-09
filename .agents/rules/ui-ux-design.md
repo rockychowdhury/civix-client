@@ -33,3 +33,16 @@ description: Principal Product Designer UI/UX Guidelines for Civix, focusing on 
 - **Toast Notifications:** Toasts must be positioned on the **bottom-right**.
 - **Responsive Design:** Layout, text, buttons, and spacing must optimize flawlessly across mobile, tablet, laptop, and desktop viewports.
 - **Accessibility:** All interactive elements must be keyboard-friendly. Meaningful `alt` text must be present for all images. Color contrast must pass WCAG standards in both light and dark themes.
+
+## 5. Table Architecture & Interaction Patterns (Department Dashboard Standard)
+- **TanStack React Table Required:** All tabular data interfaces across dashboards must use `@tanstack/react-table` with `getCoreRowModel()`, `getSortedRowModel()`, and `getPaginationRowModel()`. Headers must have interactive sorting indicators (`ArrowUp`, `ArrowDown`, `ArrowUpDown`) in `font-display text-[10px] uppercase tracking-widest text-ink/40`.
+- **NO Trailing "Actions" Column:** Tables must NEVER include an ad-hoc 3-dots (`MoreHorizontal`) dropdown action column at the end of rows. Trailing button columns add cognitive clutter and violate the sleek, data-dense editorial aesthetic.
+- **Direct Row Click Interaction:** Table rows must be directly interactive (`cursor-pointer`). Clicking anywhere on a row with the left mouse button (or right-clicking with `onContextMenu`) immediately selects the entity and opens the contextual action flow (e.g., Slide-over Inspector Sheet, Context Menu, or Triage Drawer).
+- **Active Selection Highlighting:** Selected rows must use `data-state={row.original.id === selectedId ? "selected" : undefined}` with `bg-ink/[0.03] shadow-[inset_3px_0_0_0_var(--color-ledger)] border-line/20` and smooth hover transitions (`hover:bg-ink/[0.02]`).
+- **Standardized Pagination (`DataTablePagination`):** Every table MUST feature the bottom pagination toolbar providing:
+  1. Record metrics: `Showing X-Y of Z record(s)`.
+  2. "Rows per page" dropdown selector (`10, 20, 30, 40, 50`).
+  3. Page status: `Page X of Y`.
+  4. "Previous" and "Next" pagination controls with `ChevronLeft` and `ChevronRight`.
+- **In-Table Empty State:** When no results match, render a dedicated row inside `<TableBody>` spanning all columns (`colSpan={columns.length}`) with a centered `?` badge in `font-display text-ink/20`, a headline in `font-body text-lg text-ink/50`, and a subtext in `text-ink/30 text-sm`.
+

@@ -12,9 +12,7 @@ export default function Page() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-1">
         <h1 className="font-display text-2xl font-semibold text-ink">History</h1>
-        <p className="font-body text-sm text-ink/60">
-          Resolved, verified, and rejected jobs.
-        </p>
+        <p className="font-body text-sm text-ink/60">Resolved, verified, and rejected jobs.</p>
       </div>
       <Suspense
         fallback={

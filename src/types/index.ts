@@ -1,6 +1,7 @@
 export * from "./analytics.type";
 export * from "./auth.type";
 export * from "./category.type";
+export * from "./citizen.type";
 export * from "./issue.type";
 export * from "./jurisdiction.type";
 export * from "./location.type";

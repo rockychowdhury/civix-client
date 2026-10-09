@@ -16,7 +16,9 @@ export async function uploadAttachments(
   payload: IUploadAttachmentPayload = { purpose: "REPORT_EVIDENCE" },
 ) {
   const formData = new FormData();
-  files.forEach((file) => formData.append("files", file));
+  for (const file of files) {
+    formData.append("files", file);
+  }
   formData.append("purpose", payload.purpose);
   const res = await apiClient<{ data: { urls: string[] } }>(`/attachments/service-request/${id}`, {
     method: "POST",

@@ -15,6 +15,7 @@ export const NAV_CONFIG: Record<string, NavItem[]> = {
 
 export * from "./admin.routes";
 export * from "./citizen.routes";
+export * from "./city.routes";
 export * from "./department.routes";
 export * from "./municipality.routes";
 export * from "./system.routes";

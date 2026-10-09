@@ -37,6 +37,7 @@ export interface IStaffProfile {
   municipalityId: string | null;
   currentWorkload?: number;
   maxWorkload?: number;
+  status?: string;
   createdAt: string;
   updatedAt: string;
   user?: {

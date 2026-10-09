@@ -1,9 +1,3 @@
-Viewed staff.service.ts:110-160
-Viewed staff.service.ts:160-190
-Viewed seedRolesAndPermissions.ts:84-115
-Viewed checkAuth.ts:1-60
-Viewed checkAuth.ts:60-120
-
 Here is the list of API endpoints available for the **City Admin (`CITY_ADMIN`)** to manage municipality-wide operations, grouped by resource tabs for the **City Admin Dashboard**:
 
 ---

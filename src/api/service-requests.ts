@@ -1,6 +1,51 @@
 import apiClient from "@/lib/apiClient";
-
 import type { ServiceRequest } from "@/types";
+import { cleanParams } from "@/utils";
+
+export interface MunicipalityRequestFilter {
+  searchTerm?: string;
+  status?: string;
+  requestType?: string;
+  categoryId?: string;
+  unTriaged?: boolean;
+  page?: number;
+  limit?: number;
+}
+
+export async function getMunicipalityServiceRequests(
+  municipalityId: string,
+  params?: MunicipalityRequestFilter,
+) {
+  return apiClient<{ data: ServiceRequest[]; meta?: unknown }>(
+    `/service-requests/municipality/${municipalityId}`,
+    { params: cleanParams(params) },
+  );
+}
+
+export async function getServiceRequestsByCivicIssue(
+  civicIssueId: string,
+  params?: MunicipalityRequestFilter,
+) {
+  return apiClient<{ data: ServiceRequest[]; meta?: unknown }>(
+    `/service-requests/civic-issue/${civicIssueId}`,
+    { params: cleanParams(params) },
+  );
+}
+
+export async function getMyServiceRequests(params?: {
+  searchTerm?: string;
+  status?: string;
+  categoryId?: string;
+  page?: number;
+  limit?: number;
+}) {
+  return apiClient<{
+    data: ServiceRequest[];
+    meta?: { page: number; limit: number; total: number; totalPages: number };
+  }>("/service-requests/my-requests", {
+    params: cleanParams(params),
+  });
+}
 
 export async function getServiceRequests(filters?: Record<string, string>) {
   const res = await apiClient<{ data: ServiceRequest[] }>("/service-requests", {

@@ -1,18 +1,14 @@
 "use client";
 
-import { useServiceRequestDetail } from "@/hooks";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import { StatusPill } from "@/components/layout/dashboard/StatusPill";
-import { AttachmentGallery } from "./AttachmentGallery";
-import { ReclassifyRequestForm } from "@/components/forms/ReclassifyRequestForm";
-import { LinkToIssueForm } from "@/components/forms/LinkToIssueForm";
-import { FlagInvalidForm } from "@/components/forms/FlagInvalidForm";
 import { format } from "date-fns";
+import { FlagInvalidForm } from "@/components/forms/FlagInvalidForm";
+import { LinkToIssueForm } from "@/components/forms/LinkToIssueForm";
+import { ReclassifyRequestForm } from "@/components/forms/ReclassifyRequestForm";
+import { StatusPill } from "@/components/layout/dashboard/StatusPill";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { useServiceRequestDetail } from "@/hooks";
+import { formatWard, formatZone } from "@/lib/utils";
+import { AttachmentGallery } from "./AttachmentGallery";
 
 interface ServiceRequestDetailSheetProps {
   requestId: string | null;
@@ -21,16 +17,20 @@ interface ServiceRequestDetailSheetProps {
 
 export function ServiceRequestDetailSheet({ requestId, onClose }: ServiceRequestDetailSheetProps) {
   const { data: request, isLoading } = useServiceRequestDetail(requestId || "");
-  
+
   if (!requestId) return null;
 
   return (
     <Sheet open={!!requestId} onOpenChange={(open) => !open && onClose()}>
       <SheetContent className="w-full sm:max-w-lg border-l border-line bg-paper flex flex-col gap-6 overflow-y-auto custom-scrollbar p-6">
         {isLoading ? (
-          <div className="flex-1 flex items-center justify-center text-ink/50">Loading details...</div>
+          <div className="flex-1 flex items-center justify-center text-ink/50">
+            Loading details...
+          </div>
         ) : !request ? (
-          <div className="flex-1 flex items-center justify-center text-signal-open">Request not found.</div>
+          <div className="flex-1 flex items-center justify-center text-signal-open">
+            Request not found.
+          </div>
         ) : (
           <>
             <SheetHeader className="text-left space-y-4">
@@ -71,7 +71,7 @@ export function ServiceRequestDetailSheet({ requestId, onClose }: ServiceRequest
                   <div className="p-4 rounded-md border border-line bg-paper">
                     <p className="font-medium text-ink">{request.location.address}</p>
                     <p className="text-sm text-ink/60">
-                      Ward: {request.location.ward} / Zone: {request.location.zone}
+                      {formatWard(request.location.ward)} / {formatZone(request.location.zone)}
                     </p>
                     <div className="mt-3 h-32 bg-field rounded-sm flex items-center justify-center border border-line overflow-hidden">
                       {/* Map Preview Mock */}
@@ -85,25 +85,30 @@ export function ServiceRequestDetailSheet({ requestId, onClose }: ServiceRequest
               <div className="pt-4 border-t border-line space-y-6">
                 <h3 className="font-display text-lg text-ink">Review & Act</h3>
 
-                <ReclassifyRequestForm 
-                  requestId={request.id} 
+                <ReclassifyRequestForm
+                  requestId={request.id}
                   currentCategoryId={request.categoryId}
-                  onSuccess={onClose} 
+                  onSuccess={onClose}
                 />
 
                 {(!request.linkedIssueId || request.needsReview) && (
-                  <LinkToIssueForm 
+                  <LinkToIssueForm
                     requestId={request.id}
                     categoryId={request.categoryId}
-                    ward={request.location?.ward || ""}
+                    ward={
+                      typeof request.location?.ward === "object"
+                        ? String(
+                            (request.location.ward as any)?.number ??
+                              (request.location.ward as any)?.name ??
+                              "",
+                          )
+                        : String(request.location?.ward || "")
+                    }
                     onSuccess={onClose}
                   />
                 )}
 
-                <FlagInvalidForm 
-                  requestId={request.id} 
-                  onSuccess={onClose} 
-                />
+                <FlagInvalidForm requestId={request.id} onSuccess={onClose} />
               </div>
             </div>
           </>

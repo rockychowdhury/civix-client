@@ -5,8 +5,8 @@ import { formatDistanceToNow } from "date-fns";
 import { Paperclip } from "lucide-react";
 import { StatusPill } from "@/components/layout/dashboard/StatusPill";
 import { Badge } from "@/components/ui/badge";
+import { formatWard, formatZone } from "@/lib/utils";
 import type { ServiceRequest } from "@/types";
-import { cn } from "@/lib/utils";
 
 export const columns: ColumnDef<ServiceRequest, any>[] = [
   {
@@ -55,7 +55,9 @@ export const columns: ColumnDef<ServiceRequest, any>[] = [
       if (!loc) return <span className="text-ink/50">Unknown</span>;
       return (
         <div className="flex flex-col">
-          <span>{loc.ward} / {loc.zone}</span>
+          <span>
+            {formatWard(loc.ward)} / {formatZone(loc.zone)}
+          </span>
           <span className="text-xs text-ink/60 truncate">{loc.address}</span>
         </div>
       );
@@ -72,7 +74,7 @@ export const columns: ColumnDef<ServiceRequest, any>[] = [
     cell: ({ row }: { row: any }) => {
       const issue = row.original.linkedIssue;
       const needsReview = row.original.needsReview;
-      
+
       if (issue) {
         return (
           <span className="font-mono text-sm text-ink/70 cursor-pointer hover:text-ink">
@@ -80,15 +82,18 @@ export const columns: ColumnDef<ServiceRequest, any>[] = [
           </span>
         );
       }
-      
+
       if (needsReview) {
         return (
-          <Badge variant="secondary" className="text-[10px] uppercase tracking-wider text-signal-open border-signal-open/20 bg-signal-open/5">
+          <Badge
+            variant="secondary"
+            className="text-[10px] uppercase tracking-wider text-signal-open border-signal-open/20 bg-signal-open/5"
+          >
             Needs Review
           </Badge>
         );
       }
-      
+
       return <span className="text-ink/40">—</span>;
     },
   },

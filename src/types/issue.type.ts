@@ -12,7 +12,7 @@ export interface CivicIssue {
   title: string;
   description: string;
   status: string;
-  priority?: string;
+  priority?: string | { code?: string; name?: string };
   priorityOverriddenBy?: string;
   priorityOverrideReason?: string;
   slaDeadline?: string;
@@ -26,10 +26,16 @@ export interface CivicIssue {
   resolvedAt?: string;
   closedAt?: string;
   hasWorkOrder?: boolean;
+  departmentId?: string;
+  department?: { id: string; name: string };
+  wardId?: string;
+  ward?: string;
   location: {
     address: string;
     latitude: number | null;
     longitude: number | null;
+    ward?: string;
+    zone?: string;
   };
   category: {
     name: string;

@@ -32,18 +32,22 @@ import { useGetDepartments } from "@/hooks/department.hook";
 import type { Category } from "@/types";
 import { categoryFormSchema } from "@/validation";
 
-export function CategoriesView() {
-  const { search, setSearch, debouncedSearch, page, setPage, limit } = useAdminListParams();
+export function CategoriesView({ municipalityId }: { municipalityId?: string } = {}) {
+  const [departmentId, setDepartmentId] = useState<string>("");
   const [dialog, setDialog] = useState<{ mode: "create" | "edit"; row?: Category } | null>(null);
   const [deleting, setDeleting] = useState<Category | null>(null);
   const [childrenFor, setChildrenFor] = useState<Category | null>(null);
+  const { search, setSearch, debouncedSearch, page, setPage, limit } = useAdminListParams(
+    `${municipalityId ?? ""}:${departmentId}`,
+  );
 
   const query = useGetAdminCategories({
     searchTerm: debouncedSearch || undefined,
+    departmentId: departmentId || undefined,
     page,
     limit,
   });
-  const departmentsQuery = useGetDepartments();
+  const departmentsQuery = useGetDepartments(municipalityId ? { municipalityId } : undefined);
   const childrenQuery = useGetCategoryChildren(childrenFor?.id ?? "");
   const createMutation = useCreateCategory();
   const updateMutation = useUpdateCategory();
@@ -110,23 +114,48 @@ export function CategoriesView() {
 
   return (
     <div className="flex flex-col gap-5">
-      <AdminToolbar
-        searchValue={search}
-        onSearchChange={setSearch}
-        searchPlaceholder="Search categories…"
-        resultCount={meta?.total}
-        action={
-          <Button
-            type="button"
-            size="sm"
-            onClick={() => setDialog({ mode: "create" })}
-            className="cursor-pointer"
-          >
-            <Plus className="size-4" aria-hidden="true" />
-            Create category
-          </Button>
-        }
-      />
+      <div className="flex flex-col gap-3">
+        <AdminToolbar
+          searchValue={search}
+          onSearchChange={setSearch}
+          searchPlaceholder="Search categories…"
+          resultCount={meta?.total}
+          action={
+            <Button
+              type="button"
+              size="sm"
+              onClick={() => setDialog({ mode: "create" })}
+              className="cursor-pointer"
+            >
+              <Plus className="size-4" aria-hidden="true" />
+              Create category
+            </Button>
+          }
+        />
+        {municipalityId ? (
+          <div className="flex items-center gap-2">
+            <label
+              htmlFor="category-department-filter"
+              className="font-mono text-[0.6875rem] uppercase tracking-widest text-ink/50"
+            >
+              Department
+            </label>
+            <select
+              id="category-department-filter"
+              value={departmentId}
+              onChange={(e) => setDepartmentId(e.target.value)}
+              className="h-9 cursor-pointer rounded-xs border border-line/20 bg-field/50 px-2 text-sm text-ink"
+            >
+              <option value="">All departments</option>
+              {departments.map((d: { id: string; name: string }) => (
+                <option key={d.id} value={d.id}>
+                  {d.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        ) : null}
+      </div>
 
       <DataTable<Category>
         columns={[

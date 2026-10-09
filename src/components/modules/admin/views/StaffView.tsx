@@ -23,6 +23,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { STAFF_PROVISION_KINDS, STAFF_PROVISION_LABEL } from "@/constant/admin.constant";
+import type { StaffProvisionKind } from "@/constant/admin.constant";
 import {
   useCreateCityAdmin,
   useCreateDepartmentManager,
@@ -35,52 +36,76 @@ import {
 import type { ICreateStaffPayload, IStaffProfile } from "@/types";
 import { provisionStaffFormSchema } from "@/validation";
 
-const FIELDS: AdminFormField[] = [
-  {
-    name: "kind",
-    label: "Role",
-    type: "select",
-    options: STAFF_PROVISION_KINDS.map((k) => ({ value: k, label: STAFF_PROVISION_LABEL[k] })),
-  },
-  { name: "firstName", label: "First name", type: "text", placeholder: "e.g. Arif" },
-  { name: "lastName", label: "Last name", type: "text", placeholder: "e.g. Rahman" },
-  { name: "email", label: "Email", type: "text", placeholder: "name@example.com" },
-  { name: "password", label: "Password", type: "text", placeholder: "Min 8 chars, Aa + 0" },
-  { name: "phone", label: "Phone", type: "text", placeholder: "01XXXXXXXXX", optional: true },
-  {
-    name: "designation",
-    label: "Designation",
-    type: "text",
-    placeholder: "e.g. Engineer",
-    optional: true,
-  },
-  {
-    name: "departmentId",
-    label: "Department ID",
-    type: "text",
-    placeholder: "UUID",
-    optional: true,
-  },
-  {
-    name: "municipalityId",
-    label: "Municipality ID",
-    type: "text",
-    placeholder: "UUID",
-    optional: true,
-  },
-];
+export interface StaffViewScope {
+  /** Restrict provisionable roles (city admins can't create admins). */
+  allowedKinds?: StaffProvisionKind[];
+  /** When provided, department becomes a select instead of free text. */
+  departmentOptions?: { id: string; name: string }[];
+  /** Hide the municipality field (server derives it from requester scope). */
+  hideMunicipalityField?: boolean;
+}
+
+function buildProvisionFields(scope: StaffViewScope): AdminFormField[] {
+  const kinds = scope.allowedKinds ?? [...STAFF_PROVISION_KINDS];
+  return [
+    {
+      name: "kind",
+      label: "Role",
+      type: "select",
+      options: kinds.map((k) => ({ value: k, label: STAFF_PROVISION_LABEL[k] })),
+    },
+    { name: "firstName", label: "First name", type: "text", placeholder: "e.g. Arif" },
+    { name: "lastName", label: "Last name", type: "text", placeholder: "e.g. Rahman" },
+    { name: "email", label: "Email", type: "text", placeholder: "name@example.com" },
+    { name: "password", label: "Password", type: "text", placeholder: "Min 8 chars, Aa + 0" },
+    { name: "phone", label: "Phone", type: "text", placeholder: "01XXXXXXXXX", optional: true },
+    {
+      name: "designation",
+      label: "Designation",
+      type: "text",
+      placeholder: "e.g. Engineer",
+      optional: true,
+    },
+    scope.departmentOptions
+      ? {
+          name: "departmentId",
+          label: "Department",
+          type: "select" as const,
+          options: scope.departmentOptions.map((d) => ({ value: d.id, label: d.name })),
+        }
+      : {
+          name: "departmentId",
+          label: "Department ID",
+          type: "text" as const,
+          placeholder: "UUID",
+          optional: true,
+        },
+    ...(scope.hideMunicipalityField
+      ? []
+      : [
+          {
+            name: "municipalityId",
+            label: "Municipality ID",
+            type: "text" as const,
+            placeholder: "UUID",
+            optional: true,
+          },
+        ]),
+  ];
+}
 
 function staffRole(row: IStaffProfile): string {
   const codes = (row.user?.userRoles ?? []).map((ur) => ur?.role?.code).filter(Boolean);
   return codes.join(", ") || "—";
 }
 
-export function StaffView() {
+export function StaffView({ scope }: { scope?: StaffViewScope } = {}) {
   const searchParams = useSearchParams();
   const roleFilter = searchParams.get("role") || undefined;
   const { search, setSearch, debouncedSearch, page, setPage, limit } =
     useAdminListParams(roleFilter);
   const [provisionOpen, setProvisionOpen] = useState(false);
+  const fields = buildProvisionFields(scope ?? {});
 
   const query = useGetAllStaff({
     searchTerm: debouncedSearch || undefined,
@@ -245,7 +270,7 @@ export function StaffView() {
         onOpenChange={setProvisionOpen}
         title="Provision staff"
         description="High-privilege roles are Super Admin only — the API enforces it."
-        fields={FIELDS}
+        fields={fields}
         schema={provisionStaffFormSchema}
         defaultValues={{
           kind: "",

@@ -87,10 +87,10 @@ export function useDeleteCategory() {
   });
 }
 
-export function useGetAdminSlaPolicies() {
+export function useGetAdminSlaPolicies(params?: { municipalityId?: string; categoryId?: string }) {
   return useQuery({
-    queryKey: ADMIN_QUERY_KEYS.slaPolicies,
-    queryFn: () => getAdminSlaPolicies(),
+    queryKey: [...ADMIN_QUERY_KEYS.slaPolicies, params],
+    queryFn: () => getAdminSlaPolicies(params),
   });
 }
 

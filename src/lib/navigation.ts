@@ -22,8 +22,11 @@ const PORTAL_NAV: Record<PortalId, PortalNav> = {
     portalId: "citizen",
     portalLabel: "Citizen",
     items: [
-      { label: "Overview", href: "/citizen/overview" },
-      { label: "My Reports", href: "/citizen/my-reports", permission: "issue:read" },
+      { label: "Overview", href: "/citizen/overview", mobileTab: true },
+      { label: "My Reports", href: "/citizen/my-reports", permission: "issue:read", mobileTab: true },
+      { label: "Report Issue", href: "/citizen/report", mobileTab: true },
+      { label: "Feedback", href: "/citizen/feedback", mobileTab: true },
+      { label: "Profile", href: "/citizen/profile", mobileTab: true },
     ],
   },
   technician: {
@@ -67,7 +70,15 @@ const PORTAL_NAV: Record<PortalId, PortalNav> = {
   municipality: {
     portalId: "municipality",
     portalLabel: "Municipality",
-    items: [{ label: "Overview", href: "/municipality/overview" }],
+    items: [
+      { label: "Overview", href: "/municipality/overview", permission: "municipality:read" },
+      { label: "Departments", href: "/municipality/departments", permission: "department:read" },
+      { label: "Staff", href: "/municipality/staff", permission: "staff:read" },
+      { label: "Zones", href: "/municipality/zones", permission: "zone:read" },
+      { label: "Issues", href: "/municipality/issues", permission: "oversight:read" },
+      { label: "Requests", href: "/municipality/requests", permission: "oversight:read" },
+      { label: "Feedback", href: "/municipality/feedback", permission: "oversight:read" },
+    ],
   },
   system: {
     portalId: "system",

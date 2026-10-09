@@ -1,14 +1,14 @@
 "use client";
 
+import { Calendar as CalendarIcon, Mail, MapPin, Phone, Wrench } from "lucide-react";
 import { useState } from "react";
-import { useGetMe } from "@/hooks/auth.hook";
-import { Switch } from "@/components/ui/switch";
-import { User, Map, Wrench, Calendar as CalendarIcon, Phone, Mail } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { useGetMe } from "@/hooks/auth.hook";
 
 export function TechnicianProfileClient() {
   const { data: meData, isLoading } = useGetMe();
-  
+
   // Availability toggle state (in a real app, this would mutate to backend)
   const [isAvailable, setIsAvailable] = useState(true);
 
@@ -36,10 +36,13 @@ export function TechnicianProfileClient() {
       <div className="bg-paper p-8 rounded-xl border border-line shadow-sm">
         <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
           <div className="h-24 w-24 rounded-full bg-ledger/10 flex items-center justify-center text-ledger text-3xl font-display shrink-0 border-2 border-ledger/20">
-            {user?.firstName?.[0]}{user?.lastName?.[0]}
+            {user?.firstName?.[0]}
+            {user?.lastName?.[0]}
           </div>
           <div className="flex flex-col gap-1">
-            <h2 className="font-display text-2xl text-ink font-semibold">{user?.firstName} {user?.lastName}</h2>
+            <h2 className="font-display text-2xl text-ink font-semibold">
+              {user?.firstName} {user?.lastName}
+            </h2>
             <p className="text-ink/60">{staffProfile?.role || "Technician"}</p>
             <div className="flex items-center gap-4 mt-2">
               <div className="flex items-center text-sm text-ink/70">
@@ -68,13 +71,10 @@ export function TechnicianProfileClient() {
             </p>
           </div>
           <div className="flex items-center justify-between p-4 rounded-lg bg-field/30 border border-line/50">
-            <span className={`font-medium ${isAvailable ? 'text-ledger' : 'text-ink/50'}`}>
+            <span className={`font-medium ${isAvailable ? "text-ledger" : "text-ink/50"}`}>
               {isAvailable ? "Taking Assignments" : "Currently Unavailable"}
             </span>
-            <Switch 
-              checked={isAvailable} 
-              onCheckedChange={setIsAvailable} 
-            />
+            <Switch checked={isAvailable} onCheckedChange={setIsAvailable} />
           </div>
         </div>
 
@@ -82,11 +82,11 @@ export function TechnicianProfileClient() {
         <div className="bg-paper p-6 rounded-xl border border-line flex flex-col gap-6 shadow-sm">
           <div>
             <h3 className="font-display text-lg font-medium text-ink flex items-center mb-3">
-              <Map className="h-5 w-5 mr-2 text-ink/50" />
+              <MapPin className="h-5 w-5 mr-2 text-ink/50" />
               Coverage Zones
             </h3>
             <div className="flex flex-wrap gap-2">
-              {coverageZones.map(zone => (
+              {coverageZones.map((zone) => (
                 <Badge key={zone} variant="secondary" className="bg-field border-line/30">
                   {zone}
                 </Badge>
@@ -100,7 +100,7 @@ export function TechnicianProfileClient() {
               Specialties
             </h3>
             <div className="flex flex-wrap gap-2">
-              {skills.map(skill => (
+              {skills.map((skill) => (
                 <Badge key={skill} variant="secondary" className="bg-field border-line/30">
                   {skill}
                 </Badge>

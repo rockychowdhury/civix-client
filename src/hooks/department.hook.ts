@@ -34,7 +34,12 @@ export function useGetSlaPolicies(categoryId?: string) {
   });
 }
 
-export function useGetDepartments(params?: { searchTerm?: string; page?: number; limit?: number }) {
+export function useGetDepartments(params?: {
+  searchTerm?: string;
+  municipalityId?: string;
+  page?: number;
+  limit?: number;
+}) {
   return useQuery({
     queryKey: [...ADMIN_QUERY_KEYS.departments, params],
     queryFn: () => getDepartments(params),

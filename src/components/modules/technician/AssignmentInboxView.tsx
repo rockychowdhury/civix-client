@@ -42,6 +42,18 @@ function AssignmentCard({
               {wo.id.split("-")[0].toUpperCase()}
             </span>
           ) : null}
+          {wo?.civicIssue?.issueNumber ? (
+            <span className="font-mono text-xs text-ink/45">#{wo.civicIssue.issueNumber}</span>
+          ) : null}
+          {wo?.priority ? (
+            <span className="font-mono text-[11px] uppercase tracking-wider text-ink/50">
+              ·{" "}
+              {typeof wo.priority === "object"
+                ? (wo.priority as { name?: string; code?: string }).name ||
+                  (wo.priority as { name?: string; code?: string }).code
+                : wo.priority}
+            </span>
+          ) : null}
         </div>
         <Link
           href={wo?.id ? `/technician/work-orders/${wo.id}` : "#"}
