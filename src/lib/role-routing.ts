@@ -20,11 +20,20 @@ export const ROLE_DEFAULT_LANDING: Record<string, string> = {
   [USER_ROLES.SUPER_ADMIN]: "/system/overview",
 };
 
+/**
+ * Normalize a role identifier to its canonical code form.
+ * Accepts codes ("SUPER_ADMIN"), display names ("Super Admin"), or
+ * hyphenated variants ("super-admin") — all resolve to "SUPER_ADMIN".
+ */
+export function normalizeRoleCode(role: string): string {
+  return role.toUpperCase().replace(/[\s-]+/g, "_");
+}
+
 export function getDashboardHref(roles: string[]): string {
   if (!roles || roles.length === 0) return "/";
 
   // Ensure all roles are evaluated case-insensitively
-  const normalizedRoles = roles.map((r) => r.toUpperCase());
+  const normalizedRoles = roles.map(normalizeRoleCode);
 
   // Prioritize higher-level roles if a user has multiple
   if (normalizedRoles.includes(USER_ROLES.SUPER_ADMIN)) return ROLE_DEFAULT_LANDING.SUPER_ADMIN;

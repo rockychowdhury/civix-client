@@ -1,11 +1,11 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  getServiceRequests,
-  getServiceRequestById,
-  reclassifyServiceRequest,
-  linkServiceRequestToIssue,
   flagServiceRequestInvalid,
   getNearbyCivicIssues,
+  getServiceRequestById,
+  getServiceRequests,
+  linkServiceRequestToIssue,
+  reclassifyServiceRequest,
 } from "@/api/service-requests";
 import type { ServiceRequest } from "@/types";
 

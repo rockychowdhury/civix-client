@@ -1,15 +1,13 @@
-import Link from "next/link";
+import { Logo } from "@/components/shared/logo";
 import type { ReactNode } from "react";
 
 export default function AuthLayout({ children, panel }: { children: ReactNode; panel: ReactNode }) {
   return (
     <div className="grid min-h-screen lg:grid-cols-[45fr_55fr]">
       <div className="flex flex-col bg-paper px-5 py-10 sm:px-8 lg:px-12 lg:py-14">
-        <Link href="/" className="w-fit font-display text-lg tracking-[0.025em] text-ink">
-          Civix
-        </Link>
+        <Logo className="w-fit text-ink" textClassName="text-lg" />
 
-        <div className="flex flex-1 items-center py-12">
+        <div className="flex flex-1 items-center justify-center py-12">
           <div className="w-full max-w-[420px]">{children}</div>
         </div>
 

@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getTeams, getTeamById, createTeam, updateTeam, deleteTeam } from "../api/team.api";
 import { toast } from "sonner";
 import type { ITeamFilter } from "@/types";
+import { createTeam, deleteTeam, getTeamById, getTeams, updateTeam } from "../api/team.api";
 
 export function useGetTeams(params?: ITeamFilter) {
   return useQuery({
@@ -28,14 +28,14 @@ export function useCreateTeam() {
     },
     onError: (error: any) => {
       toast.error(error?.data?.message || "Failed to create team");
-    }
+    },
   });
 }
 
 export function useUpdateTeam() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, payload }: { id: string, payload: any }) => updateTeam(id, payload),
+    mutationFn: ({ id, payload }: { id: string; payload: any }) => updateTeam(id, payload),
     onSuccess: (_, { id }) => {
       toast.success("Team updated successfully");
       queryClient.invalidateQueries({ queryKey: ["teams"] });
@@ -43,7 +43,7 @@ export function useUpdateTeam() {
     },
     onError: (error: any) => {
       toast.error(error?.data?.message || "Failed to update team");
-    }
+    },
   });
 }
 
@@ -57,6 +57,6 @@ export function useDeleteTeam() {
     },
     onError: (error: any) => {
       toast.error(error?.data?.message || "Failed to delete team");
-    }
+    },
   });
 }

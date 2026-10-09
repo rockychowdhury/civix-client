@@ -1,17 +1,22 @@
 "use client";
 
-import * as React from "react";
 import {
   flexRender,
   getCoreRowModel,
-  getSortedRowModel,
   getPaginationRowModel,
-  SortingState,
+  getSortedRowModel,
+  type SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
+import * as React from "react";
 import { Button } from "@/components/ui/button";
-
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -20,27 +25,36 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { columns } from "./columns/work-order-columns";
 import type { WorkOrder } from "@/types";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { columns } from "./columns/work-order-columns";
 
 interface WorkOrdersTableProps {
   data: WorkOrder[];
   currentTab: string;
   onRowClick?: (workOrder: WorkOrder, event: React.MouseEvent) => void;
   selectedId?: string;
-  onAccept?: (workOrderId: string, e: React.MouseEvent) => void;
+  onAccept?: (assignmentId: string, e: React.MouseEvent) => void;
   isAccepting?: boolean;
+  onReject?: (assignmentId: string, workOrder: WorkOrder, e: React.MouseEvent) => void;
+  isRejecting?: boolean;
+  onStart?: (workOrderId: string, e: React.MouseEvent) => void;
+  isStarting?: boolean;
 }
 
-export function WorkOrdersTable({ data, currentTab, onRowClick, selectedId, onAccept, isAccepting }: WorkOrdersTableProps) {
+export function WorkOrdersTable({
+  data,
+  currentTab,
+  onRowClick,
+  selectedId,
+  onAccept,
+  isAccepting,
+  onReject,
+  isRejecting,
+  onStart,
+  isStarting,
+}: WorkOrdersTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  
+
   const table = useReactTable({
     data,
     columns,
@@ -53,7 +67,11 @@ export function WorkOrdersTable({ data, currentTab, onRowClick, selectedId, onAc
       currentTab,
       onAccept,
       isAccepting,
-    }
+      onReject,
+      isRejecting,
+      onStart,
+      isStarting,
+    },
   });
 
   return (
@@ -64,18 +82,15 @@ export function WorkOrdersTable({ data, currentTab, onRowClick, selectedId, onAc
             <TableRow key={headerGroup.id} className="border-b border-line/40 hover:bg-transparent">
               {headerGroup.headers.map((header: any) => {
                 return (
-                  <TableHead 
-                    key={header.id} 
+                  <TableHead
+                    key={header.id}
                     className="text-ink/40 font-display text-[10px] uppercase tracking-widest h-14 align-bottom pb-4 px-4 first:pl-6 cursor-pointer hover:text-ink/80 transition-colors text-left"
                     onClick={header.column.getToggleSortingHandler()}
                   >
                     <div className="flex items-center gap-1.5">
                       {header.isPlaceholder
                         ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                        : flexRender(header.column.columnDef.header, header.getContext())}
                       {header.column.getCanSort() && (
                         <span className="w-3 flex-shrink-0 flex items-center justify-center">
                           {{
@@ -100,8 +115,8 @@ export function WorkOrdersTable({ data, currentTab, onRowClick, selectedId, onAc
                 key={row.id}
                 data-state={row.original.id === selectedId ? "selected" : undefined}
                 className={`border-b border-line/10 transition-all duration-300 hover:bg-ink/[0.02] cursor-pointer group ${
-                  row.original.id === selectedId 
-                    ? "bg-ink/[0.03] shadow-[inset_3px_0_0_0_var(--color-ledger)] border-line/20" 
+                  row.original.id === selectedId
+                    ? "bg-ink/[0.03] shadow-[inset_3px_0_0_0_var(--color-ledger)] border-line/20"
                     : ""
                 }`}
                 onClick={(e) => onRowClick?.(row.original, e)}
@@ -111,7 +126,10 @@ export function WorkOrdersTable({ data, currentTab, onRowClick, selectedId, onAc
                 }}
               >
                 {row.getVisibleCells().map((cell: any) => (
-                  <TableCell key={cell.id} className="py-6 px-4 first:pl-6 transition-all duration-300">
+                  <TableCell
+                    key={cell.id}
+                    className="py-6 px-4 first:pl-6 transition-all duration-300"
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
@@ -131,7 +149,7 @@ export function WorkOrdersTable({ data, currentTab, onRowClick, selectedId, onAc
           )}
         </TableBody>
       </Table>
-      
+
       {/* Pagination */}
       <div className="flex items-center justify-end space-x-6 lg:space-x-8 px-4 py-4">
         <div className="flex items-center space-x-2">
@@ -139,7 +157,10 @@ export function WorkOrdersTable({ data, currentTab, onRowClick, selectedId, onAc
           <div className="relative">
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-[65px] px-2 justify-between border border-line bg-transparent hover:bg-ink/5 text-ink focus-visible:ring-1 focus-visible:ring-ledger cursor-pointer">
+                <Button
+                  variant="ghost"
+                  className="h-8 w-[65px] px-2 justify-between border border-line bg-transparent hover:bg-ink/5 text-ink focus-visible:ring-1 focus-visible:ring-ledger cursor-pointer"
+                >
                   {table.getState().pagination.pageSize}
                   <ArrowDown className="h-3 w-3 opacity-50" />
                 </Button>

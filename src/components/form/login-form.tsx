@@ -95,19 +95,19 @@ export default function LoginForm() {
         </p>
       </header>
 
-      <Tabs defaultValue="login" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 bg-field/50 border border-line/20 p-1 rounded-lg">
+      <Tabs defaultValue="demo" className="w-full">
+        <TabsList className="flex w-full border-b border-line/20 rounded-none p-0 bg-transparent h-auto justify-start gap-6">
           <TabsTrigger
             value="login"
-            className="text-sm font-medium py-2 rounded-md data-[state=active]:bg-paper data-[state=active]:text-ledger data-[state=active]:shadow-sm cursor-pointer transition-all"
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-b-ledger data-[state=active]:text-ledger data-[state=active]:!bg-transparent data-[state=active]:!shadow-none text-ink/60 font-medium py-3 px-1 hover:text-ink focus-visible:outline-none focus-visible:ring-0 transition-colors cursor-pointer"
           >
-            Login
+            Log in manually
           </TabsTrigger>
           <TabsTrigger
             value="demo"
-            className="text-sm font-medium py-2 rounded-md data-[state=active]:bg-paper data-[state=active]:text-ledger data-[state=active]:shadow-sm cursor-pointer transition-all"
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-b-ledger data-[state=active]:text-ledger data-[state=active]:!bg-transparent data-[state=active]:!shadow-none text-ink/60 font-medium py-3 px-1 hover:text-ink focus-visible:outline-none focus-visible:ring-0 transition-colors cursor-pointer"
           >
-            Demo
+            Demo Accounts
           </TabsTrigger>
         </TabsList>
         <TabsContent value="login" className="mt-8 flex flex-col gap-8">
@@ -211,10 +211,9 @@ export default function LoginForm() {
           </p>
         </TabsContent>
 
-        <TabsContent value="demo" className="mt-8 flex flex-col gap-4">
+        <TabsContent value="demo" className="mt-8 flex flex-col gap-4 focus-visible:outline-none">
           <div className="mb-2">
-            <h2 className="font-display text-lg font-medium text-ink">Demo Accounts</h2>
-            <p className="font-body text-sm text-ink/60 mt-1">
+            <p className="font-body text-sm text-ink/60">
               Select a role below to instantly log in and explore the platform.
             </p>
           </div>

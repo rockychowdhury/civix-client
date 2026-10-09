@@ -60,19 +60,21 @@ export function Navbar() {
     ? `${user.citizenProfile.firstName} ${user.citizenProfile.lastName}`
     : user?.email;
 
-  let dashboardHref;
+  let dashboardHref: string | undefined;
   if (user) {
     const roles: string[] = [];
 
-    // The backend provides "userRoles" for this user schema
+    // The backend provides "userRoles" for this user schema.
+    // Prefer the stable role `code` ("SUPER_ADMIN") over the display `name`
+    // ("Super Admin") so downstream matching never misses.
     if (user.userRoles && Array.isArray(user.userRoles)) {
       roles.push(
-        ...user.userRoles.map((ur: any) => ur?.role?.name || ur?.role?.code).filter(Boolean),
+        ...user.userRoles.map((ur: any) => ur?.role?.code || ur?.role?.name).filter(Boolean),
       );
     } else if (user.roles) {
       roles.push(
         ...user.roles
-          .map((r: any) => (typeof r === "string" ? r : r.role?.name || r.name))
+          .map((r: any) => (typeof r === "string" ? r : r.role?.code || r.role?.name || r.name))
           .filter(Boolean),
       );
     } else if (user.role) {

@@ -44,7 +44,7 @@ export function WorkUpdateForm({ workOrderId }: WorkUpdateFormProps) {
         className="min-h-[100px] resize-none border-line focus-visible:ring-ledger bg-paper"
       />
       <div className="flex items-center justify-between">
-        <Button type="button" variant="ghost" size="sm" className="text-ink/60 hover:text-ink">
+        <Button type="button" variant="ghost" size="sm" className="text-ink/60 hover:text-ink cursor-pointer">
           <Paperclip className="h-4 w-4 mr-2" />
           Add Photo
         </Button>

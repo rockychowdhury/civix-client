@@ -1,5 +1,23 @@
 import apiClient from "@/lib/apiClient";
-import type { ICreateStaffPayload, IUpdateStaffPayload, IStaffFilter, IStaffListResponse, IStaffProfile } from "@/types";
+import type {
+  ICreateStaffPayload,
+  IStaffFilter,
+  IStaffListResponse,
+  IStaffProfile,
+  IUpdateStaffPayload,
+} from "@/types";
+
+export function createPlatformAdmin(payload: ICreateStaffPayload) {
+  return apiClient("/staff/platform-admin", { method: "POST", body: payload });
+}
+
+export function createCityAdmin(payload: ICreateStaffPayload) {
+  return apiClient("/staff/city-admin", { method: "POST", body: payload });
+}
+
+export function createDepartmentManager(payload: ICreateStaffPayload) {
+  return apiClient("/staff/department-manager", { method: "POST", body: payload });
+}
 
 export function createDispatcher(payload: ICreateStaffPayload) {
   return apiClient("/staff/dispatcher", { method: "POST", body: payload });
@@ -14,7 +32,10 @@ export function getAllStaff(params?: IStaffFilter) {
 }
 
 export function getAllTechnicians(params?: IStaffFilter) {
-  return apiClient<IStaffListResponse>("/staff/technicians", { method: "GET", params: params as any });
+  return apiClient<IStaffListResponse>("/staff/technicians", {
+    method: "GET",
+    params: params as any,
+  });
 }
 
 export function getStaffById(id: string) {

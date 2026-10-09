@@ -22,11 +22,13 @@ export interface IStaffFilter {
   page?: number;
   limit?: number;
   sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
+  sortOrder?: "asc" | "desc";
 }
 
 export interface IStaffProfile {
-  id: string;
+  // NOTE: StaffProfile's primary key is `userId` — the API returns no `id`.
+  // `id` is kept optional for backwards compatibility; always key by `userId`.
+  id?: string;
   userId: string;
   firstName: string;
   lastName: string;

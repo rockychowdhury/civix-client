@@ -1,16 +1,25 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { useMyQueue } from "@/hooks/work-order.hook";
+import { useRouter } from "next/navigation";
 import { WorkOrdersTable } from "@/components/tables/WorkOrdersTable";
+import { useMyQueue } from "@/hooks/work-order.hook";
 
 export function TechnicianHistoryClient() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  
-  // Hardcode filter to completed/closed. Or assume backend handles 'history' via query
+
   const { data: queueData, isLoading, isError, refetch } = useMyQueue({ filter: "history" });
-  const workOrders = queueData?.data || [];
+  const assignments = queueData?.data || [];
+  const rawWorkOrders = assignments.map((a: any) => ({
+    ...(a.workOrder || {}),
+    assignmentId: a.id,
+    assignmentStatus: a.status,
+  }));
+  const workOrders =
+    rawWorkOrders.length > 0
+      ? rawWorkOrders.some((wo: any) => wo.status === "RESOLVED" || wo.status === "CLOSED")
+        ? rawWorkOrders.filter((wo: any) => wo.status === "RESOLVED" || wo.status === "CLOSED")
+        : rawWorkOrders
+      : [];
 
   return (
     <div className="flex flex-col gap-6 w-full animate-slide-up motion-reduce:animate-none">
@@ -29,13 +38,17 @@ export function TechnicianHistoryClient() {
             <span className="text-signal-open text-xl font-display">!</span>
           </div>
           <p className="text-signal-open font-medium text-lg">Unable to load history</p>
-          <button onClick={() => refetch()} className="text-ledger underline text-sm hover:text-ledger/80 cursor-pointer">
+          <button
+            type="button"
+            onClick={() => refetch()}
+            className="text-ledger underline text-sm hover:text-ledger/80 cursor-pointer"
+          >
             Try again
           </button>
         </div>
       ) : (
-        <WorkOrdersTable 
-          data={workOrders} 
+        <WorkOrdersTable
+          data={workOrders}
           currentTab="completed" // Reuse the completed tab configuration
           onRowClick={(workOrder) => {
             router.push(`/technician/work-orders/${workOrder.id}`);

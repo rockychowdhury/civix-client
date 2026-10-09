@@ -1,8 +1,8 @@
 import { citizenRoutes } from "./citizen.routes";
-import { technicianRoutes } from "./technician.routes";
 import { departmentRoutes } from "./department.routes";
 import { municipalityRoutes } from "./municipality.routes";
 import { systemRoutes } from "./system.routes";
+import { technicianRoutes } from "./technician.routes";
 import type { NavItem } from "./types";
 
 export const NAV_CONFIG: Record<string, NavItem[]> = {
@@ -13,9 +13,10 @@ export const NAV_CONFIG: Record<string, NavItem[]> = {
   "/system": systemRoutes,
 };
 
-export * from "./types";
+export * from "./admin.routes";
 export * from "./citizen.routes";
-export * from "./technician.routes";
 export * from "./department.routes";
 export * from "./municipality.routes";
 export * from "./system.routes";
+export * from "./technician.routes";
+export * from "./types";

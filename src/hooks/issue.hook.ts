@@ -1,5 +1,10 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getPublicCivicIssue, getDepartmentIssues, overrideIssuePriority, updateIssueStatus } from "@/api/issue.api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  getDepartmentIssues,
+  getPublicCivicIssue,
+  overrideIssuePriority,
+  updateIssueStatus,
+} from "@/api/issue.api";
 import type { CivicIssue } from "@/types";
 
 export function useCivicIssueTracking(issueNumber: string) {

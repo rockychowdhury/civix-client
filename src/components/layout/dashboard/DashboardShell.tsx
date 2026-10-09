@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { AppSidebar } from "@/components/layout/dashboard/AppSidebar";
+import { MobileNav } from "@/components/layout/dashboard/MobileNav";
 import { Topbar } from "@/components/layout/dashboard/Topbar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { USER_ROLES } from "@/constant/role.constant";
@@ -82,6 +83,8 @@ export function DashboardShell({ children }: { children: ReactNode }) {
         >
           {children}
         </main>
+
+        {nav && <MobileNav nav={nav} />}
       </div>
     </SidebarProvider>
   );

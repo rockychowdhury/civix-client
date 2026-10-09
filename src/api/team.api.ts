@@ -1,5 +1,11 @@
 import apiClient from "@/lib/apiClient";
-import type { ITeamFilter, ITeamListResponse, ITeam, ICreateTeamPayload, IUpdateTeamPayload } from "@/types";
+import type {
+  ICreateTeamPayload,
+  ITeam,
+  ITeamFilter,
+  ITeamListResponse,
+  IUpdateTeamPayload,
+} from "@/types";
 
 export function getTeams(params?: ITeamFilter) {
   return apiClient<ITeamListResponse>("/teams", { method: "GET", params: params as any });

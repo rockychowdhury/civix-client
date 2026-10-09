@@ -26,6 +26,6 @@ export interface IResetPassword {
   newPassword: string;
 }
 
-import { USER_ROLES } from "@/constant/role.constant";
+import type { USER_ROLES } from "@/constant/role.constant";
 
-export type UserRole = typeof USER_ROLES[keyof typeof USER_ROLES];
+export type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES];

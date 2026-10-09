@@ -1,14 +1,21 @@
+import { Suspense } from "react";
+import { AdminPageHeader, AdminSectionSkeleton } from "@/components/modules/admin";
+import { AnalyticsOverviewView } from "@/components/modules/admin/views/AnalyticsOverviewView";
+
+export const dynamic = "force-static";
+
+export const metadata = { title: "Overview — Civix" };
+
 export default function Page() {
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-semibold text-ink">Overview</h1>
-      </div>
-      <div className="rounded-lg border border-line/20 bg-field/20 p-12 text-center border-dashed">
-        <p className="font-body text-sm text-ink/60">
-          This section is currently being constructed.
-        </p>
-      </div>
+    <div className="flex flex-col gap-8">
+      <AdminPageHeader
+        title="Platform overview"
+        description="Cross-municipality health at a glance. Breakdowns stay collapsed until you need them."
+      />
+      <Suspense fallback={<AdminSectionSkeleton />}>
+        <AnalyticsOverviewView />
+      </Suspense>
     </div>
   );
 }

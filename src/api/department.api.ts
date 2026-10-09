@@ -1,7 +1,39 @@
 import apiClient from "@/lib/apiClient";
+import { cleanParams } from "@/utils";
+
+export function getDepartments(params?: { searchTerm?: string; page?: number; limit?: number }) {
+  return apiClient<{ data: any[]; meta?: unknown }>("/departments", {
+    method: "GET",
+    params: cleanParams(params),
+  });
+}
+
+export function createDepartment(payload: Record<string, unknown>) {
+  return apiClient<{ data: any }>("/departments", { method: "POST", body: payload });
+}
 
 export function getDepartmentById(id: string) {
   return apiClient<{ data: any }>(`/departments/${id}`, { method: "GET" });
+}
+
+export function updateDepartment(id: string, payload: Record<string, unknown>) {
+  return apiClient<{ data: any }>(`/departments/${id}`, { method: "PATCH", body: payload });
+}
+
+export function attachDepartmentServiceAreas(
+  id: string,
+  payload: { areaIds?: string[]; wardIds?: string[] },
+) {
+  return apiClient<{ data: any }>(`/departments/${id}/service-areas`, {
+    method: "POST",
+    body: payload,
+  });
+}
+
+export function removeDepartmentServiceArea(id: string, areaId: string) {
+  return apiClient<{ data: any }>(`/departments/${id}/service-areas/${areaId}`, {
+    method: "DELETE",
+  });
 }
 
 export function getDepartmentCategories(departmentId?: string) {

@@ -14,7 +14,13 @@ export async function getServiceRequestById(id: string) {
   return res.data;
 }
 
-export async function reclassifyServiceRequest({ id, categoryId }: { id: string; categoryId: string }) {
+export async function reclassifyServiceRequest({
+  id,
+  categoryId,
+}: {
+  id: string;
+  categoryId: string;
+}) {
   const res = await apiClient<{ data: ServiceRequest }>(`/service-requests/${id}/reclassify`, {
     method: "POST",
     body: { categoryId },
@@ -22,7 +28,13 @@ export async function reclassifyServiceRequest({ id, categoryId }: { id: string;
   return res.data;
 }
 
-export async function linkServiceRequestToIssue({ id, civicIssueId }: { id: string; civicIssueId: string }) {
+export async function linkServiceRequestToIssue({
+  id,
+  civicIssueId,
+}: {
+  id: string;
+  civicIssueId: string;
+}) {
   const res = await apiClient<{ data: ServiceRequest }>(`/service-requests/${id}/link`, {
     method: "POST",
     body: { civicIssueId },
@@ -39,8 +51,11 @@ export async function flagServiceRequestInvalid({ id, reason }: { id: string; re
 }
 
 export async function getNearbyCivicIssues(categoryId: string, ward: string) {
-  const res = await apiClient<{ data: { id: string; issueNumber: string; title: string }[] }>("/civic-issues/nearby", {
-    query: { categoryId, ward },
-  });
+  const res = await apiClient<{ data: { id: string; issueNumber: string; title: string }[] }>(
+    "/civic-issues/nearby",
+    {
+      query: { categoryId, ward },
+    },
+  );
   return res.data;
 }

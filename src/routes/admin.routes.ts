@@ -1,0 +1,131 @@
+import {
+  Activity,
+  Building2,
+  Eye,
+  Home,
+  Map as MapIcon,
+  Settings,
+  ShieldAlert,
+  ShieldCheck,
+  Tags,
+  UserPlus,
+  Users,
+} from "lucide-react";
+import type { NavItem } from "./types";
+
+/**
+ * Canonical nested route list for the Super Admin / Platform Admin portal.
+ *
+ * Mounted at `/system` (see `ROLE_PORTAL_MAP`). Every entry maps 1:1 to a
+ * section in `docs/admin-apis.md`. Parent `url` values are real routes —
+ * detail pages (`[municipalityId]`, `[userId]`, …) hang off them but are
+ * intentionally excluded from the sidebar nav (progressive disclosure).
+ */
+export const adminRoutes: NavItem[] = [
+  {
+    title: "Overview",
+    url: "/system/overview",
+    icon: Home,
+    permission: "analytics:read",
+  },
+  {
+    title: "Municipalities",
+    url: "/system/municipalities",
+    icon: Building2,
+    permission: "municipality:read",
+  },
+  {
+    title: "Users",
+    url: "/system/users",
+    icon: Users,
+    permission: "user:read",
+    items: [
+      { title: "All Users", url: "/system/users" },
+      { title: "Suspended", url: "/system/users?status=SUSPENDED" },
+      { title: "Deactivated", url: "/system/users?status=INACTIVE" },
+    ],
+  },
+  {
+    title: "Staff",
+    url: "/system/staff",
+    icon: UserPlus,
+    permission: "staff:read",
+    items: [
+      { title: "All Staff", url: "/system/staff" },
+      { title: "Platform Admins", url: "/system/staff?role=PLATFORM_ADMIN" },
+      { title: "City Admins", url: "/system/staff?role=CITY_ADMIN" },
+      { title: "Managers", url: "/system/staff?role=DEPARTMENT_MANAGER" },
+      { title: "Dispatchers", url: "/system/staff?role=DISPATCHER" },
+      { title: "Technicians", url: "/system/staff?role=TECHNICIAN" },
+    ],
+  },
+  {
+    title: "Roles & Access",
+    url: "/system/roles",
+    icon: ShieldCheck,
+    permission: "role:read",
+    items: [
+      { title: "Roles", url: "/system/roles" },
+      { title: "Permissions", url: "/system/roles/permissions" },
+    ],
+  },
+  {
+    title: "Departments",
+    url: "/system/departments",
+    icon: Building2,
+    permission: "department:read",
+    items: [
+      { title: "Departments", url: "/system/departments" },
+      { title: "Teams", url: "/system/departments/teams" },
+    ],
+  },
+  {
+    title: "Jurisdiction",
+    url: "/system/zones",
+    icon: MapIcon,
+    permission: "zone:read",
+    items: [
+      { title: "Zones", url: "/system/zones" },
+      { title: "Wards", url: "/system/wards" },
+    ],
+  },
+  {
+    title: "Categories & SLA",
+    url: "/system/categories",
+    icon: Tags,
+    permission: "category:read",
+    items: [
+      { title: "Categories", url: "/system/categories" },
+      { title: "SLA Policies", url: "/system/sla-policies" },
+    ],
+  },
+  {
+    title: "Oversight",
+    url: "/system/oversight",
+    icon: Eye,
+    permission: "oversight:read",
+    items: [
+      { title: "Civic Issues", url: "/system/oversight/issues" },
+      { title: "Service Requests", url: "/system/oversight/requests" },
+      { title: "Feedback", url: "/system/oversight/feedback" },
+    ],
+  },
+  {
+    title: "Platform Settings",
+    url: "/system/platform-settings",
+    icon: Settings,
+    permission: "system:read",
+  },
+  {
+    title: "System Health",
+    url: "/system/system-health",
+    icon: Activity,
+    permission: "system:read",
+  },
+  {
+    title: "Audit Log",
+    url: "/system/audit-log",
+    icon: ShieldAlert,
+    permission: "system:read",
+  },
+];

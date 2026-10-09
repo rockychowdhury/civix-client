@@ -1,5 +1,6 @@
 import { USER_ROLES } from "@/constant/role.constant";
 import { hasPermission, type Permission } from "@/lib/permissions";
+import { normalizeRoleCode } from "@/lib/role-routing";
 
 export type PortalId = "citizen" | "technician" | "department" | "municipality" | "system";
 
@@ -30,7 +31,7 @@ const PORTAL_NAV: Record<PortalId, PortalNav> = {
     portalLabel: "Technician",
     items: [
       {
-        label: "Today's Queue",
+        label: "My Queue",
         href: "/technician/queue",
         permission: "workorder:read",
         mobileTab: true,
@@ -39,6 +40,11 @@ const PORTAL_NAV: Record<PortalId, PortalNav> = {
         label: "Completed",
         href: "/technician/history",
         permission: "workorder:read",
+        mobileTab: true,
+      },
+      {
+        label: "Profile",
+        href: "/technician/profile",
         mobileTab: true,
       },
     ],
@@ -60,7 +66,14 @@ const PORTAL_NAV: Record<PortalId, PortalNav> = {
   system: {
     portalId: "system",
     portalLabel: "System Platform",
-    items: [{ label: "Overview", href: "/system/overview" }],
+    items: [
+      { label: "Overview", href: "/system/overview", permission: "analytics:read" },
+      { label: "Municipalities", href: "/system/municipalities", permission: "municipality:read" },
+      { label: "Users", href: "/system/users", permission: "user:read" },
+      { label: "Staff", href: "/system/staff", permission: "staff:read" },
+      { label: "Roles", href: "/system/roles", permission: "role:read" },
+      { label: "Oversight", href: "/system/oversight/issues", permission: "oversight:read" },
+    ],
   },
 };
 
@@ -92,7 +105,7 @@ const ROLE_TO_PORTAL: Record<string, PortalId> = {
 export function getPortalNav(roles: string[]): PortalNav | null {
   if (!roles || roles.length === 0) return null;
 
-  const normalized = roles.map((role) => role.toUpperCase());
+  const normalized = roles.map(normalizeRoleCode);
 
   for (const role of ROLE_PRIORITY) {
     if (normalized.includes(role)) {

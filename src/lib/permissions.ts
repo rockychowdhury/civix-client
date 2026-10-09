@@ -22,6 +22,24 @@ export type Permission =
   | "municipality:read"
   | "municipality:update"
   | "municipality:delete"
+  // Platform admin
+  | "analytics:read"
+  | "user:read"
+  | "user:update"
+  | "user:delete"
+  | "staff:read"
+  | "staff:manage"
+  | "role:read"
+  | "role:manage"
+  | "zone:read"
+  | "zone:manage"
+  | "ward:read"
+  | "ward:manage"
+  | "sla:read"
+  | "sla:manage"
+  | "team:read"
+  | "team:manage"
+  | "oversight:read"
   // Departments
   | "department:read"
   | "department:create"
@@ -63,16 +81,57 @@ export const PERMISSION_MATRIX: Record<UserRole, Permission[]> = {
   ],
   [USER_ROLES.PLATFORM_ADMIN]: [
     "system:read",
+    "analytics:read",
     "municipality:read",
     "municipality:create",
     "municipality:update",
+    "user:read",
+    "user:update",
+    "staff:read",
+    "staff:manage",
+    "role:read",
+    "department:read",
+    "department:create",
+    "department:update",
+    "team:read",
+    "team:manage",
+    "category:read",
+    "category:edit",
+    "zone:read",
+    "ward:read",
+    "sla:read",
+    "oversight:read",
+    "issue:read",
   ],
   [USER_ROLES.SUPER_ADMIN]: [
     "system:read",
+    "analytics:read",
     "municipality:read",
     "municipality:create",
     "municipality:update",
     "municipality:delete",
+    "user:read",
+    "user:update",
+    "user:delete",
+    "staff:read",
+    "staff:manage",
+    "role:read",
+    "role:manage",
+    "department:read",
+    "department:create",
+    "department:update",
+    "team:read",
+    "team:manage",
+    "category:read",
+    "category:edit",
+    "zone:read",
+    "zone:manage",
+    "ward:read",
+    "ward:manage",
+    "sla:read",
+    "sla:manage",
+    "oversight:read",
+    "issue:read",
   ],
 };
 
