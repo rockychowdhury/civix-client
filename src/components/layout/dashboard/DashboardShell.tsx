@@ -4,18 +4,19 @@ import type { ReactNode } from "react";
 import { AppSidebar } from "@/components/layout/dashboard/AppSidebar";
 import { Topbar } from "@/components/layout/dashboard/Topbar";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { USER_ROLES } from "@/constant/role.constant";
 import { useGetMe } from "@/hooks/auth.hook";
 import { getPortalNav } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
 const ROLE_LABELS: Record<string, string> = {
-  CITIZEN: "Citizen",
-  TECHNICIAN: "Technician",
-  DISPATCHER: "Dispatcher",
-  DEPARTMENT_MANAGER: "Dept. Manager",
-  CITY_ADMIN: "City Admin",
-  PLATFORM_ADMIN: "Platform Admin",
-  SUPER_ADMIN: "Super Admin",
+  [USER_ROLES.CITIZEN]: "Citizen",
+  [USER_ROLES.TECHNICIAN]: "Technician",
+  [USER_ROLES.DISPATCHER]: "Dispatcher",
+  [USER_ROLES.DEPARTMENT_MANAGER]: "Dept. Manager",
+  [USER_ROLES.CITY_ADMIN]: "City Admin",
+  [USER_ROLES.PLATFORM_ADMIN]: "Platform Admin",
+  [USER_ROLES.SUPER_ADMIN]: "Super Admin",
 };
 
 export function DashboardShell({ children }: { children: ReactNode }) {
@@ -64,7 +65,14 @@ export function DashboardShell({ children }: { children: ReactNode }) {
     <SidebarProvider>
       <AppSidebar userRoleCodes={roles} />
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden bg-paper text-ink">
-        {nav && <Topbar nav={nav} userName={userName} roleLabel={roleLabel} departmentName={departmentName} />}
+        {nav && (
+          <Topbar
+            nav={nav}
+            userName={userName}
+            roleLabel={roleLabel}
+            departmentName={departmentName}
+          />
+        )}
 
         <main
           className={cn(

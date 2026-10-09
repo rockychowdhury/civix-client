@@ -26,11 +26,6 @@ export interface IResetPassword {
   newPassword: string;
 }
 
-export type UserRole =
-  | "CITIZEN"
-  | "TECHNICIAN"
-  | "DISPATCHER"
-  | "DEPARTMENT_MANAGER"
-  | "CITY_ADMIN"
-  | "PLATFORM_ADMIN"
-  | "SUPER_ADMIN";
+import { USER_ROLES } from "@/constant/role.constant";
+
+export type UserRole = typeof USER_ROLES[keyof typeof USER_ROLES];

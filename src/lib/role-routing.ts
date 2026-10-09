@@ -1,21 +1,23 @@
+import { USER_ROLES } from "@/constant/role.constant";
+
 export const ROLE_PORTAL_MAP: Record<string, string> = {
-  CITIZEN: "/citizen",
-  TECHNICIAN: "/technician",
-  DISPATCHER: "/department",
-  DEPARTMENT_MANAGER: "/department",
-  CITY_ADMIN: "/municipality",
-  PLATFORM_ADMIN: "/system",
-  SUPER_ADMIN: "/system",
+  [USER_ROLES.CITIZEN]: "/citizen",
+  [USER_ROLES.TECHNICIAN]: "/technician",
+  [USER_ROLES.DISPATCHER]: "/department",
+  [USER_ROLES.DEPARTMENT_MANAGER]: "/department",
+  [USER_ROLES.CITY_ADMIN]: "/municipality",
+  [USER_ROLES.PLATFORM_ADMIN]: "/system",
+  [USER_ROLES.SUPER_ADMIN]: "/system",
 };
 
 export const ROLE_DEFAULT_LANDING: Record<string, string> = {
-  CITIZEN: "/citizen/overview",
-  TECHNICIAN: "/technician/queue",
-  DISPATCHER: "/department/work-orders",
-  DEPARTMENT_MANAGER: "/department/overview",
-  CITY_ADMIN: "/municipality/overview",
-  PLATFORM_ADMIN: "/system/overview",
-  SUPER_ADMIN: "/system/overview",
+  [USER_ROLES.CITIZEN]: "/citizen/overview",
+  [USER_ROLES.TECHNICIAN]: "/technician/queue",
+  [USER_ROLES.DISPATCHER]: "/department/work-orders",
+  [USER_ROLES.DEPARTMENT_MANAGER]: "/department/overview",
+  [USER_ROLES.CITY_ADMIN]: "/municipality/overview",
+  [USER_ROLES.PLATFORM_ADMIN]: "/system/overview",
+  [USER_ROLES.SUPER_ADMIN]: "/system/overview",
 };
 
 export function getDashboardHref(roles: string[]): string {
@@ -25,14 +27,15 @@ export function getDashboardHref(roles: string[]): string {
   const normalizedRoles = roles.map((r) => r.toUpperCase());
 
   // Prioritize higher-level roles if a user has multiple
-  if (normalizedRoles.includes("SUPER_ADMIN")) return ROLE_DEFAULT_LANDING.SUPER_ADMIN;
-  if (normalizedRoles.includes("PLATFORM_ADMIN")) return ROLE_DEFAULT_LANDING.PLATFORM_ADMIN;
-  if (normalizedRoles.includes("CITY_ADMIN")) return ROLE_DEFAULT_LANDING.CITY_ADMIN;
-  if (normalizedRoles.includes("DEPARTMENT_MANAGER"))
+  if (normalizedRoles.includes(USER_ROLES.SUPER_ADMIN)) return ROLE_DEFAULT_LANDING.SUPER_ADMIN;
+  if (normalizedRoles.includes(USER_ROLES.PLATFORM_ADMIN))
+    return ROLE_DEFAULT_LANDING.PLATFORM_ADMIN;
+  if (normalizedRoles.includes(USER_ROLES.CITY_ADMIN)) return ROLE_DEFAULT_LANDING.CITY_ADMIN;
+  if (normalizedRoles.includes(USER_ROLES.DEPARTMENT_MANAGER))
     return ROLE_DEFAULT_LANDING.DEPARTMENT_MANAGER;
-  if (normalizedRoles.includes("DISPATCHER")) return ROLE_DEFAULT_LANDING.DISPATCHER;
-  if (normalizedRoles.includes("TECHNICIAN")) return ROLE_DEFAULT_LANDING.TECHNICIAN;
-  if (normalizedRoles.includes("CITIZEN")) return ROLE_DEFAULT_LANDING.CITIZEN;
+  if (normalizedRoles.includes(USER_ROLES.DISPATCHER)) return ROLE_DEFAULT_LANDING.DISPATCHER;
+  if (normalizedRoles.includes(USER_ROLES.TECHNICIAN)) return ROLE_DEFAULT_LANDING.TECHNICIAN;
+  if (normalizedRoles.includes(USER_ROLES.CITIZEN)) return ROLE_DEFAULT_LANDING.CITIZEN;
 
   return "/";
 }

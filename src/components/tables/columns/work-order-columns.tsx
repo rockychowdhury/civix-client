@@ -8,40 +8,21 @@ import Link from "next/link";
 
 export const columns: ColumnDef<WorkOrder, any>[] = [
   {
-    accessorKey: "id",
-    header: "Work Order #",
-    cell: ({ row }: { row: any }) => (
-      <span className="font-mono text-xs text-ink/70">
-        {row.original.id.split('-')[0].toUpperCase()}
-      </span>
-    ),
-  },
-  {
-    id: "details",
-    header: "Details",
+    id: "civicIssueNumber",
+    header: "Civic Issue",
     cell: ({ row }: { row: any }) => {
       const issue = row.original.civicIssue;
+      if (issue) {
+        return (
+          <Link href={`/track?issueNumber=${issue.issueNumber}`} className="font-mono text-sm hover:text-ledger transition-colors cursor-pointer" onClick={(e) => e.stopPropagation()}>
+            {issue.issueNumber}
+          </Link>
+        );
+      }
       return (
-        <div className="flex flex-col gap-1 max-w-[280px]">
-          <span className="text-sm font-medium text-ink truncate" title={row.original.title}>
-            {row.original.title}
-          </span>
-          {issue ? (
-            <div className="flex items-center gap-2 text-xs text-ink/60">
-              <Link href={`/track?issueNumber=${issue.issueNumber}`} className="font-mono hover:text-ledger transition-colors cursor-pointer" onClick={(e) => e.stopPropagation()}>
-                {issue.issueNumber}
-              </Link>
-              {issue.location?.address && (
-                <>
-                  <span>•</span>
-                  <span className="truncate">{issue.location.address}</span>
-                </>
-              )}
-            </div>
-          ) : (
-            <span className="text-xs text-ink/40">No issue attached</span>
-          )}
-        </div>
+        <span className="font-mono text-sm text-ink/70">
+          {row.original.id.split('-')[0].toUpperCase()}
+        </span>
       );
     }
   },
@@ -49,7 +30,7 @@ export const columns: ColumnDef<WorkOrder, any>[] = [
     accessorKey: "priority",
     header: "Priority",
     cell: ({ row }: { row: any }) => {
-      const priorityObj = row.original.priority || row.original.civicIssue?.priority;
+      const priorityObj = row.original.civicIssue?.priority || row.original.priority;
       const priority = typeof priorityObj === 'object' && priorityObj !== null ? (priorityObj?.code || priorityObj?.name || "Normal") : (priorityObj || "Normal");
       const normalizedPriority = typeof priority === 'string' ? priority.toUpperCase() : "";
       return (
@@ -86,15 +67,52 @@ export const columns: ColumnDef<WorkOrder, any>[] = [
     }
   },
   {
+    id: "resolutionDeadline",
+    header: "Resolution Deadline",
+    cell: ({ row }: { row: any }) => {
+      const deadline = row.original.civicIssue?.resolutionDeadlineAt;
+      if (!deadline) return <span className="text-xs text-ink/40">N/A</span>;
+      return (
+        <span className="text-xs text-ink/70">
+          {formatDistanceToNow(new Date(deadline), { addSuffix: true })}
+        </span>
+      );
+    }
+  },
+  {
     id: "assignment",
-    header: "Assignment & Actions",
+    header: "Assignments",
     cell: ({ row, table }: { row: any, table: any }) => {
       const meta = table.options.meta as any;
       const currentTab = meta?.currentTab;
       
-      // On 'Needs Assignment' tab, render the inline suggestion control
-      if (currentTab === "needs-assignment") {
-        return <TechnicianSuggestionInline workOrder={row.original} />;
+      const assignment = row.original.assignments?.[0];
+      const assignee = assignment?.assignedTo || row.original.currentAssignee;
+      const team = assignment?.team;
+      
+      if (assignee || team) {
+        return (
+          <div className="flex flex-col gap-1">
+            {assignee && (
+              <div className="flex items-center gap-2">
+                <span className="flex size-6 items-center justify-center rounded-full bg-ledger font-mono text-[0.625rem] font-medium text-paper">
+                  {assignee.firstName?.[0]}{assignee.lastName?.[0]}
+                </span>
+                <span className="text-sm font-medium">{assignee.firstName} {assignee.lastName}</span>
+                {assignee.employeeId && (
+                  <span className="text-xs font-mono text-ink/50 bg-ink/5 px-1.5 py-0.5 rounded-sm">
+                    {assignee.employeeId}
+                  </span>
+                )}
+              </div>
+            )}
+            {team && (
+              <div className="text-xs text-ink/70 flex items-center gap-1">
+                Team: <span className="font-medium text-ink">{team.name}</span>
+              </div>
+            )}
+          </div>
+        );
       }
       
       if (currentTab === "technician-queue") {
@@ -113,17 +131,8 @@ export const columns: ColumnDef<WorkOrder, any>[] = [
         return <span className="text-xs text-ink/70 font-medium">{row.original.status.replace(/_/g, ' ')}</span>;
       }
       
-      // On other tabs, just show assignee name or status
-      const assignee = row.original.currentAssignee;
-      if (assignee) {
-        return (
-          <div className="flex items-center gap-2">
-            <span className="flex size-6 items-center justify-center rounded-full bg-ledger font-mono text-[0.625rem] font-medium text-paper">
-              {assignee.firstName?.[0]}{assignee.lastName?.[0]}
-            </span>
-            <span className="text-sm font-medium">{assignee.firstName} {assignee.lastName}</span>
-          </div>
-        );
+      if (currentTab !== "technician-queue") {
+        return <TechnicianSuggestionInline workOrder={row.original} />;
       }
       
       return <span className="text-ink/50 text-sm italic">Unassigned</span>;

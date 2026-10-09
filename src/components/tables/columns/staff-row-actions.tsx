@@ -1,8 +1,10 @@
 "use client";
 
+import type { Row } from "@tanstack/react-table";
+import { Eye, MoreHorizontal, PenSquare, ShieldAlert, ShieldCheck } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
-import { type Row } from "@tanstack/react-table";
-import { MoreHorizontal, ShieldAlert, ShieldCheck, PenSquare, Eye } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,12 +13,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { IStaffProfile } from "@/types";
-import { useUpdateStaffStatus } from "@/hooks/staff.hook";
+import { USER_ROLES } from "@/constant/role.constant";
 import { useGetMe } from "@/hooks/auth.hook";
+import { useUpdateStaffStatus } from "@/hooks/staff.hook";
 import { hasPermission } from "@/lib/permissions";
-import Link from "next/link";
-import { toast } from "sonner";
+import type { IStaffProfile } from "@/types";
 
 interface StaffRowActionsProps {
   row: Row<IStaffProfile>;
@@ -26,10 +27,13 @@ export function StaffRowActions({ row }: StaffRowActionsProps) {
   const staff = row.original;
   const status = staff.user?.status;
   const { mutate: updateStatus, isPending } = useUpdateStaffStatus();
-  
+
   const { data: userData } = useGetMe();
   const roles = userData?.data?.userRoles?.map((ur: any) => ur.role.code) || [];
-  const canManage = hasPermission(roles, "technician:manage") || roles.includes("SUPER_ADMIN") || roles.includes("PLATFORM_ADMIN");
+  const canManage =
+    hasPermission(roles, "technician:manage") ||
+    roles.includes(USER_ROLES.SUPER_ADMIN) ||
+    roles.includes(USER_ROLES.PLATFORM_ADMIN);
 
   const handleStatusChange = (newStatus: string) => {
     updateStatus({ id: staff.userId, status: newStatus });
@@ -38,10 +42,7 @@ export function StaffRowActions({ row }: StaffRowActionsProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          className="flex h-8 w-8 p-0 data-[state=open]:bg-field"
-        >
+        <Button variant="ghost" className="flex h-8 w-8 p-0 data-[state=open]:bg-field">
           <MoreHorizontal className="h-4 w-4" />
           <span className="sr-only">Open menu</span>
         </Button>

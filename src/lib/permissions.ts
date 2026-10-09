@@ -1,11 +1,5 @@
-export type Role =
-  | "CITIZEN"
-  | "TECHNICIAN"
-  | "DISPATCHER"
-  | "DEPARTMENT_MANAGER"
-  | "CITY_ADMIN"
-  | "PLATFORM_ADMIN"
-  | "SUPER_ADMIN";
+import { USER_ROLES } from "@/constant/role.constant";
+import type { UserRole } from "@/types/auth.type";
 
 // Define the permissions available in the system
 export type Permission =
@@ -35,11 +29,19 @@ export type Permission =
   // System
   | "system:read";
 
-export const PERMISSION_MATRIX: Record<Role, Permission[]> = {
-  CITIZEN: ["issue:read"],
-  TECHNICIAN: ["workorder:read", "workorder:update", "issue:read"],
-  DISPATCHER: ["workorder:assign", "workorder:read", "issue:read", "issue:update", "technician:read", "technician:manage", "department:read"],
-  DEPARTMENT_MANAGER: [
+export const PERMISSION_MATRIX: Record<UserRole, Permission[]> = {
+  [USER_ROLES.CITIZEN]: ["issue:read"],
+  [USER_ROLES.TECHNICIAN]: ["workorder:read", "workorder:update", "issue:read"],
+  [USER_ROLES.DISPATCHER]: [
+    "workorder:assign",
+    "workorder:read",
+    "issue:read",
+    "issue:update",
+    "technician:read",
+    "technician:manage",
+    "department:read",
+  ],
+  [USER_ROLES.DEPARTMENT_MANAGER]: [
     "workorder:assign",
     "workorder:read",
     "workorder:override-priority",
@@ -49,7 +51,7 @@ export const PERMISSION_MATRIX: Record<Role, Permission[]> = {
     "issue:update",
     "department:read",
   ],
-  CITY_ADMIN: [
+  [USER_ROLES.CITY_ADMIN]: [
     "category:read",
     "category:edit",
     "department:read",
@@ -59,13 +61,13 @@ export const PERMISSION_MATRIX: Record<Role, Permission[]> = {
     "municipality:update",
     "issue:read",
   ],
-  PLATFORM_ADMIN: [
+  [USER_ROLES.PLATFORM_ADMIN]: [
     "system:read",
     "municipality:read",
     "municipality:create",
     "municipality:update",
   ],
-  SUPER_ADMIN: [
+  [USER_ROLES.SUPER_ADMIN]: [
     "system:read",
     "municipality:read",
     "municipality:create",
@@ -76,7 +78,7 @@ export const PERMISSION_MATRIX: Record<Role, Permission[]> = {
 
 export function hasPermission(roles: string[], permission: Permission): boolean {
   return roles.some((role) => {
-    const rolePermissions = PERMISSION_MATRIX[role as Role];
+    const rolePermissions = PERMISSION_MATRIX[role as UserRole];
     return rolePermissions?.includes(permission) ?? false;
   });
 }

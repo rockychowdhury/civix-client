@@ -1,3 +1,4 @@
+import { USER_ROLES } from "@/constant/role.constant";
 import { hasPermission, type Permission } from "@/lib/permissions";
 
 export type PortalId = "citizen" | "technician" | "department" | "municipality" | "system";
@@ -64,23 +65,23 @@ const PORTAL_NAV: Record<PortalId, PortalNav> = {
 };
 
 const ROLE_PRIORITY = [
-  "SUPER_ADMIN",
-  "PLATFORM_ADMIN",
-  "CITY_ADMIN",
-  "DEPARTMENT_MANAGER",
-  "DISPATCHER",
-  "TECHNICIAN",
-  "CITIZEN",
+  USER_ROLES.SUPER_ADMIN,
+  USER_ROLES.PLATFORM_ADMIN,
+  USER_ROLES.CITY_ADMIN,
+  USER_ROLES.DEPARTMENT_MANAGER,
+  USER_ROLES.DISPATCHER,
+  USER_ROLES.TECHNICIAN,
+  USER_ROLES.CITIZEN,
 ] as const;
 
 const ROLE_TO_PORTAL: Record<string, PortalId> = {
-  CITIZEN: "citizen",
-  TECHNICIAN: "technician",
-  DISPATCHER: "department",
-  DEPARTMENT_MANAGER: "department",
-  CITY_ADMIN: "municipality",
-  PLATFORM_ADMIN: "system",
-  SUPER_ADMIN: "system",
+  [USER_ROLES.CITIZEN]: "citizen",
+  [USER_ROLES.TECHNICIAN]: "technician",
+  [USER_ROLES.DISPATCHER]: "department",
+  [USER_ROLES.DEPARTMENT_MANAGER]: "department",
+  [USER_ROLES.CITY_ADMIN]: "municipality",
+  [USER_ROLES.PLATFORM_ADMIN]: "system",
+  [USER_ROLES.SUPER_ADMIN]: "system",
 };
 
 /**
