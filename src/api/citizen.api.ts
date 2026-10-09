@@ -12,6 +12,7 @@ export interface MyRequestsFilter {
   searchTerm?: string;
   status?: string;
   categoryId?: string;
+  pendingFeedback?: boolean;
   page?: number;
   limit?: number;
 }
@@ -27,6 +28,18 @@ export async function getMyServiceRequests(params?: MyRequestsFilter) {
   }>("/service-requests/my-requests", {
     method: "GET",
     params: cleanParams(params),
+  });
+}
+
+/**
+ * Fetch service requests with active resolutions awaiting citizen feedback.
+ * GET /api/v1/service-requests/pending-feedback
+ */
+export async function getPendingFeedbackServiceRequests() {
+  return apiClient<{
+    data: ServiceRequest[];
+  }>("/service-requests/pending-feedback", {
+    method: "GET",
   });
 }
 

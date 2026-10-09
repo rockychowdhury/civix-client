@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
-import { useNearbyCivicIssues, useLinkServiceRequestToIssue } from "@/hooks";
+import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -12,13 +12,9 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useLinkServiceRequestToIssue, useNearbyCivicIssues } from "@/hooks";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
 
 interface LinkToIssueFormProps {
   requestId: string;
@@ -30,7 +26,7 @@ interface LinkToIssueFormProps {
 export function LinkToIssueForm({ requestId, categoryId, ward, onSuccess }: LinkToIssueFormProps) {
   const [open, setOpen] = useState(false);
   const [selectedIssueId, setSelectedIssueId] = useState("");
-  
+
   const { data: nearbyIssuesData, isLoading } = useNearbyCivicIssues(categoryId, ward);
   const nearbyIssues = nearbyIssuesData || [];
 
@@ -38,7 +34,7 @@ export function LinkToIssueForm({ requestId, categoryId, ward, onSuccess }: Link
 
   const handleLink = () => {
     if (!selectedIssueId) return;
-    
+
     mutate(
       { id: requestId, civicIssueId: selectedIssueId },
       {
@@ -49,27 +45,30 @@ export function LinkToIssueForm({ requestId, categoryId, ward, onSuccess }: Link
         onError: () => {
           toast.error("Failed to link request.");
         },
-      }
+      },
     );
   };
 
   return (
     <div className="flex flex-col gap-3 p-4 border border-line rounded-md bg-paper">
       <h4 className="font-display font-medium text-ink">Link to Existing Issue</h4>
-      <p className="text-sm text-ink/70">Merge this request into an already active operational issue.</p>
-      
+      <p className="text-sm text-ink/70">
+        Merge this request into an already active operational issue.
+      </p>
+
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="secondary"
             role="combobox"
             aria-expanded={open}
-            className="w-full justify-between font-body h-11 border border-line"
+            className="w-full justify-between font-body h-11 border border-line cursor-pointer"
           >
             {isLoading
               ? "Loading nearby issues..."
-              : selectedIssueId 
-                ? (nearbyIssues.find((i) => i.id === selectedIssueId)?.issueNumber || "Selected issue")
+              : selectedIssueId
+                ? nearbyIssues.find((i) => i.id === selectedIssueId)?.issueNumber ||
+                  "Selected issue"
                 : "Select candidate issue..."}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
@@ -93,7 +92,7 @@ export function LinkToIssueForm({ requestId, categoryId, ward, onSuccess }: Link
                     <Check
                       className={cn(
                         "mr-2 h-4 w-4",
-                        selectedIssueId === issue.id ? "opacity-100 text-ledger" : "opacity-0"
+                        selectedIssueId === issue.id ? "opacity-100 text-ledger" : "opacity-0",
                       )}
                     />
                     <div className="flex flex-col">
@@ -109,10 +108,11 @@ export function LinkToIssueForm({ requestId, categoryId, ward, onSuccess }: Link
       </Popover>
 
       <div className="flex justify-end mt-2">
-        <Button 
-          variant="secondary" 
-          onClick={handleLink} 
+        <Button
+          variant="secondary"
+          onClick={handleLink}
           disabled={isPending || !selectedIssueId}
+          className="cursor-pointer"
         >
           {isPending ? "Linking..." : "Link to Issue"}
         </Button>

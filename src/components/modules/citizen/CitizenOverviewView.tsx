@@ -2,10 +2,12 @@
 
 import { format } from "date-fns";
 import {
+  AlertCircle,
   ArrowRight,
   CheckCircle2,
   Clock,
   FileText,
+  Image as ImageIcon,
   PlusCircle,
   Search,
   Sparkles,
@@ -15,11 +17,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { StatusPill } from "@/components/layout/dashboard/StatusPill";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useGetMe } from "@/hooks/auth.hook";
-import { useMyServiceRequests } from "@/hooks/citizen.hook";
+import { useMyServiceRequests, usePendingFeedbackRequests } from "@/hooks/citizen.hook";
 import type { ServiceRequest } from "@/types";
+import { CitizenFeedbackDialog } from "./CitizenFeedbackDialog";
 import { CitizenRequestDetailModal } from "./CitizenRequestDetailModal";
 import { CitizenTrustBadge } from "./CitizenTrustBadge";
 
@@ -27,6 +31,9 @@ export function CitizenOverviewView() {
   const router = useRouter();
   const [trackingSearch, setTrackingSearch] = useState("");
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
+
+  // Direct feedback modal state for pending banner
+  const [feedbackTargetRequest, setFeedbackTargetRequest] = useState<ServiceRequest | null>(null);
 
   const { data: userData } = useGetMe();
   const user = userData?.data;
@@ -39,6 +46,11 @@ export function CitizenOverviewView() {
 
   const { data: requestsRes, isLoading } = useMyServiceRequests({ limit: 20 });
   const requests: ServiceRequest[] = requestsRes?.data || [];
+
+  // Dedicated pending feedback requests hook
+  const { data: pendingFeedbackRes, isLoading: isPendingFeedbackLoading } =
+    usePendingFeedbackRequests();
+  const pendingFeedbackRequests: ServiceRequest[] = pendingFeedbackRes?.data || [];
 
   const stats = useMemo(() => {
     const total = requests.length;
@@ -57,13 +69,19 @@ export function CitizenOverviewView() {
       const s = r.status.toUpperCase();
       return s === "RESOLVED" || s === "CLOSED" || s === "COMPLETED";
     }).length;
-    const pendingFeedback = requests.filter((r) => {
-      const s = r.status.toUpperCase();
-      return (s === "RESOLVED" || s === "CLOSED") && !r.feedback;
-    }).length;
+    // Prefer count from pending feedback endpoint if available
+    const pendingFeedback =
+      pendingFeedbackRequests.length > 0
+        ? pendingFeedbackRequests.length
+        : requests.filter((r) => {
+            const s = r.status.toUpperCase();
+            return (
+              (s === "RESOLVED" || s === "CLOSED" || s === "PENDING_VERIFICATION") && !r.feedback
+            );
+          }).length;
 
     return { total, active, resolved, pendingFeedback };
-  }, [requests]);
+  }, [requests, pendingFeedbackRequests]);
 
   const recentRequests = useMemo(() => {
     return [...requests]
@@ -113,7 +131,7 @@ export function CitizenOverviewView() {
 
           <div className="flex flex-wrap items-center gap-3 shrink-0">
             <Button asChild variant="primary" size="lg" className="cursor-pointer shadow-xs">
-              <Link href="/citizen/report">
+              <Link href="/report">
                 <PlusCircle className="size-4 mr-2" /> Report an Issue
               </Link>
             </Button>
@@ -142,6 +160,114 @@ export function CitizenOverviewView() {
           </form>
         </div>
       </div>
+
+      {/* Action Required: Pending Feedback Alert Banner */}
+      {!isPendingFeedbackLoading && pendingFeedbackRequests.length > 0 && (
+        <div className="rounded-xl border border-amber-300/80 bg-amber-50/50 dark:bg-amber-950/20 p-5 sm:p-6 shadow-xs space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="size-9 rounded-full bg-amber-500/15 flex items-center justify-center text-amber-600 shrink-0">
+                <AlertCircle className="size-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h2 className="font-display text-base font-semibold text-ink">
+                    Action Required: Review Completed Work
+                  </h2>
+                  <Badge
+                    variant="outline"
+                    className="border-amber-400 bg-amber-100 text-amber-800 text-[11px] font-mono"
+                  >
+                    {pendingFeedbackRequests.length} pending
+                  </Badge>
+                </div>
+                <p className="font-body text-xs text-ink/70 mt-0.5">
+                  You have <strong>{pendingFeedbackRequests.length}</strong> completed request
+                  {pendingFeedbackRequests.length > 1 ? "s" : ""} waiting for your review. Please
+                  confirm if the issue was satisfactorily resolved.
+                </p>
+              </div>
+            </div>
+
+            <Button
+              asChild
+              variant="ghost"
+              size="sm"
+              className="cursor-pointer text-xs text-amber-800 hover:bg-amber-100/50 self-start sm:self-auto"
+            >
+              <Link href="/citizen/feedback">
+                View all reviews <ArrowRight className="size-3.5 ml-1" />
+              </Link>
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+            {pendingFeedbackRequests.slice(0, 2).map((req) => {
+              const activeWo = req.civicIssue?.workOrders?.[0];
+              const resolution = activeWo?.resolution;
+              const summary = resolution?.summary || req.resolutionNotes;
+              const attachments = resolution?.attachments || [];
+
+              return (
+                <div
+                  key={req.id}
+                  className="rounded-lg border border-amber-200/90 bg-paper p-4 flex flex-col justify-between gap-3 shadow-2xs"
+                >
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-mono text-xs font-semibold text-ink">
+                        {req.trackingNumber}
+                      </span>
+                      {req.category && (
+                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-xs bg-field border border-line text-ink/70">
+                          {req.category.name}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs font-body text-ink/80 line-clamp-1 font-medium">
+                      {req.description}
+                    </p>
+
+                    {summary && (
+                      <div className="p-2.5 rounded-md bg-field/40 border border-line/40 text-xs text-ink/80">
+                        <span className="font-mono text-[10px] uppercase text-signal-resolved font-medium block mb-0.5">
+                          Technician Summary:
+                        </span>
+                        <p className="line-clamp-2 italic font-body">{summary}</p>
+                      </div>
+                    )}
+
+                    {attachments.length > 0 && (
+                      <div className="flex items-center gap-1.5 text-[11px] font-mono text-ink/60 pt-1">
+                        <ImageIcon className="size-3 text-ink/40" />
+                        <span>
+                          {attachments.length} photo proof attachment
+                          {attachments.length > 1 ? "s" : ""}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2 border-t border-line/40">
+                    <span className="text-[11px] font-mono text-ink/50">
+                      {req.submittedAt ? format(new Date(req.submittedAt), "MMM d") : ""}
+                    </span>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={() => setFeedbackTargetRequest(req)}
+                      className="cursor-pointer text-xs h-8 bg-amber-600 hover:bg-amber-700 text-white"
+                    >
+                      <Star className="size-3.5 mr-1.5 fill-amber-300 text-amber-300" /> Submit
+                      Feedback
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Metrics Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -178,16 +304,28 @@ export function CitizenOverviewView() {
           </div>
         </div>
 
-        <div className="rounded-lg border border-line bg-paper p-5 flex flex-col justify-between">
+        <Link
+          href="/citizen/feedback"
+          className="rounded-lg border border-line bg-paper p-5 flex flex-col justify-between hover:border-amber-400 transition-colors cursor-pointer group"
+        >
           <div className="flex items-center justify-between text-amber-600 text-xs font-mono uppercase tracking-wider">
             <span>Reviews Needed</span>
-            <Star className="size-4 text-amber-500" />
+            <Star className="size-4 text-amber-500 fill-amber-400" />
           </div>
           <div className="mt-4">
-            <p className="font-display text-3xl font-semibold text-ink">{stats.pendingFeedback}</p>
+            <div className="flex items-baseline justify-between">
+              <p className="font-display text-3xl font-semibold text-ink group-hover:text-amber-600 transition-colors">
+                {stats.pendingFeedback}
+              </p>
+              {stats.pendingFeedback > 0 && (
+                <span className="text-[11px] font-mono text-amber-600 font-medium">
+                  Review now →
+                </span>
+              )}
+            </div>
             <p className="font-body text-xs text-ink/60 mt-1">Resolved jobs to rate</p>
           </div>
-        </div>
+        </Link>
       </div>
 
       {/* Main Content Grid: Recent Submissions + Trust Progression */}
@@ -219,7 +357,7 @@ export function CitizenOverviewView() {
                 You haven't reported any civic issues yet.
               </p>
               <Button asChild variant="primary" size="sm" className="cursor-pointer">
-                <Link href="/citizen/report">Report your first issue</Link>
+                <Link href="/report">Report your first issue</Link>
               </Button>
             </div>
           ) : (
@@ -316,6 +454,24 @@ export function CitizenOverviewView() {
         onClose={() => setSelectedRequestId(null)}
         requestId={selectedRequestId}
       />
+
+      {/* Direct Feedback Dialog from Pending Banner */}
+      {feedbackTargetRequest && (
+        <CitizenFeedbackDialog
+          isOpen={!!feedbackTargetRequest}
+          onClose={() => setFeedbackTargetRequest(null)}
+          serviceRequestId={feedbackTargetRequest.id}
+          resolutionId={feedbackTargetRequest.civicIssue?.workOrders?.[0]?.resolution?.id}
+          resolutionSummary={
+            feedbackTargetRequest.civicIssue?.workOrders?.[0]?.resolution?.summary ||
+            feedbackTargetRequest.resolutionNotes
+          }
+          resolutionAttachments={
+            feedbackTargetRequest.civicIssue?.workOrders?.[0]?.resolution?.attachments
+          }
+          trackingNumber={feedbackTargetRequest.trackingNumber}
+        />
+      )}
     </div>
   );
 }

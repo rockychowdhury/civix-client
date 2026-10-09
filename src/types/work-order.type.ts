@@ -48,14 +48,53 @@ export interface WorkUpdate {
   attachments?: { id: string; url?: string }[];
 }
 
+export interface ResolutionVerification {
+  id: string;
+  resolutionId: string;
+  verifiedById?: string;
+  status: "VERIFIED" | "REJECTED" | "REOPENED" | string;
+  notes?: string | null;
+  verifiedAt: string;
+  verifiedBy?: {
+    id?: string;
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+  };
+}
+
 export interface WorkResolution {
   id: string;
   workOrderId: string;
   summary: string;
   submittedByUserId?: string;
+  submittedBy?: {
+    id?: string;
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+  };
   approvedAt?: string | null;
   rejectedAt?: string | null;
   createdAt: string;
+  attachments?: Array<{ id: string; url: string; fileType?: string }>;
+  feedbacks?: Array<{
+    id: string;
+    rating: number;
+    comment?: string | null;
+    createdAt?: string;
+    citizen?: {
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+    };
+  }>;
+  verifications?: ResolutionVerification[];
+}
+
+export interface IVerifyResolutionPayload {
+  status: "VERIFIED" | "REJECTED" | "REOPENED";
+  notes?: string;
 }
 
 export interface WorkOrder {

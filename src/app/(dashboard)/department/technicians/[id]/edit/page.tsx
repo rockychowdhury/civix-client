@@ -16,7 +16,7 @@ export default function EditStaffPage() {
   const { id } = useParams<{ id: string }>();
   const { data: response, isLoading: isLoadingProfile, isError } = useGetStaffById(id);
   const staff = response?.data;
-  
+
   const { mutate: updateStaff, isPending } = useUpdateStaff();
 
   const form = useForm({
@@ -36,11 +36,14 @@ export default function EditStaffPage() {
       if (value.phone !== undefined) payload.phone = value.phone;
       if (value.designation !== undefined) payload.designation = value.designation;
 
-      updateStaff({ id, payload }, {
-        onSuccess: () => {
-          router.push(`/department/technicians/${id}`);
-        }
-      });
+      updateStaff(
+        { id, payload },
+        {
+          onSuccess: () => {
+            router.push(`/department/technicians/${id}`);
+          },
+        },
+      );
     },
   });
 
@@ -66,16 +69,17 @@ export default function EditStaffPage() {
     <div className="flex flex-col gap-8 w-full max-w-2xl mx-auto pb-12">
       <div className="flex flex-col gap-4">
         <Link href={`/department/technicians/${id}`} className="w-fit">
-          <Button variant="ghost" className="pl-0 h-auto hover:bg-transparent text-ink/40 hover:text-ink font-body transition-colors cursor-pointer">
+          <Button
+            variant="ghost"
+            className="pl-0 h-auto hover:bg-transparent text-ink/40 hover:text-ink font-body transition-colors cursor-pointer"
+          >
             <ChevronLeft className="h-4 w-4 mr-1" />
             Cancel
           </Button>
         </Link>
 
         <div>
-          <h1 className="font-display text-3xl font-semibold text-ink">
-            Edit Staff Profile
-          </h1>
+          <h1 className="font-display text-3xl font-semibold text-ink">Edit Staff Profile</h1>
           <p className="text-ink/60 font-medium">
             Update personal information and internal designation.
           </p>
@@ -100,7 +104,12 @@ export default function EditStaffPage() {
                   const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
                   return (
                     <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor={field.name} className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium">First name</FieldLabel>
+                      <FieldLabel
+                        htmlFor={field.name}
+                        className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium"
+                      >
+                        First name
+                      </FieldLabel>
                       <Input
                         id={field.name}
                         autoComplete="given-name"
@@ -122,7 +131,12 @@ export default function EditStaffPage() {
                   const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
                   return (
                     <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor={field.name} className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium">Last name</FieldLabel>
+                      <FieldLabel
+                        htmlFor={field.name}
+                        className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium"
+                      >
+                        Last name
+                      </FieldLabel>
                       <Input
                         id={field.name}
                         autoComplete="family-name"
@@ -145,7 +159,10 @@ export default function EditStaffPage() {
                 const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
                   <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name} className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium">
+                    <FieldLabel
+                      htmlFor={field.name}
+                      className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium"
+                    >
                       Internal Designation
                     </FieldLabel>
                     <Input
@@ -168,7 +185,10 @@ export default function EditStaffPage() {
                 const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
                   <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name} className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium">
+                    <FieldLabel
+                      htmlFor={field.name}
+                      className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium"
+                    >
                       Contact Phone
                     </FieldLabel>
                     <Input

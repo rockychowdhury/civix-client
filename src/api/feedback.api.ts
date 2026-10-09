@@ -39,8 +39,15 @@ export function getFeedbackById(id: string) {
   return apiClient<{ data: CityFeedback }>(`/feedback/${id}`, { method: "GET" });
 }
 
+export function getFeedbackByResolutionId(resolutionId: string) {
+  return apiClient<{ data: CityFeedback[] }>(`/feedback/resolution/${resolutionId}`, {
+    method: "GET",
+  });
+}
+
 export function submitFeedback(payload: {
   serviceRequestId: string;
+  resolutionId?: string;
   rating: number;
   comment?: string;
 }) {

@@ -38,6 +38,7 @@ export interface UpdateMyProfilePayload {
 
 export interface CreateFeedbackPayload {
   serviceRequestId: string;
+  resolutionId?: string;
   rating: number; // 1 - 5
   comment?: string;
 }

@@ -2,7 +2,7 @@
 export const CITIZEN_PATHS = {
   overview: "/citizen/overview",
   myReports: "/citizen/my-reports",
-  report: "/citizen/report",
+  report: "/report",
   feedback: "/citizen/feedback",
   profile: "/citizen/profile",
   publicTrack: (issueNumber: string) => `/track?issueNumber=${encodeURIComponent(issueNumber)}`,

@@ -12,20 +12,24 @@ import type { CivicIssue } from "@/types";
 export function IssuesClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  
+
   // URL state sync
   const currentStatus = searchParams.get("status") || "on-queue";
-  
+
   const [selectedIssueId, setSelectedIssueId] = useState<string | undefined>();
   const [selectedIssue, setSelectedIssue] = useState<CivicIssue | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
-  
+
   const { data: userData, isLoading: isUserLoading } = useGetMe();
   const departmentId = userData?.data?.staffProfile?.departmentMembers?.[0]?.departmentId;
 
   // Fetch via TanStack Query
-  const { data: issuesData, isLoading: isIssuesLoading, isError } = useDepartmentIssues(departmentId, {
+  const {
+    data: issuesData,
+    isLoading: isIssuesLoading,
+    isError,
+  } = useDepartmentIssues(departmentId, {
     status: currentStatus,
   });
 
@@ -41,11 +45,8 @@ export function IssuesClient() {
 
   return (
     <>
-      <IssueFilters 
-        status={currentStatus} 
-        onStatusChange={handleStatusChange} 
-      />
-      
+      <IssueFilters status={currentStatus} onStatusChange={handleStatusChange} />
+
       {isLoading ? (
         <div className="h-64 flex flex-col items-center justify-center text-ink/40 font-body animate-pulse">
           <div className="h-8 w-8 rounded-full border-2 border-ledger border-t-transparent animate-spin mb-4" />
@@ -57,12 +58,14 @@ export function IssuesClient() {
             <span className="text-signal-open text-xl font-display">!</span>
           </div>
           <p className="text-signal-open font-medium text-lg">System Disconnect</p>
-          <p className="text-ink/40 max-w-sm">Unable to retrieve operational issues. Please try refreshing.</p>
+          <p className="text-ink/40 max-w-sm">
+            Unable to retrieve operational issues. Please try refreshing.
+          </p>
         </div>
       ) : (
         <>
-          <CivicIssuesTable 
-            data={issues} 
+          <CivicIssuesTable
+            data={issues}
             selectedId={selectedIssueId}
             onRowClick={(issue, e) => {
               setSelectedIssueId(issue.id);
@@ -71,7 +74,7 @@ export function IssuesClient() {
               setIsMenuOpen(true);
             }}
           />
-          <CivicIssueContextMenu 
+          <CivicIssueContextMenu
             issue={selectedIssue}
             isOpen={isMenuOpen}
             onClose={() => setIsMenuOpen(false)}

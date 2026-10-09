@@ -6,19 +6,19 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { useCreateTeam } from "@/hooks/team.hook";
 import { useGetMe } from "@/hooks/auth.hook";
-import { type CreateTeamValues, createTeamFormSchema } from "@/validation";
 import { useGetAllStaff } from "@/hooks/staff.hook";
+import { useCreateTeam } from "@/hooks/team.hook";
+import { type CreateTeamValues, createTeamFormSchema } from "@/validation";
 
 export function AddTeamForm() {
   const router = useRouter();
   const { data: userData } = useGetMe();
   const departmentId = userData?.data?.staffProfile?.departmentMembers?.[0]?.departmentId;
-  
+
   const { mutate: createTeam, isPending } = useCreateTeam();
   const { data: staffData } = useGetAllStaff({ limit: 100 });
-  
+
   const staffMembers = staffData?.data || [];
 
   const form = useForm({
@@ -35,7 +35,7 @@ export function AddTeamForm() {
         toast.error("Department ID not found. Please try refreshing.");
         return;
       }
-      
+
       const payloadData = {
         name: value.name,
         code: value.code,
@@ -43,10 +43,10 @@ export function AddTeamForm() {
         leaderId: value.leaderId || undefined,
       };
 
-      createTeam(payloadData, { 
+      createTeam(payloadData, {
         onSuccess: () => {
           router.push("/department/teams");
-        } 
+        },
       });
     },
   });
@@ -68,7 +68,12 @@ export function AddTeamForm() {
             const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name} className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium">Team Name</FieldLabel>
+                <FieldLabel
+                  htmlFor={field.name}
+                  className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium"
+                >
+                  Team Name
+                </FieldLabel>
                 <Input
                   id={field.name}
                   placeholder="e.g. Electrical Squad Alpha"
@@ -90,7 +95,12 @@ export function AddTeamForm() {
             const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name} className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium">Team Code</FieldLabel>
+                <FieldLabel
+                  htmlFor={field.name}
+                  className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium"
+                >
+                  Team Code
+                </FieldLabel>
                 <Input
                   id={field.name}
                   placeholder="e.g. ELEC-A"
@@ -112,8 +122,14 @@ export function AddTeamForm() {
             const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name} className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium">
-                  Team Leader <span className="text-ink/40 font-normal normal-case tracking-normal ml-1">(Optional)</span>
+                <FieldLabel
+                  htmlFor={field.name}
+                  className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium"
+                >
+                  Team Leader{" "}
+                  <span className="text-ink/40 font-normal normal-case tracking-normal ml-1">
+                    (Optional)
+                  </span>
                 </FieldLabel>
                 <select
                   id={field.name}

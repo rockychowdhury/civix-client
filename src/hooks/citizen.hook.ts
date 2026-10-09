@@ -5,6 +5,7 @@ import {
   getCitizenServiceRequestById,
   getMyProfile,
   getMyServiceRequests,
+  getPendingFeedbackServiceRequests,
   type MyRequestsFilter,
   submitCitizenFeedback,
   updateMyProfile,
@@ -18,6 +19,14 @@ export function useMyServiceRequests(params?: MyRequestsFilter) {
     queryKey: [...CITIZEN_QUERY_KEYS.myRequests, params],
     queryFn: () => getMyServiceRequests(params),
     staleTime: 60 * 1000,
+  });
+}
+
+export function usePendingFeedbackRequests() {
+  return useQuery({
+    queryKey: [...CITIZEN_QUERY_KEYS.myRequests, "pending-feedback"],
+    queryFn: () => getPendingFeedbackServiceRequests(),
+    staleTime: 30 * 1000,
   });
 }
 
@@ -68,7 +77,13 @@ export function useSubmitCitizenFeedback() {
     onSuccess: () => {
       toast.success("Thank you for your feedback!");
       queryClient.invalidateQueries({ queryKey: CITIZEN_QUERY_KEYS.myRequests });
+      queryClient.invalidateQueries({
+        queryKey: [...CITIZEN_QUERY_KEYS.myRequests, "pending-feedback"],
+      });
       queryClient.invalidateQueries({ queryKey: CITIZEN_QUERY_KEYS.feedback });
+      queryClient.invalidateQueries({ queryKey: ["resolution"] });
+      queryClient.invalidateQueries({ queryKey: ["resolution-feedback"] });
+      queryClient.invalidateQueries({ queryKey: ["work-order"] });
     },
     onError: (error: any) => {
       const message = error?.data?.message || "Failed to submit feedback";

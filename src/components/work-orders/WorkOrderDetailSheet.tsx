@@ -2,9 +2,9 @@
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useWorkOrderById, useWorkOrderUpdates } from "@/hooks/work-order.hook";
-import { format } from "date-fns";
 import { Loader2, MapPin, Tag } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { ResolutionVerificationCard } from "./ResolutionVerificationCard";
 import { WorkOrderStatusLedger } from "./WorkOrderStatusLedger";
 
 interface WorkOrderDetailSheetProps {
@@ -13,7 +13,11 @@ interface WorkOrderDetailSheetProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function WorkOrderDetailSheet({ workOrderId, isOpen, onOpenChange }: WorkOrderDetailSheetProps) {
+export function WorkOrderDetailSheet({
+  workOrderId,
+  isOpen,
+  onOpenChange,
+}: WorkOrderDetailSheetProps) {
   const { data: workOrder, isLoading } = useWorkOrderById(workOrderId);
   const { data: updates, isLoading: isUpdatesLoading } = useWorkOrderUpdates(workOrderId);
 
@@ -31,26 +35,38 @@ export function WorkOrderDetailSheet({ workOrderId, isOpen, onOpenChange }: Work
                 <div>
                   <div className="flex items-center gap-3 mb-2">
                     <Badge variant="outline" className="font-mono text-xs text-ink/70">
-                      {workOrder.id.split('-')[0].toUpperCase()}
+                      {workOrder.id.split("-")[0].toUpperCase()}
                     </Badge>
                     {(() => {
                       const priorityObj = workOrder.priority || workOrder.civicIssue?.priority;
-                      const priority = typeof priorityObj === 'object' ? (priorityObj?.code || priorityObj?.name || "Normal") : (priorityObj || "Normal");
-                      const normalizedPriority = typeof priority === 'string' ? priority.toUpperCase() : "";
+                      const priority =
+                        typeof priorityObj === "object"
+                          ? priorityObj?.code || priorityObj?.name || "Normal"
+                          : priorityObj || "Normal";
+                      const normalizedPriority =
+                        typeof priority === "string" ? priority.toUpperCase() : "";
                       return (
-                        <Badge variant={normalizedPriority === "HIGH" || normalizedPriority === "URGENT" || normalizedPriority === "CRITICAL" ? "destructive" : "secondary"}>
+                        <Badge
+                          variant={
+                            normalizedPriority === "HIGH" ||
+                            normalizedPriority === "URGENT" ||
+                            normalizedPriority === "CRITICAL"
+                              ? "destructive"
+                              : "secondary"
+                          }
+                        >
                           {priority}
                         </Badge>
                       );
                     })()}
                     <Badge variant="default" className="bg-ledger text-paper">
-                      {workOrder.status.replace(/_/g, ' ')}
+                      {workOrder.status.replace(/_/g, " ")}
                     </Badge>
                   </div>
                   <SheetTitle className="font-display text-xl text-ink leading-tight">
                     {workOrder.title}
                   </SheetTitle>
-                  
+
                   {workOrder.civicIssue && (
                     <div className="flex items-center gap-4 mt-3 text-sm text-ink/70">
                       <span className="flex items-center gap-1.5 font-mono">
@@ -66,11 +82,13 @@ export function WorkOrderDetailSheet({ workOrderId, isOpen, onOpenChange }: Work
                 </div>
               </div>
             </SheetHeader>
-            
+
             <div className="flex-1 overflow-y-auto p-6 space-y-8">
               {/* Instructions Section */}
               <section>
-                <h3 className="font-display font-medium text-lg text-ink mb-3">Instructions & Context</h3>
+                <h3 className="font-display font-medium text-lg text-ink mb-3">
+                  Instructions & Context
+                </h3>
                 <div className="bg-field/20 border border-line/20 rounded-md p-4 text-sm text-ink/80 whitespace-pre-wrap font-body">
                   {workOrder.description}
                 </div>
@@ -83,7 +101,8 @@ export function WorkOrderDetailSheet({ workOrderId, isOpen, onOpenChange }: Work
                   {workOrder.currentAssignee ? (
                     <div className="flex items-center gap-3">
                       <span className="flex size-8 items-center justify-center rounded-full bg-ledger font-mono text-xs font-medium text-paper">
-                        {workOrder.currentAssignee.firstName?.[0]}{workOrder.currentAssignee.lastName?.[0]}
+                        {workOrder.currentAssignee.firstName?.[0]}
+                        {workOrder.currentAssignee.lastName?.[0]}
                       </span>
                       <div>
                         <p className="font-medium text-ink text-sm">
@@ -97,6 +116,17 @@ export function WorkOrderDetailSheet({ workOrderId, isOpen, onOpenChange }: Work
                   )}
                 </div>
               </section>
+
+              {/* Resolution & Verification Section */}
+              {(workOrder.resolution || workOrder.status === "PENDING_VERIFICATION") && (
+                <section>
+                  <ResolutionVerificationCard
+                    resolutionId={workOrder.resolution?.id}
+                    initialResolution={workOrder.resolution}
+                    workOrderStatus={workOrder.status}
+                  />
+                </section>
+              )}
 
               {/* Ledger Section */}
               <section>

@@ -46,7 +46,9 @@ export function WardsView({ municipalityId }: { municipalityId?: string } = {}) 
     page,
     limit,
   });
-  const zonesQuery = useGetAdminZones(municipalityId ? { municipalityId, limit: 100 } : { limit: 100 });
+  const zonesQuery = useGetAdminZones(
+    municipalityId ? { municipalityId, limit: 100 } : { limit: 100 },
+  );
   const coverageQuery = useGetWardDepartments(coverageFor?.id ?? "");
   const createMutation = useCreateWard();
   const updateMutation = useUpdateWard();

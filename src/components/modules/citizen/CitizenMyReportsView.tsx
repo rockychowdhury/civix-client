@@ -76,7 +76,7 @@ export function CitizenMyReportsView() {
         </div>
 
         <Button asChild variant="primary" className="cursor-pointer shrink-0">
-          <Link href="/citizen/report">
+          <Link href="/report">
             <PlusCircle className="size-4 mr-2" /> Report New Issue
           </Link>
         </Button>
@@ -136,16 +136,22 @@ export function CitizenMyReportsView() {
             </p>
           </div>
           <Button asChild variant="primary" size="sm" className="cursor-pointer">
-            <Link href="/citizen/report">Report an Issue Now</Link>
+            <Link href="/report">Report an Issue Now</Link>
           </Button>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4">
           {filteredRequests.map((request) => {
-            const isResolved =
-              request.status.toUpperCase() === "RESOLVED" ||
-              request.status.toUpperCase() === "CLOSED";
-            const needsRating = isResolved && !request.feedback;
+            const statusUpper = request.status.toUpperCase();
+            const isEligibleForRating =
+              statusUpper === "RESOLVED" ||
+              statusUpper === "CLOSED" ||
+              statusUpper === "COMPLETED" ||
+              statusUpper === "PENDING_VERIFICATION";
+            const needsRating = isEligibleForRating && !request.feedback;
+            const activeWo = request.civicIssue?.workOrders?.[0];
+            const resolution = activeWo?.resolution;
+            const resolutionSummary = resolution?.summary || request.resolutionNotes;
 
             return (
               <div
@@ -179,6 +185,15 @@ export function CitizenMyReportsView() {
                 <p className="font-body text-sm text-ink/80 leading-relaxed line-clamp-2">
                   {request.description}
                 </p>
+
+                {resolutionSummary && (
+                  <div className="p-3 rounded-md bg-field/30 border border-line/40 text-xs text-ink/80 space-y-0.5">
+                    <span className="font-mono text-[10px] uppercase text-signal-resolved font-medium block">
+                      Technician Fix Summary:
+                    </span>
+                    <p className="font-body italic line-clamp-2">{resolutionSummary}</p>
+                  </div>
+                )}
 
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-line/60 text-xs">
                   <div className="flex flex-wrap items-center gap-4 text-ink/60 font-body">
@@ -244,6 +259,14 @@ export function CitizenMyReportsView() {
           isOpen={!!feedbackRequest}
           onClose={() => setFeedbackRequest(null)}
           serviceRequestId={feedbackRequest.id}
+          resolutionId={feedbackRequest.civicIssue?.workOrders?.[0]?.resolution?.id}
+          resolutionSummary={
+            feedbackRequest.civicIssue?.workOrders?.[0]?.resolution?.summary ||
+            feedbackRequest.resolutionNotes
+          }
+          resolutionAttachments={
+            feedbackRequest.civicIssue?.workOrders?.[0]?.resolution?.attachments
+          }
           trackingNumber={feedbackRequest.trackingNumber}
         />
       )}

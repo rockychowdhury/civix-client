@@ -233,10 +233,9 @@ export function DepartmentsView({ municipalityId }: { municipalityId?: string } 
               { onSuccess: () => setDialog(null) },
             );
           } else {
-            createMutation.mutate(
-              municipalityId ? { ...payload, municipalityId } : payload,
-              { onSuccess: () => setDialog(null) },
-            );
+            createMutation.mutate(municipalityId ? { ...payload, municipalityId } : payload, {
+              onSuccess: () => setDialog(null),
+            });
           }
         }}
       />

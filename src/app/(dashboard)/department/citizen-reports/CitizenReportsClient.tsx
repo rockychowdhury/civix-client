@@ -12,10 +12,10 @@ import type { ServiceRequest } from "@/types";
 export function CitizenReportsClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  
+
   // Read status from URL, default to "all"
   const currentStatus = searchParams.get("status") || "all";
-  
+
   // Detail sheet state
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
 
@@ -39,11 +39,8 @@ export function CitizenReportsClient() {
 
   return (
     <div className="space-y-4 animate-slide-up motion-reduce:animate-none">
-      <ServiceRequestFilters 
-        status={currentStatus} 
-        onStatusChange={handleStatusChange} 
-      />
-      
+      <ServiceRequestFilters status={currentStatus} onStatusChange={handleStatusChange} />
+
       {isLoading ? (
         <div className="h-64 flex flex-col items-center justify-center text-ink/40 font-body animate-pulse">
           <div className="h-8 w-8 rounded-full border-2 border-ledger border-t-transparent animate-spin mb-4" />
@@ -55,13 +52,16 @@ export function CitizenReportsClient() {
             <span className="text-signal-open text-xl font-display">!</span>
           </div>
           <p className="text-signal-open font-medium text-lg">System Disconnect</p>
-          <p className="text-ink/40 max-w-sm">Unable to retrieve citizen reports from the main queue at this time. Please try refreshing.</p>
+          <p className="text-ink/40 max-w-sm">
+            Unable to retrieve citizen reports from the main queue at this time. Please try
+            refreshing.
+          </p>
         </div>
       ) : (
-        <ServiceRequestsTable 
-          data={requests || []} 
+        <ServiceRequestsTable
+          data={requests || []}
           onRowClick={(row, event) => {
-            if (event.type === 'contextmenu') {
+            if (event.type === "contextmenu") {
               setContextMenuRequest(row);
               setContextMenuPosition({ x: event.clientX, y: event.clientY });
               setContextMenuOpen(true);
@@ -73,11 +73,11 @@ export function CitizenReportsClient() {
         />
       )}
 
-      <ServiceRequestDetailSheet 
-        requestId={selectedRequestId} 
-        onClose={() => setSelectedRequestId(null)} 
+      <ServiceRequestDetailSheet
+        requestId={selectedRequestId}
+        onClose={() => setSelectedRequestId(null)}
       />
-      
+
       <ServiceRequestContextMenu
         request={contextMenuRequest}
         isOpen={contextMenuOpen}

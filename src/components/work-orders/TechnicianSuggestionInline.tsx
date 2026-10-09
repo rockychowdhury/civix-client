@@ -20,13 +20,16 @@ export function TechnicianSuggestionInline({ workOrder }: { workOrder: WorkOrder
   const { data: techniciansData, isLoading: isTechsLoading } = useGetAllTechnicians({
     departmentId,
     municipalityId,
-    limit: 100
+    limit: 100,
   } as any);
 
   const technicians = techniciansData?.data || [];
-  const lowestWorkloadTech = technicians.length > 0 
-    ? technicians.reduce((prev, curr) => (curr.currentWorkload ?? 0) < (prev.currentWorkload ?? 0) ? curr : prev)
-    : null;
+  const lowestWorkloadTech =
+    technicians.length > 0
+      ? technicians.reduce((prev, curr) =>
+          (curr.currentWorkload ?? 0) < (prev.currentWorkload ?? 0) ? curr : prev,
+        )
+      : null;
 
   const isPendingAssignment = !workOrder.currentAssigneeId && !workOrder.suggestedAssigneeId;
   const hasSuggestion = !workOrder.currentAssigneeId && !!workOrder.suggestedAssigneeId;
@@ -40,7 +43,8 @@ export function TechnicianSuggestionInline({ workOrder }: { workOrder: WorkOrder
     return (
       <div className="flex items-center gap-2">
         <span className="flex size-6 items-center justify-center rounded-full bg-ledger font-mono text-[0.625rem] font-medium text-paper">
-          {workOrder.currentAssignee?.firstName?.[0]}{workOrder.currentAssignee?.lastName?.[0]}
+          {workOrder.currentAssignee?.firstName?.[0]}
+          {workOrder.currentAssignee?.lastName?.[0]}
         </span>
         <span className="text-sm font-medium text-ink">
           Assigned to {workOrder.currentAssignee?.firstName} {workOrder.currentAssignee?.lastName}
@@ -53,7 +57,7 @@ export function TechnicianSuggestionInline({ workOrder }: { workOrder: WorkOrder
     if (isTechsLoading) {
       return <span className="text-xs text-ink/50">Finding technician...</span>;
     }
-    
+
     if (lowestWorkloadTech) {
       return (
         <div className="flex items-center gap-4" onClick={(e) => e.stopPropagation()}>
@@ -66,21 +70,28 @@ export function TechnicianSuggestionInline({ workOrder }: { workOrder: WorkOrder
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <Button 
-              variant="primary" 
-              size="sm" 
+            <Button
+              variant="primary"
+              size="sm"
               className="h-7 px-3 text-xs bg-ledger hover:bg-ledger/90 text-paper cursor-pointer"
               onClick={() => {
-                assignTechnician.mutate({ 
-                  id: workOrder.id, 
-                  payload: { technicianId: lowestWorkloadTech.userId } 
-                }, {
-                  onSuccess: () => toast.success("Technician assigned successfully")
-                });
+                assignTechnician.mutate(
+                  {
+                    id: workOrder.id,
+                    payload: { technicianId: lowestWorkloadTech.userId },
+                  },
+                  {
+                    onSuccess: () => toast.success("Technician assigned successfully"),
+                  },
+                );
               }}
               disabled={assignTechnician.isPending}
             >
-              {assignTechnician.isPending ? <RefreshCw className="h-3 w-3 animate-spin mr-1.5" /> : <CheckCircle className="h-3.5 w-3.5 mr-1.5" />}
+              {assignTechnician.isPending ? (
+                <RefreshCw className="h-3 w-3 animate-spin mr-1.5" />
+              ) : (
+                <CheckCircle className="h-3.5 w-3.5 mr-1.5" />
+              )}
               Assign
             </Button>
             <Button
@@ -102,9 +113,9 @@ export function TechnicianSuggestionInline({ workOrder }: { workOrder: WorkOrder
           <AlertCircle className="h-3.5 w-3.5" />
           No technician available
         </div>
-        <Button 
-          variant="secondary" 
-          size="sm" 
+        <Button
+          variant="secondary"
+          size="sm"
           className="h-7 text-xs bg-signal-open/10 text-signal-open hover:bg-signal-open/20 cursor-pointer"
           onClick={() => setIsAssigning(true)}
         >
@@ -127,21 +138,28 @@ export function TechnicianSuggestionInline({ workOrder }: { workOrder: WorkOrder
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <Button 
-            variant="primary" 
-            size="sm" 
+          <Button
+            variant="primary"
+            size="sm"
             className="h-7 px-3 text-xs bg-ledger hover:bg-ledger/90 text-paper cursor-pointer"
             onClick={() => {
-              confirmSuggestion.mutate({ id: workOrder.id }, {
-                onSuccess: () => toast.success("Technician assignment confirmed")
-              });
+              confirmSuggestion.mutate(
+                { id: workOrder.id },
+                {
+                  onSuccess: () => toast.success("Technician assignment confirmed"),
+                },
+              );
             }}
             disabled={confirmSuggestion.isPending}
           >
-            {confirmSuggestion.isPending ? <RefreshCw className="h-3 w-3 animate-spin mr-1.5" /> : <CheckCircle className="h-3.5 w-3.5 mr-1.5" />}
+            {confirmSuggestion.isPending ? (
+              <RefreshCw className="h-3 w-3 animate-spin mr-1.5" />
+            ) : (
+              <CheckCircle className="h-3.5 w-3.5 mr-1.5" />
+            )}
             Confirm
           </Button>
-          <span 
+          <span
             className="text-xs font-medium text-ink/50 hover:text-ink cursor-pointer hover:underline underline-offset-2 transition-colors"
             onClick={() => setIsAssigning(true)}
           >

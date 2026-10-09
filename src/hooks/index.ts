@@ -23,3 +23,4 @@ export * from "./useReducedMotion";
 export * from "./useReportDraft";
 export * from "./user.hook";
 export * from "./useStoredValue";
+export * from "./resolution.hook";

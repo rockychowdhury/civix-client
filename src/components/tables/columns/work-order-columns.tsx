@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TechnicianSuggestionInline } from "@/components/work-orders/TechnicianSuggestionInline";
+import { cn } from "@/lib/utils";
 import type { WorkOrder } from "@/types";
 
 export const columns: ColumnDef<WorkOrder, any>[] = [
@@ -61,10 +62,16 @@ export const columns: ColumnDef<WorkOrder, any>[] = [
     header: "Status",
     cell: ({ row }: { row: any }) => {
       const status = row.original.status || "UNKNOWN";
+      const isPendingVerification = status.toUpperCase() === "PENDING_VERIFICATION";
       return (
         <Badge
           variant="outline"
-          className="text-[10px] uppercase tracking-wider bg-paper font-medium"
+          className={cn(
+            "text-[10px] uppercase tracking-wider font-medium",
+            isPendingVerification
+              ? "border-amber-400/80 bg-amber-50 dark:bg-amber-950/20 text-amber-700 font-semibold"
+              : "bg-paper text-ink",
+          )}
         >
           {status.replace(/_/g, " ")}
         </Badge>

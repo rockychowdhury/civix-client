@@ -17,7 +17,9 @@ export function WorkOrderHistoryClient() {
   if (!workOrderId) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
-        <h1 className="font-display text-2xl font-semibold text-ink mb-2">No Work Order Selected</h1>
+        <h1 className="font-display text-2xl font-semibold text-ink mb-2">
+          No Work Order Selected
+        </h1>
         <p className="text-ink/60 mb-6">Please provide a work order ID to view its history.</p>
         <Link href="/department/work-orders" className="text-ledger hover:underline">
           Return to Work Orders Queue
@@ -38,7 +40,9 @@ export function WorkOrderHistoryClient() {
     return (
       <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
         <h1 className="font-display text-2xl font-semibold text-ink mb-2">Work Order Not Found</h1>
-        <p className="text-ink/60 mb-6">We couldn't load the history for this work order. It may not exist.</p>
+        <p className="text-ink/60 mb-6">
+          We couldn't load the history for this work order. It may not exist.
+        </p>
         <Link href="/department/work-orders" className="text-ledger hover:underline">
           Return to Work Orders Queue
         </Link>
@@ -58,35 +62,51 @@ export function WorkOrderHistoryClient() {
             <MoveLeft size={16} />
             Back to Queue
           </Link>
-          
+
           <div className="flex items-center gap-3 mb-4">
             <Badge variant="outline" className="font-mono text-sm text-ink/70 bg-paper">
-              {workOrder.id.split('-')[0].toUpperCase()}
+              {workOrder.id.split("-")[0].toUpperCase()}
             </Badge>
             {(() => {
               const priorityObj = workOrder.priority || workOrder.civicIssue?.priority;
-              const priority = typeof priorityObj === 'object' ? (priorityObj?.code || priorityObj?.name || "Normal") : (priorityObj || "Normal");
-              const normalizedPriority = typeof priority === 'string' ? priority.toUpperCase() : "";
+              const priority =
+                typeof priorityObj === "object"
+                  ? priorityObj?.code || priorityObj?.name || "Normal"
+                  : priorityObj || "Normal";
+              const normalizedPriority = typeof priority === "string" ? priority.toUpperCase() : "";
               return (
-                <Badge variant={normalizedPriority === "HIGH" || normalizedPriority === "URGENT" || normalizedPriority === "CRITICAL" ? "destructive" : "secondary"}>
+                <Badge
+                  variant={
+                    normalizedPriority === "HIGH" ||
+                    normalizedPriority === "URGENT" ||
+                    normalizedPriority === "CRITICAL"
+                      ? "destructive"
+                      : "secondary"
+                  }
+                >
                   {priority}
                 </Badge>
               );
             })()}
             <Badge variant="default" className="bg-ledger text-paper">
-              {workOrder.status.replace(/_/g, ' ')}
+              {workOrder.status.replace(/_/g, " ")}
             </Badge>
           </div>
-          
+
           <h1 className="font-display text-3xl font-semibold text-ink leading-tight mb-4">
             {workOrder.title}
           </h1>
 
           {workOrder.civicIssue && (
             <div className="flex flex-col gap-3 mt-6 bg-paper p-4 rounded-md border border-line/20">
-              <span className="text-xs font-semibold uppercase tracking-wider text-ink/50">Attached Issue</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-ink/50">
+                Attached Issue
+              </span>
               <div className="flex items-center gap-4 text-sm text-ink/80">
-                <Link href={`/track?issueNumber=${workOrder.civicIssue.issueNumber}`} className="flex items-center gap-1.5 font-mono hover:text-ledger cursor-pointer">
+                <Link
+                  href={`/track?issueNumber=${workOrder.civicIssue.issueNumber}`}
+                  className="flex items-center gap-1.5 font-mono hover:text-ledger cursor-pointer"
+                >
                   <Tag className="h-4 w-4" />
                   {workOrder.civicIssue.issueNumber}
                 </Link>
@@ -98,14 +118,15 @@ export function WorkOrderHistoryClient() {
             </div>
           )}
         </div>
-        
+
         <div className="mt-auto">
           <h3 className="font-display font-medium text-lg text-ink mb-3">Current Assignment</h3>
           <div className="bg-paper border border-line/20 rounded-md p-4">
             {workOrder.currentAssignee ? (
               <div className="flex items-center gap-3">
                 <span className="flex size-10 items-center justify-center rounded-full bg-ledger font-mono text-sm font-medium text-paper">
-                  {workOrder.currentAssignee.firstName?.[0]}{workOrder.currentAssignee.lastName?.[0]}
+                  {workOrder.currentAssignee.firstName?.[0]}
+                  {workOrder.currentAssignee.lastName?.[0]}
                 </span>
                 <div>
                   <p className="font-medium text-ink">
@@ -124,7 +145,7 @@ export function WorkOrderHistoryClient() {
       {/* Right panel: Ledger */}
       <div className="flex-1 p-6 md:p-12 lg:p-16 overflow-y-auto">
         <h2 className="font-display text-2xl font-medium text-ink mb-8">Full Lifecycle History</h2>
-        
+
         {updates?.length > 0 ? (
           <div className="max-w-2xl">
             <div className="space-y-8 relative before:absolute before:inset-0 before:ml-[11px] before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-line/40 before:to-transparent">
@@ -135,8 +156,12 @@ export function WorkOrderHistoryClient() {
                   </div>
                   <div className="ml-6 w-full p-5 rounded-lg border border-line/20 bg-paper shadow-sm">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-display text-base font-semibold text-ink">{update.status.replace(/_/g, ' ')}</span>
-                      <span className="text-xs font-mono text-ink/50">{format(new Date(update.createdAt), "MMMM d, yyyy 'at' h:mm a")}</span>
+                      <span className="font-display text-base font-semibold text-ink">
+                        {update.status.replace(/_/g, " ")}
+                      </span>
+                      <span className="text-xs font-mono text-ink/50">
+                        {format(new Date(update.createdAt), "MMMM d, yyyy 'at' h:mm a")}
+                      </span>
                     </div>
                     {update.notes ? (
                       <p className="text-sm text-ink/70 mt-3 whitespace-pre-wrap">{update.notes}</p>

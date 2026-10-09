@@ -36,6 +36,7 @@ export async function getMyServiceRequests(params?: {
   searchTerm?: string;
   status?: string;
   categoryId?: string;
+  pendingFeedback?: boolean;
   page?: number;
   limit?: number;
 }) {
@@ -44,6 +45,14 @@ export async function getMyServiceRequests(params?: {
     meta?: { page: number; limit: number; total: number; totalPages: number };
   }>("/service-requests/my-requests", {
     params: cleanParams(params),
+  });
+}
+
+export async function getPendingFeedbackServiceRequests() {
+  return apiClient<{
+    data: ServiceRequest[];
+  }>("/service-requests/pending-feedback", {
+    method: "GET",
   });
 }
 

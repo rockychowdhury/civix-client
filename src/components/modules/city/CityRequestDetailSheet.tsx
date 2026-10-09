@@ -6,9 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
-import { FlagInvalidForm } from "@/components/forms/FlagInvalidForm";
-import { LinkToIssueForm } from "@/components/forms/LinkToIssueForm";
-import { ReclassifyRequestForm } from "@/components/forms/ReclassifyRequestForm";
+import { FlagInvalidForm, LinkToIssueForm, ReclassifyRequestForm } from "@/components/form";
 import { StatusPill } from "@/components/layout/dashboard/StatusPill";
 import { Badge } from "@/components/ui/badge";
 import {

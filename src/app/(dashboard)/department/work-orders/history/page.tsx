@@ -9,7 +9,13 @@ export const metadata = {
 export default function WorkOrderHistoryPage() {
   return (
     <div className="flex-1 flex flex-col min-h-[calc(100vh-4rem)] w-full">
-      <Suspense fallback={<div className="flex items-center justify-center h-full text-ink/40">Loading history...</div>}>
+      <Suspense
+        fallback={
+          <div className="flex items-center justify-center h-full text-ink/40">
+            Loading history...
+          </div>
+        }
+      >
         <WorkOrderHistoryClient />
       </Suspense>
     </div>

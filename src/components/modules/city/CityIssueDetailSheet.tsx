@@ -85,9 +85,11 @@ export function CityIssueDetailSheet({
       ? priorityObj?.code || priorityObj?.name || "Normal"
       : priorityObj || "Normal";
   const normalizedPriority = typeof priority === "string" ? priority.toUpperCase() : "NORMAL";
-
-  const isResolvedOrClosed =
-    issue.status?.toUpperCase() === "RESOLVED" || issue.status?.toUpperCase() === "CLOSED";
+  const statusUpper = issue.status?.toUpperCase();
+  const isReopenable =
+    statusUpper === "RESOLVED" ||
+    statusUpper === "CLOSED" ||
+    statusUpper === "PENDING_VERIFICATION";
 
   const handlePrioritySubmit = async () => {
     if (!priorityReason.trim()) {
@@ -287,12 +289,12 @@ export function CityIssueDetailSheet({
                   <RefreshCw className="size-3.5 mr-1.5 text-signal-progress" /> Update Status
                 </Button>
 
-                {isResolvedOrClosed && (
+                {isReopenable && (
                   <Button
                     variant="secondary"
                     size="sm"
                     onClick={() => setIsReopenModalOpen(true)}
-                    className="cursor-pointer text-xs border-amber-300 text-amber-700"
+                    className="cursor-pointer text-xs border-amber-300 text-amber-700 hover:bg-amber-50"
                   >
                     <RefreshCw className="size-3.5 mr-1.5" /> Reopen Issue
                   </Button>

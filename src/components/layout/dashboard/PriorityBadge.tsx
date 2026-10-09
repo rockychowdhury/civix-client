@@ -10,8 +10,11 @@ const PRIORITY_CLASSES: Record<Priority, string> = {
 };
 
 export function PriorityBadge({ priority, className }: { priority: any; className?: string }) {
-  const priorityStr = typeof priority === 'object' ? (priority?.code || priority?.name || "NORMAL") : priority;
-  const normalized = (typeof priorityStr === 'string' ? priorityStr.toUpperCase() : "NORMAL") as Priority;
+  const priorityStr =
+    typeof priority === "object" ? priority?.code || priority?.name || "NORMAL" : priority;
+  const normalized = (
+    typeof priorityStr === "string" ? priorityStr.toUpperCase() : "NORMAL"
+  ) as Priority;
   const toneClass = PRIORITY_CLASSES[normalized] ?? PRIORITY_CLASSES.LOW;
   return (
     <span

@@ -17,7 +17,7 @@ export default function EditTeamPage() {
   const { id } = useParams<{ id: string }>();
   const { data: response, isLoading: isLoadingTeam, isError } = useGetTeamById(id);
   const team = response?.data;
-  
+
   const { mutate: updateTeam, isPending } = useUpdateTeam();
   const { data: staffData } = useGetAllStaff({ limit: 100 });
   const staffMembers = staffData?.data || [];
@@ -37,11 +37,14 @@ export default function EditTeamPage() {
       if (value.status) payload.status = value.status;
       if (value.leaderId) payload.leaderId = value.leaderId;
 
-      updateTeam({ id, payload }, {
-        onSuccess: () => {
-          router.push(`/department/teams`);
-        }
-      });
+      updateTeam(
+        { id, payload },
+        {
+          onSuccess: () => {
+            router.push(`/department/teams`);
+          },
+        },
+      );
     },
   });
 
@@ -65,16 +68,17 @@ export default function EditTeamPage() {
     <div className="flex flex-col items-center pb-24 w-full">
       <div className="w-full max-w-2xl flex flex-col gap-8 pt-4">
         <Link href={`/department/teams`} className="w-fit">
-          <Button variant="ghost" className="pl-0 h-auto hover:bg-transparent text-ink/40 hover:text-ink font-body transition-colors cursor-pointer">
+          <Button
+            variant="ghost"
+            className="pl-0 h-auto hover:bg-transparent text-ink/40 hover:text-ink font-body transition-colors cursor-pointer"
+          >
             <ChevronLeft className="h-4 w-4 mr-1" />
             Cancel
           </Button>
         </Link>
 
         <div>
-          <h1 className="font-display text-3xl font-semibold text-ink">
-            Edit Team
-          </h1>
+          <h1 className="font-display text-3xl font-semibold text-ink">Edit Team</h1>
           <p className="text-ink/60 font-medium">
             Update team details, status, or assign a new leader.
           </p>
@@ -97,7 +101,12 @@ export default function EditTeamPage() {
                   const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
                   return (
                     <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor={field.name} className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium">Team Name</FieldLabel>
+                      <FieldLabel
+                        htmlFor={field.name}
+                        className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium"
+                      >
+                        Team Name
+                      </FieldLabel>
                       <Input
                         id={field.name}
                         value={field.state.value || ""}
@@ -118,7 +127,10 @@ export default function EditTeamPage() {
                   const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
                   return (
                     <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor={field.name} className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium">
+                      <FieldLabel
+                        htmlFor={field.name}
+                        className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium"
+                      >
                         Status
                       </FieldLabel>
                       <select
@@ -145,8 +157,14 @@ export default function EditTeamPage() {
                   const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
                   return (
                     <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor={field.name} className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium">
-                        Team Leader <span className="text-ink/40 font-normal normal-case tracking-normal ml-1">(Optional)</span>
+                      <FieldLabel
+                        htmlFor={field.name}
+                        className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium"
+                      >
+                        Team Leader{" "}
+                        <span className="text-ink/40 font-normal normal-case tracking-normal ml-1">
+                          (Optional)
+                        </span>
                       </FieldLabel>
                       <select
                         id={field.name}

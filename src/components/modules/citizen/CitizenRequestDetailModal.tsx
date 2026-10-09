@@ -59,8 +59,17 @@ export function CitizenRequestDetailModal({
   if (!isOpen || !requestId) return null;
 
   const activeStep = request ? getActiveStepIndex(request.status) : 0;
-  const isResolved =
-    request?.status?.toUpperCase() === "RESOLVED" || request?.status?.toUpperCase() === "CLOSED";
+  const statusUpper = request?.status?.toUpperCase() || "";
+  const isResolvedOrPendingReview =
+    statusUpper === "RESOLVED" ||
+    statusUpper === "CLOSED" ||
+    statusUpper === "COMPLETED" ||
+    statusUpper === "PENDING_VERIFICATION";
+
+  const activeWorkOrder =
+    request?.civicIssue?.workOrders?.[0] || (civicIssue as any)?.workOrders?.[0];
+  const resolution = activeWorkOrder?.resolution || (civicIssue as any)?.resolution;
+  const resolutionSummary = resolution?.summary || request?.resolutionNotes;
 
   return (
     <>
@@ -237,8 +246,55 @@ export function CitizenRequestDetailModal({
                   </div>
                 )}
 
+                {/* Technician Resolution Section (if available) */}
+                {resolutionSummary && (
+                  <div className="rounded-lg border border-line bg-field/30 p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-signal-resolved font-medium">
+                        <Tag className="size-3.5" />
+                        <span>Technician Resolution Details</span>
+                      </div>
+                      {resolution?.createdAt && (
+                        <span className="text-[11px] font-mono text-ink/40">
+                          Completed {format(new Date(resolution.createdAt), "PPP")}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="p-3 rounded-md bg-paper border border-line/60 text-xs font-body text-ink/85 whitespace-pre-wrap leading-relaxed">
+                      {resolutionSummary}
+                    </div>
+
+                    {resolution?.attachments && resolution.attachments.length > 0 && (
+                      <div className="space-y-1.5 pt-1">
+                        <span className="text-[10px] font-mono uppercase text-ink/50 block">
+                          Technician Completion Photos ({resolution.attachments.length})
+                        </span>
+                        <div className="grid grid-cols-3 gap-2">
+                          {resolution.attachments.map((att: any, idx: number) => (
+                            <button
+                              key={att.id || idx}
+                              type="button"
+                              onClick={() => setSelectedPhoto(att.url)}
+                              className="group relative aspect-video rounded-md overflow-hidden border border-line bg-field focus:outline-none focus:ring-2 focus:ring-signal-open cursor-pointer"
+                            >
+                              <Image
+                                src={att.url}
+                                alt={`Resolution proof ${idx + 1}`}
+                                fill
+                                unoptimized
+                                className="object-cover transition-transform group-hover:scale-105"
+                              />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* Feedback / Quality Review Section */}
-                {isResolved && (
+                {isResolvedOrPendingReview && (
                   <div className="rounded-lg border border-line bg-paper p-4 space-y-3">
                     <div className="flex items-center justify-between">
                       <h4 className="text-xs font-mono uppercase tracking-wider text-ink/70">
@@ -278,10 +334,10 @@ export function CitizenRequestDetailModal({
                         )}
                       </div>
                     ) : (
-                      <div className="flex items-center justify-between gap-4 p-3 rounded-md bg-signal-resolved/[0.05] border border-signal-resolved/20">
+                      <div className="flex items-center justify-between gap-4 p-3 rounded-md bg-amber-50/50 dark:bg-amber-950/20 border border-amber-300/60">
                         <div className="text-xs">
                           <p className="font-medium text-ink">
-                            This issue has been marked resolved
+                            Work is complete and awaiting your review
                           </p>
                           <p className="text-ink/60">
                             Did the city solve this to your satisfaction?
@@ -291,9 +347,10 @@ export function CitizenRequestDetailModal({
                           variant="primary"
                           size="sm"
                           onClick={() => setIsFeedbackOpen(true)}
-                          className="shrink-0 text-xs cursor-pointer"
+                          className="shrink-0 text-xs cursor-pointer bg-amber-600 hover:bg-amber-700 text-white"
                         >
-                          <Star className="size-3.5 mr-1.5" /> Rate Work
+                          <Star className="size-3.5 mr-1.5 fill-amber-300 text-amber-300" /> Rate
+                          Work
                         </Button>
                       </div>
                     )}
@@ -331,6 +388,9 @@ export function CitizenRequestDetailModal({
         isOpen={isFeedbackOpen}
         onClose={() => setIsFeedbackOpen(false)}
         serviceRequestId={request?.id || null}
+        resolutionId={activeWorkOrder?.resolution?.id}
+        resolutionSummary={resolutionSummary}
+        resolutionAttachments={activeWorkOrder?.resolution?.attachments}
         trackingNumber={request?.trackingNumber}
       />
     </>

@@ -1,7 +1,15 @@
 "use client";
 
 import { useGetStaffById } from "@/hooks/staff.hook";
-import { ChevronLeft, Mail, Phone, Building2, ShieldCheck, ShieldAlert, BadgeInfo } from "lucide-react";
+import {
+  ChevronLeft,
+  Mail,
+  Phone,
+  Building2,
+  ShieldCheck,
+  ShieldAlert,
+  BadgeInfo,
+} from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useParams } from "next/navigation";
@@ -22,17 +30,23 @@ export default function StaffProfilePage() {
 
   const status = staff.user?.status || "UNKNOWN";
   const roles = staff.user?.userRoles?.map((ur: any) => ur.role.code) || [];
-  
+
   let statusColor = "bg-line/20 text-ink/70";
-  if (status === "ACTIVE") statusColor = "bg-signal-resolved/20 text-signal-resolved border-signal-resolved/30";
-  if (status === "INACTIVE") statusColor = "bg-signal-progress/20 text-signal-progress border-signal-progress/30";
-  if (status === "SUSPENDED" || status === "BANNED") statusColor = "bg-signal-open/20 text-signal-open border-signal-open/30";
+  if (status === "ACTIVE")
+    statusColor = "bg-signal-resolved/20 text-signal-resolved border-signal-resolved/30";
+  if (status === "INACTIVE")
+    statusColor = "bg-signal-progress/20 text-signal-progress border-signal-progress/30";
+  if (status === "SUSPENDED" || status === "BANNED")
+    statusColor = "bg-signal-open/20 text-signal-open border-signal-open/30";
 
   return (
     <div className="flex flex-col gap-8 w-full max-w-4xl mx-auto pb-12">
       <div className="flex flex-col gap-4">
         <Link href="/department/technicians" className="w-fit">
-          <Button variant="ghost" className="pl-0 h-auto hover:bg-transparent text-ink/40 hover:text-ink font-body transition-colors cursor-pointer">
+          <Button
+            variant="ghost"
+            className="pl-0 h-auto hover:bg-transparent text-ink/40 hover:text-ink font-body transition-colors cursor-pointer"
+          >
             <ChevronLeft className="h-4 w-4 mr-1" />
             Back to Directory
           </Button>
@@ -41,15 +55,14 @@ export default function StaffProfilePage() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="w-20 h-20 bg-field rounded-full flex items-center justify-center text-ink/40 font-display text-3xl">
-              {staff.firstName[0]}{staff.lastName[0]}
+              {staff.firstName[0]}
+              {staff.lastName[0]}
             </div>
             <div className="flex flex-col">
               <h1 className="font-display text-3xl font-semibold text-ink">
                 {staff.firstName} {staff.lastName}
               </h1>
-              <p className="text-ink/60 font-medium">
-                {staff.designation || "Staff Member"}
-              </p>
+              <p className="text-ink/60 font-medium">{staff.designation || "Staff Member"}</p>
             </div>
           </div>
           <Badge variant="outline" className={`capitalize px-3 py-1 text-sm ${statusColor}`}>
@@ -60,7 +73,9 @@ export default function StaffProfilePage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-paper border border-line/10 p-6 rounded-2xl shadow-sm flex flex-col gap-6">
-          <h2 className="font-display text-xl font-medium text-ink border-b border-line/10 pb-4">Contact Information</h2>
+          <h2 className="font-display text-xl font-medium text-ink border-b border-line/10 pb-4">
+            Contact Information
+          </h2>
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-field/50 rounded-lg flex items-center justify-center">
@@ -84,7 +99,9 @@ export default function StaffProfilePage() {
         </div>
 
         <div className="bg-paper border border-line/10 p-6 rounded-2xl shadow-sm flex flex-col gap-6">
-          <h2 className="font-display text-xl font-medium text-ink border-b border-line/10 pb-4">Role & Access</h2>
+          <h2 className="font-display text-xl font-medium text-ink border-b border-line/10 pb-4">
+            Role & Access
+          </h2>
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-field/50 rounded-lg flex items-center justify-center">
@@ -106,10 +123,14 @@ export default function StaffProfilePage() {
                 <Building2 className="w-5 h-5 text-ink/60" />
               </div>
               <div className="flex flex-col">
-                <span className="text-xs text-ink/50 uppercase tracking-wide">Department Assignments</span>
+                <span className="text-xs text-ink/50 uppercase tracking-wide">
+                  Department Assignments
+                </span>
                 <div className="flex flex-col gap-1 mt-1 text-sm font-medium text-ink">
                   {staff.departmentMembers?.map((dm: any) => (
-                    <span key={dm.department.id}>{dm.department.name} <span className="text-ink/40 text-xs">({dm.role})</span></span>
+                    <span key={dm.department.id}>
+                      {dm.department.name} <span className="text-ink/40 text-xs">({dm.role})</span>
+                    </span>
                   )) || "None"}
                 </div>
               </div>

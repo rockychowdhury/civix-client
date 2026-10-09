@@ -8,20 +8,20 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { useCreateDispatcher, useCreateTechnician } from "@/hooks/staff.hook";
 import { useGetMe } from "@/hooks/auth.hook";
-import { type AddStaffValues, addStaffFormSchema } from "@/validation";
+import { useCreateDispatcher, useCreateTechnician } from "@/hooks/staff.hook";
 import { cn } from "@/lib/utils";
+import { type AddStaffValues, addStaffFormSchema } from "@/validation";
 
 export function AddStaffForm() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const { data: userData } = useGetMe();
   const departmentId = userData?.data?.staffProfile?.departmentMembers?.[0]?.departmentId;
-  
+
   const { mutate: createDispatcher, isPending: dispatcherPending } = useCreateDispatcher();
   const { mutate: createTechnician, isPending: technicianPending } = useCreateTechnician();
-  
+
   const isPending = dispatcherPending || technicianPending;
 
   const form = useForm({
@@ -42,7 +42,7 @@ export function AddStaffForm() {
         toast.error("Department ID not found. Please try refreshing.");
         return;
       }
-      
+
       const payloadData = {
         firstName: value.firstName,
         lastName: value.lastName,
@@ -78,10 +78,14 @@ export function AddStaffForm() {
       {/* Section: Role Assignment */}
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-1.5">
-          <h2 className="font-display text-xl font-medium text-ink tracking-tight">Role & Permissions</h2>
-          <p className="text-sm font-body text-ink/50">Determine the operational bounds for this team member.</p>
+          <h2 className="font-display text-xl font-medium text-ink tracking-tight">
+            Role & Permissions
+          </h2>
+          <p className="text-sm font-body text-ink/50">
+            Determine the operational bounds for this team member.
+          </p>
         </div>
-        
+
         <form.Field
           name="role"
           children={(field) => {
@@ -89,27 +93,35 @@ export function AddStaffForm() {
             return (
               <Field data-invalid={isInvalid}>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <label className={cn(
-                    "relative flex flex-col p-6 rounded-xl border cursor-pointer transition-all duration-300 group overflow-hidden",
-                    field.state.value === "technician" 
-                      ? "border-ink bg-ink/5 shadow-sm scale-[1.02]" 
-                      : "border-line/20 bg-field/20 hover:bg-field/50 hover:border-line/40 text-ink/70 hover:text-ink"
-                  )}>
-                    <input 
-                      type="radio" 
-                      name="role" 
-                      value="technician" 
+                  <label
+                    className={cn(
+                      "relative flex flex-col p-6 rounded-xl border cursor-pointer transition-all duration-300 group overflow-hidden",
+                      field.state.value === "technician"
+                        ? "border-ink bg-ink/5 shadow-sm scale-[1.02]"
+                        : "border-line/20 bg-field/20 hover:bg-field/50 hover:border-line/40 text-ink/70 hover:text-ink",
+                    )}
+                  >
+                    <input
+                      type="radio"
+                      name="role"
+                      value="technician"
                       className="absolute inset-0 opacity-0 cursor-pointer"
                       checked={field.state.value === "technician"}
                       onChange={() => field.handleChange("technician")}
                     />
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-display font-medium text-lg">Technician</span>
-                      <div className={cn(
-                        "w-4 h-4 rounded-full border flex items-center justify-center transition-colors",
-                        field.state.value === "technician" ? "border-ink bg-ink" : "border-line/50"
-                      )}>
-                        {field.state.value === "technician" && <div className="w-1.5 h-1.5 bg-paper rounded-full" />}
+                      <div
+                        className={cn(
+                          "w-4 h-4 rounded-full border flex items-center justify-center transition-colors",
+                          field.state.value === "technician"
+                            ? "border-ink bg-ink"
+                            : "border-line/50",
+                        )}
+                      >
+                        {field.state.value === "technician" && (
+                          <div className="w-1.5 h-1.5 bg-paper rounded-full" />
+                        )}
                       </div>
                     </div>
                     <span className="font-body text-sm text-ink/50">
@@ -117,27 +129,35 @@ export function AddStaffForm() {
                     </span>
                   </label>
 
-                  <label className={cn(
-                    "relative flex flex-col p-6 rounded-xl border cursor-pointer transition-all duration-300 group overflow-hidden",
-                    field.state.value === "dispatcher" 
-                      ? "border-ink bg-ink/5 shadow-sm scale-[1.02]" 
-                      : "border-line/20 bg-field/20 hover:bg-field/50 hover:border-line/40 text-ink/70 hover:text-ink"
-                  )}>
-                    <input 
-                      type="radio" 
-                      name="role" 
-                      value="dispatcher" 
+                  <label
+                    className={cn(
+                      "relative flex flex-col p-6 rounded-xl border cursor-pointer transition-all duration-300 group overflow-hidden",
+                      field.state.value === "dispatcher"
+                        ? "border-ink bg-ink/5 shadow-sm scale-[1.02]"
+                        : "border-line/20 bg-field/20 hover:bg-field/50 hover:border-line/40 text-ink/70 hover:text-ink",
+                    )}
+                  >
+                    <input
+                      type="radio"
+                      name="role"
+                      value="dispatcher"
                       className="absolute inset-0 opacity-0 cursor-pointer"
                       checked={field.state.value === "dispatcher"}
                       onChange={() => field.handleChange("dispatcher")}
                     />
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-display font-medium text-lg">Dispatcher</span>
-                      <div className={cn(
-                        "w-4 h-4 rounded-full border flex items-center justify-center transition-colors",
-                        field.state.value === "dispatcher" ? "border-ink bg-ink" : "border-line/50"
-                      )}>
-                        {field.state.value === "dispatcher" && <div className="w-1.5 h-1.5 bg-paper rounded-full" />}
+                      <div
+                        className={cn(
+                          "w-4 h-4 rounded-full border flex items-center justify-center transition-colors",
+                          field.state.value === "dispatcher"
+                            ? "border-ink bg-ink"
+                            : "border-line/50",
+                        )}
+                      >
+                        {field.state.value === "dispatcher" && (
+                          <div className="w-1.5 h-1.5 bg-paper rounded-full" />
+                        )}
                       </div>
                     </div>
                     <span className="font-body text-sm text-ink/50">
@@ -157,8 +177,12 @@ export function AddStaffForm() {
       {/* Section: Personal Details */}
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-1.5 mb-2">
-          <h2 className="font-display text-xl font-medium text-ink tracking-tight">Identity Details</h2>
-          <p className="text-sm font-body text-ink/50">Basic information required for their profile.</p>
+          <h2 className="font-display text-xl font-medium text-ink tracking-tight">
+            Identity Details
+          </h2>
+          <p className="text-sm font-body text-ink/50">
+            Basic information required for their profile.
+          </p>
         </div>
 
         <FieldGroup className="gap-6">
@@ -169,7 +193,12 @@ export function AddStaffForm() {
                 const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
                   <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name} className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium">First name</FieldLabel>
+                    <FieldLabel
+                      htmlFor={field.name}
+                      className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium"
+                    >
+                      First name
+                    </FieldLabel>
                     <Input
                       id={field.name}
                       autoComplete="given-name"
@@ -192,7 +221,12 @@ export function AddStaffForm() {
                 const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
                   <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name} className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium">Last name</FieldLabel>
+                    <FieldLabel
+                      htmlFor={field.name}
+                      className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium"
+                    >
+                      Last name
+                    </FieldLabel>
                     <Input
                       id={field.name}
                       autoComplete="family-name"
@@ -216,8 +250,14 @@ export function AddStaffForm() {
               const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
               return (
                 <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name} className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium">
-                    Internal Designation <span className="text-ink/40 font-normal normal-case tracking-normal ml-1">(Optional)</span>
+                  <FieldLabel
+                    htmlFor={field.name}
+                    className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium"
+                  >
+                    Internal Designation{" "}
+                    <span className="text-ink/40 font-normal normal-case tracking-normal ml-1">
+                      (Optional)
+                    </span>
                   </FieldLabel>
                   <Input
                     id={field.name}
@@ -241,8 +281,12 @@ export function AddStaffForm() {
       {/* Section: Account Access */}
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-1.5 mb-2">
-          <h2 className="font-display text-xl font-medium text-ink tracking-tight">Security & Contact</h2>
-          <p className="text-sm font-body text-ink/50">Login credentials and recovery information.</p>
+          <h2 className="font-display text-xl font-medium text-ink tracking-tight">
+            Security & Contact
+          </h2>
+          <p className="text-sm font-body text-ink/50">
+            Login credentials and recovery information.
+          </p>
         </div>
 
         <FieldGroup className="gap-6">
@@ -252,7 +296,12 @@ export function AddStaffForm() {
               const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
               return (
                 <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name} className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium">Email address</FieldLabel>
+                  <FieldLabel
+                    htmlFor={field.name}
+                    className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium"
+                  >
+                    Email address
+                  </FieldLabel>
                   <Input
                     id={field.name}
                     type="email"
@@ -277,8 +326,14 @@ export function AddStaffForm() {
               const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
               return (
                 <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name} className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium">
-                    Contact Phone <span className="text-ink/40 font-normal normal-case tracking-normal ml-1">(Optional)</span>
+                  <FieldLabel
+                    htmlFor={field.name}
+                    className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium"
+                  >
+                    Contact Phone{" "}
+                    <span className="text-ink/40 font-normal normal-case tracking-normal ml-1">
+                      (Optional)
+                    </span>
                   </FieldLabel>
                   <Input
                     id={field.name}
@@ -304,7 +359,12 @@ export function AddStaffForm() {
               const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
               return (
                 <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name} className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium">Temporary Password</FieldLabel>
+                  <FieldLabel
+                    htmlFor={field.name}
+                    className="text-ink/70 text-xs uppercase tracking-wider font-display font-medium"
+                  >
+                    Temporary Password
+                  </FieldLabel>
                   <div className="relative group/pass">
                     <Input
                       id={field.name}

@@ -1,6 +1,7 @@
 "use client";
 
-import { Star } from "lucide-react";
+import { CheckCircle2, Image as ImageIcon, Star } from "lucide-react";
+import Image from "next/image";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +18,9 @@ import { cn } from "@/lib/utils";
 
 interface CitizenFeedbackDialogProps {
   serviceRequestId: string | null;
+  resolutionId?: string;
+  resolutionSummary?: string;
+  resolutionAttachments?: Array<{ id?: string; url: string; fileType?: string }>;
   trackingNumber?: string;
   isOpen: boolean;
   onClose: () => void;
@@ -33,6 +37,9 @@ const RATING_DESCRIPTIONS = [
 
 export function CitizenFeedbackDialog({
   serviceRequestId,
+  resolutionId,
+  resolutionSummary,
+  resolutionAttachments,
   trackingNumber,
   isOpen,
   onClose,
@@ -50,6 +57,7 @@ export function CitizenFeedbackDialog({
 
     await submitFeedbackMutation.mutateAsync({
       serviceRequestId,
+      resolutionId: resolutionId || undefined,
       rating,
       comment: comment.trim() || undefined,
     });
@@ -62,7 +70,7 @@ export function CitizenFeedbackDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-md bg-paper border border-line text-ink">
+      <DialogContent className="sm:max-w-md md:max-w-lg bg-paper border border-line text-ink max-h-[90vh] overflow-y-auto">
         <form onSubmit={handleSubmit} className="space-y-5">
           <DialogHeader>
             <DialogTitle className="font-display text-xl text-ink">
@@ -80,8 +88,45 @@ export function CitizenFeedbackDialog({
             </DialogDescription>
           </DialogHeader>
 
+          {/* Technician Resolution Summary & Evidence Context */}
+          {resolutionSummary && (
+            <div className="rounded-lg border border-line/60 bg-field/30 p-3.5 space-y-2">
+              <div className="flex items-center gap-1.5 text-xs font-mono text-signal-resolved font-medium">
+                <CheckCircle2 className="size-3.5" />
+                <span>Technician Reported Fix</span>
+              </div>
+              <p className="text-xs text-ink/80 font-body whitespace-pre-wrap leading-relaxed">
+                {resolutionSummary}
+              </p>
+
+              {resolutionAttachments && resolutionAttachments.length > 0 && (
+                <div className="pt-2">
+                  <span className="text-[10px] font-mono uppercase text-ink/50 flex items-center gap-1 mb-1.5">
+                    <ImageIcon className="size-3" /> Technician Evidence
+                  </span>
+                  <div className="grid grid-cols-3 gap-2">
+                    {resolutionAttachments.map((att, idx) => (
+                      <div
+                        key={att.id || idx}
+                        className="relative aspect-video rounded-md overflow-hidden border border-line bg-field/50"
+                      >
+                        <Image
+                          src={att.url}
+                          alt={`Resolution proof ${idx + 1}`}
+                          fill
+                          unoptimized
+                          className="object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Interactive Star Rating */}
-          <div className="flex flex-col items-center justify-center gap-2 py-3 rounded-lg bg-field/40 border border-line/40">
+          <div className="flex flex-col items-center justify-center gap-2 py-3.5 rounded-lg bg-field/40 border border-line/40">
             <div className="flex items-center gap-2">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button

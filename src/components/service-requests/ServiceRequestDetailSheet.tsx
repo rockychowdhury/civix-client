@@ -1,9 +1,7 @@
 "use client";
 
 import { format } from "date-fns";
-import { FlagInvalidForm } from "@/components/forms/FlagInvalidForm";
-import { LinkToIssueForm } from "@/components/forms/LinkToIssueForm";
-import { ReclassifyRequestForm } from "@/components/forms/ReclassifyRequestForm";
+import { FlagInvalidForm, LinkToIssueForm, ReclassifyRequestForm } from "@/components/form";
 import { StatusPill } from "@/components/layout/dashboard/StatusPill";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useServiceRequestDetail } from "@/hooks";

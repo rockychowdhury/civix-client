@@ -9,7 +9,15 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp, ArrowUpDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import {
@@ -37,7 +45,7 @@ interface CivicIssuesTableProps {
 
 export function CivicIssuesTable({ data, onRowClick, selectedId }: CivicIssuesTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  
+
   const table = useReactTable({
     data,
     columns,
@@ -56,18 +64,15 @@ export function CivicIssuesTable({ data, onRowClick, selectedId }: CivicIssuesTa
             <TableRow key={headerGroup.id} className="border-b border-line/40 hover:bg-transparent">
               {headerGroup.headers.map((header: any) => {
                 return (
-                  <TableHead 
-                    key={header.id} 
+                  <TableHead
+                    key={header.id}
                     className="text-ink/40 font-display text-[10px] uppercase tracking-widest h-14 align-bottom pb-4 px-4 first:pl-6 cursor-pointer hover:text-ink/80 transition-colors text-left"
                     onClick={header.column.getToggleSortingHandler()}
                   >
                     <div className="flex items-center gap-1.5">
                       {header.isPlaceholder
                         ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                        : flexRender(header.column.columnDef.header, header.getContext())}
                       {header.column.getCanSort() && (
                         <span className="w-3 flex-shrink-0 flex items-center justify-center">
                           {{
@@ -92,8 +97,8 @@ export function CivicIssuesTable({ data, onRowClick, selectedId }: CivicIssuesTa
                 key={row.id}
                 data-state={row.original.id === selectedId ? "selected" : undefined}
                 className={`border-b border-line/10 transition-all duration-300 hover:bg-ink/[0.02] cursor-pointer group ${
-                  row.original.id === selectedId 
-                    ? "bg-ink/[0.03] shadow-[inset_3px_0_0_0_var(--color-ledger)] border-line/20" 
+                  row.original.id === selectedId
+                    ? "bg-ink/[0.03] shadow-[inset_3px_0_0_0_var(--color-ledger)] border-line/20"
                     : ""
                 }`}
                 onClick={(e) => onRowClick?.(row.original, e)}
@@ -103,7 +108,10 @@ export function CivicIssuesTable({ data, onRowClick, selectedId }: CivicIssuesTa
                 }}
               >
                 {row.getVisibleCells().map((cell: any) => (
-                  <TableCell key={cell.id} className="py-6 px-4 first:pl-6 transition-all duration-300">
+                  <TableCell
+                    key={cell.id}
+                    className="py-6 px-4 first:pl-6 transition-all duration-300"
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
@@ -117,14 +125,16 @@ export function CivicIssuesTable({ data, onRowClick, selectedId }: CivicIssuesTa
                     <span className="text-ink/20 text-xl font-display">?</span>
                   </div>
                   <p className="text-ink/50 font-body text-lg">No issues found.</p>
-                  <p className="text-ink/30 font-body text-sm">Adjust your filters to see more results.</p>
+                  <p className="text-ink/30 font-body text-sm">
+                    Adjust your filters to see more results.
+                  </p>
                 </div>
               </TableCell>
             </TableRow>
           )}
         </TableBody>
       </Table>
-      
+
       {/* Pagination */}
       <div className="flex items-center justify-end space-x-6 lg:space-x-8 px-4 py-4">
         <div className="flex items-center space-x-2">
@@ -132,7 +142,10 @@ export function CivicIssuesTable({ data, onRowClick, selectedId }: CivicIssuesTa
           <div className="relative">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-[65px] px-2 justify-between border border-line bg-transparent hover:bg-ink/5 text-ink focus-visible:ring-1 focus-visible:ring-ledger">
+                <Button
+                  variant="ghost"
+                  className="h-8 w-[65px] px-2 justify-between border border-line bg-transparent hover:bg-ink/5 text-ink focus-visible:ring-1 focus-visible:ring-ledger"
+                >
                   {table.getState().pagination.pageSize}
                   <ArrowDown className="h-3 w-3 opacity-50" />
                 </Button>

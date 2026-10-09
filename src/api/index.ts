@@ -16,3 +16,5 @@ export * from "./role.api";
 export * from "./staff.api";
 export * from "./team.api";
 export * from "./user.api";
+export * from "./work-order.api";
+export * from "./resolution.api";

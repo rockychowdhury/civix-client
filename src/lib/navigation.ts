@@ -23,8 +23,13 @@ const PORTAL_NAV: Record<PortalId, PortalNav> = {
     portalLabel: "Citizen",
     items: [
       { label: "Overview", href: "/citizen/overview", mobileTab: true },
-      { label: "My Reports", href: "/citizen/my-reports", permission: "issue:read", mobileTab: true },
-      { label: "Report Issue", href: "/citizen/report", mobileTab: true },
+      {
+        label: "My Reports",
+        href: "/citizen/my-reports",
+        permission: "issue:read",
+        mobileTab: true,
+      },
+      { label: "Report Issue", href: "/report", mobileTab: true },
       { label: "Feedback", href: "/citizen/feedback", mobileTab: true },
       { label: "Profile", href: "/citizen/profile", mobileTab: true },
     ],

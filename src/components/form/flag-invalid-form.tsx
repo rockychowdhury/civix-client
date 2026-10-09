@@ -1,9 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useFlagServiceRequestInvalid } from "@/hooks";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,7 +13,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { useFlagServiceRequestInvalid } from "@/hooks";
 
 interface FlagInvalidFormProps {
   requestId: string;
@@ -31,7 +31,7 @@ export function FlagInvalidForm({ requestId, onSuccess }: FlagInvalidFormProps) 
       toast.error("Please provide a reason.");
       return;
     }
-    
+
     mutate(
       { id: requestId, reason },
       {
@@ -42,29 +42,34 @@ export function FlagInvalidForm({ requestId, onSuccess }: FlagInvalidFormProps) 
         onError: () => {
           toast.error("Failed to flag request.");
         },
-      }
+      },
     );
   };
 
   return (
     <div className="flex flex-col gap-3 p-4 border border-line rounded-md bg-paper">
       <h4 className="font-display font-medium text-signal-open">Flag as Invalid</h4>
-      <p className="text-sm text-ink/70">Mark this request as spam or invalid. It will not be routed to a department.</p>
-      
+      <p className="text-sm text-ink/70">
+        Mark this request as spam or invalid. It will not be routed to a department.
+      </p>
+
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <Button
             variant="secondary"
-            className="w-fit text-signal-open border border-signal-open/30 hover:bg-signal-open hover:text-white transition-colors"
+            className="w-fit text-signal-open border border-signal-open/30 hover:bg-signal-open hover:text-white transition-colors cursor-pointer"
           >
             Flag Request
           </Button>
         </AlertDialogTrigger>
         <AlertDialogContent className="border-line bg-paper">
           <AlertDialogHeader>
-            <AlertDialogTitle className="font-display text-ink">Flag Request as Invalid</AlertDialogTitle>
+            <AlertDialogTitle className="font-display text-ink">
+              Flag Request as Invalid
+            </AlertDialogTitle>
             <AlertDialogDescription className="text-ink/70">
-              Please provide a short reason for flagging this request. This action is destructive and removes it from the operational queue.
+              Please provide a short reason for flagging this request. This action is destructive
+              and removes it from the operational queue.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="py-4">
@@ -76,11 +81,11 @@ export function FlagInvalidForm({ requestId, onSuccess }: FlagInvalidFormProps) 
             />
           </div>
           <AlertDialogFooter>
-            <AlertDialogCancel className="font-body">Cancel</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogCancel className="font-body cursor-pointer">Cancel</AlertDialogCancel>
+            <AlertDialogAction
               onClick={handleFlag}
               disabled={isPending || !reason.trim()}
-              className="bg-signal-open hover:bg-signal-open/90 text-white font-body"
+              className="bg-signal-open hover:bg-signal-open/90 text-white font-body cursor-pointer"
             >
               {isPending ? "Flagging..." : "Confirm Flag"}
             </AlertDialogAction>

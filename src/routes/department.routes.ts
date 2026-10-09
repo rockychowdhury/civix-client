@@ -3,20 +3,30 @@ import type { NavItem } from "./types";
 
 export const departmentRoutes: NavItem[] = [
   { title: "Overview", url: "/department/overview", icon: Home, permission: "department:read" },
-  { title: "Work Orders", url: "/department/work-orders", icon: CheckSquare, permission: "workorder:read" },
-  { 
-    title: "Issue Queue", 
-    url: "/department/issues", 
+  {
+    title: "Work Orders",
+    url: "/department/work-orders",
+    icon: CheckSquare,
+    permission: "workorder:read",
+  },
+  {
+    title: "Issue Queue",
+    url: "/department/issues",
     icon: ListTodo,
     permission: "issue:read",
     items: [
       { title: "On Queue", url: "/department/issues?status=on-queue" },
       { title: "Scheduled", url: "/department/issues?status=scheduled" },
       { title: "Pending", url: "/department/issues?status=pending" },
-      { title: "All", url: "/department/issues?status=all" }
-    ]
+      { title: "All", url: "/department/issues?status=all" },
+    ],
   },
-  { title: "Citizen Reports", url: "/department/citizen-reports", icon: FileText, permission: "issue:read" },
+  {
+    title: "Citizen Reports",
+    url: "/department/citizen-reports",
+    icon: FileText,
+    permission: "issue:read",
+  },
   {
     title: "Staff Directory",
     url: "/department/technicians",

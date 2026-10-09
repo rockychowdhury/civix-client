@@ -19,6 +19,7 @@ export interface ServiceRequest {
   slaTarget?: string;
   feedback?: {
     id: string;
+    resolutionId?: string | null;
     rating: number;
     comment?: string | null;
     createdAt?: string;
@@ -30,5 +31,16 @@ export interface ServiceRequest {
     status: string;
     priority?: string;
     description?: string;
+    workOrders?: Array<{
+      id: string;
+      title?: string;
+      status?: string;
+      resolution?: {
+        id: string;
+        summary: string;
+        createdAt: string;
+        attachments?: Array<{ id: string; url: string; fileType?: string }>;
+      } | null;
+    }>;
   };
 }

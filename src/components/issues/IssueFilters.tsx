@@ -14,7 +14,9 @@ export function IssueFilters({ status, onStatusChange }: IssueFiltersProps) {
     <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 pb-2 mb-4">
       <div className="flex items-center">
         <h1 className="font-display text-2xl font-semibold text-ink">
-          {status === "all" ? "All Issues" : `${status.charAt(0).toUpperCase() + status.slice(1).replace('-', ' ')}`}
+          {status === "all"
+            ? "All Issues"
+            : `${status.charAt(0).toUpperCase() + status.slice(1).replace("-", " ")}`}
         </h1>
       </div>
 
@@ -25,7 +27,9 @@ export function IssueFilters({ status, onStatusChange }: IssueFiltersProps) {
               <p className="font-display font-medium text-ink mb-3">Priority</p>
               <div className="flex flex-wrap gap-2">
                 {["Normal", "High", "Urgent"].map((p) => (
-                  <Button key={p} variant="secondary" className="h-8 text-xs">{p}</Button>
+                  <Button key={p} variant="secondary" className="h-8 text-xs">
+                    {p}
+                  </Button>
                 ))}
               </div>
             </div>
@@ -33,7 +37,9 @@ export function IssueFilters({ status, onStatusChange }: IssueFiltersProps) {
               <p className="font-display font-medium text-ink mb-3">Category</p>
               <div className="flex flex-wrap gap-2">
                 {["Pothole", "Water Leak", "Garbage", "Street Light"].map((p) => (
-                  <Button key={p} variant="secondary" className="h-8 text-xs">{p}</Button>
+                  <Button key={p} variant="secondary" className="h-8 text-xs">
+                    {p}
+                  </Button>
                 ))}
               </div>
             </div>
