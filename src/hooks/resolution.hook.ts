@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { getResolutionById, getResolutionFeedback, verifyResolution } from "@/api/resolution.api";
-import { CITY_QUERY_KEYS } from "@/constant/city.constant";
 import { CITIZEN_QUERY_KEYS } from "@/constant/citizen.constant";
+import { CITY_QUERY_KEYS } from "@/constant/city.constant";
 import type { IVerifyResolutionPayload } from "@/types";
 
 export function useResolutionById(id?: string) {

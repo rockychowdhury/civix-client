@@ -4,14 +4,20 @@ import { format } from "date-fns";
 import {
   AlertCircle,
   ArrowRight,
+  ArrowUpRight,
+  Check,
   CheckCircle2,
   Clock,
+  Copy,
   FileText,
-  Image as ImageIcon,
+  MapPin,
+  PhoneCall,
   PlusCircle,
   Search,
+  ShieldCheck,
   Sparkles,
   Star,
+  User,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -23,31 +29,26 @@ import { Input } from "@/components/ui/input";
 import { useGetMe } from "@/hooks/auth.hook";
 import { useMyServiceRequests, usePendingFeedbackRequests } from "@/hooks/citizen.hook";
 import type { ServiceRequest } from "@/types";
-import { CitizenFeedbackDialog } from "./CitizenFeedbackDialog";
-import { CitizenRequestDetailModal } from "./CitizenRequestDetailModal";
 import { CitizenTrustBadge } from "./CitizenTrustBadge";
 
 export function CitizenOverviewView() {
   const router = useRouter();
   const [trackingSearch, setTrackingSearch] = useState("");
-  const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
-
-  // Direct feedback modal state for pending banner
-  const [feedbackTargetRequest, setFeedbackTargetRequest] = useState<ServiceRequest | null>(null);
+  const [copiedTrackingNum, setCopiedTrackingNum] = useState<string | null>(null);
 
   const { data: userData } = useGetMe();
   const user = userData?.data;
+  const citizenProfile = user?.citizenProfile;
 
-  const citizenName = user?.citizenProfile?.firstName
-    ? `${user.citizenProfile.firstName} ${user.citizenProfile.lastName || ""}`.trim()
+  const citizenName = citizenProfile?.firstName
+    ? `${citizenProfile.firstName} ${citizenProfile.lastName || ""}`.trim()
     : user?.displayName || user?.email?.split("@")[0] || "Citizen";
 
-  const trustLevel = user?.citizenProfile?.trustLevel || user?.trustLevel || "NEW";
+  const trustLevel = citizenProfile?.trustLevel || user?.trustLevel || "NEW";
 
   const { data: requestsRes, isLoading } = useMyServiceRequests({ limit: 20 });
   const requests: ServiceRequest[] = requestsRes?.data || [];
 
-  // Dedicated pending feedback requests hook
   const { data: pendingFeedbackRes, isLoading: isPendingFeedbackLoading } =
     usePendingFeedbackRequests();
   const pendingFeedbackRequests: ServiceRequest[] = pendingFeedbackRes?.data || [];
@@ -62,14 +63,15 @@ export function CitizenOverviewView() {
         s === "ACCEPTED" ||
         s === "IN_PROGRESS" ||
         s === "PENDING_VERIFICATION" ||
-        s === "PENDING_ASSIGNMENT"
+        s === "PENDING_ASSIGNMENT" ||
+        s === "NEW"
       );
     }).length;
     const resolved = requests.filter((r) => {
       const s = r.status.toUpperCase();
       return s === "RESOLVED" || s === "CLOSED" || s === "COMPLETED";
     }).length;
-    // Prefer count from pending feedback endpoint if available
+
     const pendingFeedback =
       pendingFeedbackRequests.length > 0
         ? pendingFeedbackRequests.length
@@ -94,384 +96,383 @@ export function CitizenOverviewView() {
     const query = trackingSearch.trim();
     if (!query) return;
 
-    // Check if it matches an existing request ID or tracking number
     const matched = requests.find(
       (r) =>
         r.trackingNumber?.toLowerCase() === query.toLowerCase() ||
-        r.id.toLowerCase() === query.toLowerCase(),
+        r.id.toLowerCase() === query.toLowerCase() ||
+        r.civicIssue?.issueNumber?.toLowerCase() === query.toLowerCase(),
     );
 
     if (matched) {
-      setSelectedRequestId(matched.id);
+      const trackId = matched.civicIssue?.issueNumber || matched.trackingNumber;
+      router.push(`/track?issueNumber=${encodeURIComponent(trackId)}`);
     } else {
       router.push(`/track?issueNumber=${encodeURIComponent(query)}`);
     }
   };
 
+  const handleCopy = (trackingNum: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(trackingNum);
+    setCopiedTrackingNum(trackingNum);
+    setTimeout(() => {
+      setCopiedTrackingNum(null);
+    }, 2000);
+  };
+
   return (
-    <div className="flex flex-col gap-8 max-w-6xl w-full">
-      {/* Welcome Banner */}
-      <div className="relative overflow-hidden rounded-xl border border-line bg-gradient-to-br from-paper via-paper to-field/40 p-6 sm:p-8 shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-          <div className="space-y-2">
-            <div className="flex items-center gap-3">
-              <span className="font-mono text-xs uppercase tracking-wider text-ink/50">
-                Citizen Portal
-              </span>
-              <CitizenTrustBadge level={trustLevel} showPerk={true} />
-            </div>
-            <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-ink">
-              Hello, {citizenName}
-            </h1>
-            <p className="font-body text-sm text-ink/70 max-w-xl">
-              Track your reported civic issues, monitor municipal response times, and help keep our
-              city clean and functioning.
-            </p>
+    <div className="flex flex-col gap-6 max-w-6xl w-full">
+      {/* Top Welcome Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-line">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-xs uppercase tracking-wider text-ink/50">
+              Citizen Portal
+            </span>
+            <span className="text-ink/30">•</span>
+            <CitizenTrustBadge level={trustLevel} showPerk={false} />
           </div>
-
-          <div className="flex flex-wrap items-center gap-3 shrink-0">
-            <Button asChild variant="primary" size="lg" className="cursor-pointer shadow-xs">
-              <Link href="/report">
-                <PlusCircle className="size-4 mr-2" /> Report an Issue
-              </Link>
-            </Button>
-          </div>
+          <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-ink">
+            Welcome back, {citizenName}
+          </h1>
+          <p className="font-body text-xs text-ink/65 max-w-xl">
+            Live overview of your ward reports, municipal resolution statuses, and repair audits.
+          </p>
         </div>
 
-        {/* Quick Tracker Search */}
-        <div className="mt-6 pt-6 border-t border-line/60">
-          <form
-            onSubmit={handleQuickTrack}
-            className="flex flex-col sm:flex-row items-stretch gap-2.5 max-w-xl"
-          >
-            <div className="relative flex-1">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-ink/40" />
-              <Input
-                type="text"
-                placeholder="Lookup by tracking number (e.g. #SR-2024-..., #IS-...)"
-                value={trackingSearch}
-                onChange={(e) => setTrackingSearch(e.target.value)}
-                className="pl-9.5 h-10 bg-paper/90 border-line text-sm"
-              />
-            </div>
-            <Button type="submit" variant="secondary" className="h-10 cursor-pointer shrink-0">
-              Track Status
-            </Button>
-          </form>
-        </div>
+        <Button
+          asChild
+          variant="primary"
+          size="default"
+          className="cursor-pointer shrink-0 active:translate-y-px rounded-xs shadow-2xs font-medium"
+        >
+          <Link href="/report">
+            <PlusCircle className="size-4 mr-2" /> Report an Issue
+          </Link>
+        </Button>
       </div>
 
-      {/* Action Required: Pending Feedback Alert Banner */}
-      {!isPendingFeedbackLoading && pendingFeedbackRequests.length > 0 && (
-        <div className="rounded-xl border border-amber-300/80 bg-amber-50/50 dark:bg-amber-950/20 p-5 sm:p-6 shadow-xs space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="size-9 rounded-full bg-amber-500/15 flex items-center justify-center text-amber-600 shrink-0">
-                <AlertCircle className="size-5" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="font-display text-base font-semibold text-ink">
-                    Action Required: Review Completed Work
-                  </h2>
-                  <Badge
-                    variant="outline"
-                    className="border-amber-400 bg-amber-100 text-amber-800 text-[11px] font-mono"
-                  >
-                    {pendingFeedbackRequests.length} pending
-                  </Badge>
-                </div>
-                <p className="font-body text-xs text-ink/70 mt-0.5">
-                  You have <strong>{pendingFeedbackRequests.length}</strong> completed request
-                  {pendingFeedbackRequests.length > 1 ? "s" : ""} waiting for your review. Please
-                  confirm if the issue was satisfactorily resolved.
-                </p>
-              </div>
+      {/* Action Required: Pending Verification Notice */}
+      {!isPendingFeedbackLoading && stats.pendingFeedback > 0 && (
+        <div className="rounded-xl border border-line/80 bg-paper p-4.5 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xs">
+          <div className="flex items-start gap-3">
+            <div className="size-9 rounded-full bg-signal-resolved/10 flex items-center justify-center text-signal-resolved shrink-0 mt-0.5">
+              <CheckCircle2 className="size-5" />
             </div>
-
-            <Button
-              asChild
-              variant="ghost"
-              size="sm"
-              className="cursor-pointer text-xs text-amber-800 hover:bg-amber-100/50 self-start sm:self-auto"
-            >
-              <Link href="/citizen/feedback">
-                View all reviews <ArrowRight className="size-3.5 ml-1" />
-              </Link>
-            </Button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
-            {pendingFeedbackRequests.slice(0, 2).map((req) => {
-              const activeWo = req.civicIssue?.workOrders?.[0];
-              const resolution = activeWo?.resolution;
-              const summary = resolution?.summary || req.resolutionNotes;
-              const attachments = resolution?.attachments || [];
-
-              return (
-                <div
-                  key={req.id}
-                  className="rounded-lg border border-amber-200/90 bg-paper p-4 flex flex-col justify-between gap-3 shadow-2xs"
+            <div className="space-y-0.5">
+              <div className="flex items-center gap-2">
+                <h2 className="font-display text-sm font-semibold text-ink">
+                  Repairs Completed — Sign-Off Required
+                </h2>
+                <Badge
+                  variant="outline"
+                  className="border-signal-resolved/40 bg-signal-resolved/10 text-signal-resolved text-[10px] font-mono"
                 >
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="font-mono text-xs font-semibold text-ink">
-                        {req.trackingNumber}
-                      </span>
-                      {req.category && (
-                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-xs bg-field border border-line text-ink/70">
-                          {req.category.name}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-xs font-body text-ink/80 line-clamp-1 font-medium">
-                      {req.description}
-                    </p>
-
-                    {summary && (
-                      <div className="p-2.5 rounded-md bg-field/40 border border-line/40 text-xs text-ink/80">
-                        <span className="font-mono text-[10px] uppercase text-signal-resolved font-medium block mb-0.5">
-                          Technician Summary:
-                        </span>
-                        <p className="line-clamp-2 italic font-body">{summary}</p>
-                      </div>
-                    )}
-
-                    {attachments.length > 0 && (
-                      <div className="flex items-center gap-1.5 text-[11px] font-mono text-ink/60 pt-1">
-                        <ImageIcon className="size-3 text-ink/40" />
-                        <span>
-                          {attachments.length} photo proof attachment
-                          {attachments.length > 1 ? "s" : ""}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex items-center justify-between pt-2 border-t border-line/40">
-                    <span className="text-[11px] font-mono text-ink/50">
-                      {req.submittedAt ? format(new Date(req.submittedAt), "MMM d") : ""}
-                    </span>
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      onClick={() => setFeedbackTargetRequest(req)}
-                      className="cursor-pointer text-xs h-8 bg-amber-600 hover:bg-amber-700 text-white"
-                    >
-                      <Star className="size-3.5 mr-1.5 fill-amber-300 text-amber-300" /> Submit
-                      Feedback
-                    </Button>
-                  </div>
-                </div>
-              );
-            })}
+                  {stats.pendingFeedback} awaiting review
+                </Badge>
+              </div>
+              <p className="font-body text-xs text-ink/70 leading-relaxed">
+                Field technicians logged completed repairs on your reported issues. Inspect photos
+                and rate workmanship to officially close the work orders.
+              </p>
+            </div>
           </div>
+
+          <Button
+            asChild
+            variant="primary"
+            size="sm"
+            className="cursor-pointer text-xs shrink-0 self-start sm:self-auto active:translate-y-px rounded-xs"
+          >
+            <Link href="/citizen/feedback">
+              Review Work <ArrowRight className="size-3.5 ml-1.5" />
+            </Link>
+          </Button>
         </div>
       )}
 
-      {/* Metrics Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="rounded-lg border border-line bg-paper p-5 flex flex-col justify-between">
+      {/* Realistic Metrics Row */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div className="rounded-xl border border-line/70 bg-paper p-4 flex flex-col justify-between shadow-2xs">
           <div className="flex items-center justify-between text-ink/50 text-xs font-mono uppercase tracking-wider">
-            <span>Total Submitted</span>
-            <FileText className="size-4 text-ink/40" />
-          </div>
-          <div className="mt-4">
-            <p className="font-display text-3xl font-semibold text-ink">{stats.total}</p>
-            <p className="font-body text-xs text-ink/60 mt-1">Lifetime reported issues</p>
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-line bg-paper p-5 flex flex-col justify-between">
-          <div className="flex items-center justify-between text-signal-progress text-xs font-mono uppercase tracking-wider">
             <span>In Progress</span>
-            <Clock className="size-4 text-signal-progress" />
+            <Clock className="size-4 text-ink/40" />
           </div>
-          <div className="mt-4">
-            <p className="font-display text-3xl font-semibold text-ink">{stats.active}</p>
-            <p className="font-body text-xs text-ink/60 mt-1">Assigned or under repair</p>
+          <div className="mt-3">
+            <p className="font-display text-2xl sm:text-3xl font-semibold text-ink">{stats.active}</p>
+            <p className="font-body text-[11px] text-ink/60 mt-0.5">Assigned or under active repair</p>
           </div>
         </div>
 
-        <div className="rounded-lg border border-line bg-paper p-5 flex flex-col justify-between">
+        <div className="rounded-xl border border-line/70 bg-paper p-4 flex flex-col justify-between shadow-2xs">
           <div className="flex items-center justify-between text-signal-resolved text-xs font-mono uppercase tracking-wider">
             <span>Resolved</span>
             <CheckCircle2 className="size-4 text-signal-resolved" />
           </div>
-          <div className="mt-4">
-            <p className="font-display text-3xl font-semibold text-ink">{stats.resolved}</p>
-            <p className="font-body text-xs text-ink/60 mt-1">Successfully addressed</p>
+          <div className="mt-3">
+            <p className="font-display text-2xl sm:text-3xl font-semibold text-ink">{stats.resolved}</p>
+            <p className="font-body text-[11px] text-ink/60 mt-0.5">Repairs completed</p>
           </div>
         </div>
 
         <Link
           href="/citizen/feedback"
-          className="rounded-lg border border-line bg-paper p-5 flex flex-col justify-between hover:border-amber-400 transition-colors cursor-pointer group"
+          className="rounded-xl border border-line/70 bg-paper p-4 flex flex-col justify-between shadow-2xs hover:border-line hover:shadow-xs transition-all cursor-pointer group"
         >
-          <div className="flex items-center justify-between text-amber-600 text-xs font-mono uppercase tracking-wider">
-            <span>Reviews Needed</span>
-            <Star className="size-4 text-amber-500 fill-amber-400" />
+          <div className="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-ink/50 group-hover:text-ink">
+            <span>Awaiting Sign-Off</span>
+            <Star className="size-4 text-ink/40 group-hover:text-ledger transition-colors" />
           </div>
-          <div className="mt-4">
+          <div className="mt-3">
             <div className="flex items-baseline justify-between">
-              <p className="font-display text-3xl font-semibold text-ink group-hover:text-amber-600 transition-colors">
+              <p className="font-display text-2xl sm:text-3xl font-semibold text-ink">
                 {stats.pendingFeedback}
               </p>
               {stats.pendingFeedback > 0 && (
-                <span className="text-[11px] font-mono text-amber-600 font-medium">
-                  Review now →
-                </span>
+                <span className="text-[10px] font-mono text-ledger font-semibold">Rate now →</span>
               )}
             </div>
-            <p className="font-body text-xs text-ink/60 mt-1">Resolved jobs to rate</p>
+            <p className="font-body text-[11px] text-ink/60 mt-0.5">Pending your verification</p>
           </div>
         </Link>
+
+        <div className="rounded-xl border border-line/70 bg-paper p-4 flex flex-col justify-between shadow-2xs">
+          <div className="flex items-center justify-between text-ink/50 text-xs font-mono uppercase tracking-wider">
+            <span>Total Reported</span>
+            <FileText className="size-4 text-ink/40" />
+          </div>
+          <div className="mt-3">
+            <p className="font-display text-2xl sm:text-3xl font-semibold text-ink">{stats.total}</p>
+            <p className="font-body text-[11px] text-ink/60 mt-0.5">Lifetime citizen reports</p>
+          </div>
+        </div>
       </div>
 
-      {/* Main Content Grid: Recent Submissions + Trust Progression */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Recent Submissions (2 cols) */}
-        <div className="lg:col-span-2 rounded-xl border border-line bg-paper p-6 flex flex-col justify-between space-y-4">
-          <div className="flex items-center justify-between">
+      {/* Main Content Grid: Recent Submissions (2 cols) + Citizen Ward Standing (1 col) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        {/* Left Column: Recent Submissions & Search (2 cols) */}
+        <div className="lg:col-span-2 rounded-xl border border-line/80 bg-paper p-5 sm:p-6 space-y-4 shadow-2xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-line/60">
             <div>
-              <h2 className="font-display text-lg font-semibold text-ink">Recent Reports</h2>
-              <p className="font-body text-xs text-ink/60">
-                Latest submissions and their current lifecycle statuses.
+              <h2 className="font-display text-base font-semibold text-ink">Recent Reports</h2>
+              <p className="font-body text-xs text-ink/60 mt-0.5">
+                Active municipal status and direct tracking.
               </p>
             </div>
-            <Button asChild variant="ghost" size="sm" className="cursor-pointer text-xs">
+
+            <Button asChild variant="ghost" size="sm" className="cursor-pointer text-xs self-start sm:self-auto h-7 px-2">
               <Link href="/citizen/my-reports">
-                View all <ArrowRight className="size-3.5 ml-1" />
+                View all ({stats.total}) <ArrowRight className="size-3.5 ml-1" />
               </Link>
             </Button>
           </div>
 
+          {/* Quick Issue Tracker Search */}
+          <form onSubmit={handleQuickTrack} className="relative w-full">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-ink/40" />
+            <Input
+              type="text"
+              placeholder="Track issue directly by # (e.g. ISS-..., REQ-...)..."
+              value={trackingSearch}
+              onChange={(e) => setTrackingSearch(e.target.value)}
+              className="pl-8.5 pr-20 h-8.5 text-xs bg-field/30 border-line/70 rounded-xs"
+            />
+            <Button
+              type="submit"
+              variant="secondary"
+              size="sm"
+              className="absolute right-1 top-1/2 -translate-y-1/2 h-6.5 px-2.5 text-[11px] font-mono cursor-pointer rounded-xs"
+            >
+              Track ↗
+            </Button>
+          </form>
+
+          {/* Reports List */}
           {isLoading ? (
-            <div className="h-48 flex items-center justify-center text-sm font-mono text-ink/40 animate-pulse">
+            <div className="h-44 flex items-center justify-center text-xs font-mono text-ink/40 animate-pulse">
               Loading recent reports...
             </div>
           ) : recentRequests.length === 0 ? (
-            <div className="p-8 text-center rounded-lg border border-line/40 bg-field/10 space-y-3">
+            <div className="p-8 text-center rounded-lg border border-line/40 bg-field/15 space-y-3">
               <Sparkles className="size-8 mx-auto text-ink/30" />
-              <p className="font-body text-sm text-ink/70">
-                You haven't reported any civic issues yet.
-              </p>
-              <Button asChild variant="primary" size="sm" className="cursor-pointer">
-                <Link href="/report">Report your first issue</Link>
+              <div className="space-y-1 max-w-sm mx-auto">
+                <p className="font-display text-sm font-semibold text-ink">
+                  No issues reported yet
+                </p>
+                <p className="font-body text-xs text-ink/60">
+                  Notice a broken streetlight, pothole, or garbage accumulation in your ward?
+                </p>
+              </div>
+              <Button asChild variant="primary" size="sm" className="cursor-pointer text-xs active:translate-y-px">
+                <Link href="/report">Report an Issue</Link>
               </Button>
             </div>
           ) : (
             <div className="divide-y divide-line/60">
-              {recentRequests.map((request) => (
-                <div
-                  key={request.id}
-                  className="py-3.5 flex items-center justify-between gap-4 transition-colors hover:bg-field/20 px-2 rounded-md"
-                >
-                  <div className="min-w-0 space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-semibold text-ink">
-                        {request.trackingNumber}
-                      </span>
-                      {request.category && (
-                        <span className="text-[11px] font-mono px-1.5 py-0.5 rounded-xs bg-field border border-line/60 text-ink/70">
-                          {request.category.name}
-                        </span>
-                      )}
-                    </div>
-                    <p className="font-body text-xs text-ink/70 truncate max-w-md">
-                      {request.description}
-                    </p>
-                    <p className="font-mono text-[10px] text-ink/40">
-                      {request.submittedAt
-                        ? format(new Date(request.submittedAt), "MMM d, yyyy")
-                        : ""}
-                    </p>
-                  </div>
+              {recentRequests.map((request) => {
+                const civicIssueNumber =
+                  request.civicIssue?.issueNumber ||
+                  request.linkedIssue?.issueNumber ||
+                  (request as any).issueNumber;
 
-                  <div className="flex items-center gap-3 shrink-0">
-                    <StatusPill status={request.status} />
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => setSelectedRequestId(request.id)}
-                      className="text-xs cursor-pointer"
-                    >
-                      Details
-                    </Button>
+                const primaryId = civicIssueNumber || request.trackingNumber;
+
+                return (
+                  <div
+                    key={request.id}
+                    className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-colors hover:bg-field/20 px-2 rounded-xs"
+                  >
+                    <div className="min-w-0 space-y-1">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <Link
+                          href={`/track?issueNumber=${encodeURIComponent(primaryId)}`}
+                          className="font-mono text-xs font-semibold text-ink hover:underline cursor-pointer"
+                        >
+                          #{primaryId}
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={(e) => handleCopy(primaryId, e)}
+                          title="Copy reference ID"
+                          className="p-0.5 text-ink/40 hover:text-ink transition-colors cursor-pointer"
+                        >
+                          {copiedTrackingNum === primaryId ? (
+                            <Check className="size-3 text-signal-resolved" />
+                          ) : (
+                            <Copy className="size-3" />
+                          )}
+                        </button>
+                        {request.category && (
+                          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-xs bg-field/60 border border-line/60 text-ink/75">
+                            {request.category.name}
+                          </span>
+                        )}
+                      </div>
+
+                      <p className="font-body text-xs text-ink/75 truncate max-w-md">
+                        {request.description}
+                      </p>
+
+                      <div className="flex items-center gap-2 text-[10px] font-mono text-ink/45">
+                        <span>
+                          {request.submittedAt
+                            ? format(new Date(request.submittedAt), "MMM d, yyyy")
+                            : ""}
+                        </span>
+                        {request.location?.address && (
+                          <>
+                            <span>•</span>
+                            <span className="truncate max-w-[200px] flex items-center gap-1">
+                              <MapPin className="size-2.5 text-ink/35 shrink-0" />
+                              {request.location.address}
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                      <StatusPill status={request.status} />
+                      <Button
+                        asChild
+                        variant="secondary"
+                        size="sm"
+                        className="text-xs h-7 px-2.5 cursor-pointer active:translate-y-px rounded-xs font-medium"
+                      >
+                        <Link href={`/track?issueNumber=${encodeURIComponent(primaryId)}`}>
+                          Track <ArrowUpRight className="size-3 ml-1 text-ink/50" />
+                        </Link>
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
 
-        {/* Community Trust & Progression (1 col) */}
-        <div className="rounded-xl border border-line bg-paper p-6 space-y-5">
-          <div className="flex items-center gap-2">
-            <Sparkles className="size-4 text-signal-progress" />
-            <h3 className="font-display text-base font-semibold text-ink">Trust Progression</h3>
-          </div>
-
-          <div className="p-4 rounded-lg bg-field/30 border border-line/50 space-y-2.5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-mono text-ink/60">Current Standing</span>
+        {/* Right Column: Citizen Profile Standing & Helplines (1 col) */}
+        <div className="flex flex-col gap-5">
+          {/* Real Citizen Standing Card */}
+          <div className="rounded-xl border border-line/80 bg-paper p-5 space-y-4 shadow-2xs">
+            <div className="flex items-center justify-between pb-3 border-b border-line/50">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="size-4 text-signal-resolved" />
+                <h3 className="font-display text-sm font-semibold text-ink">Citizen Standing</h3>
+              </div>
               <CitizenTrustBadge level={trustLevel} />
             </div>
-            <p className="font-body text-xs text-ink/70 leading-relaxed">
+
+            <div className="space-y-2 text-xs font-body">
+              <div className="flex items-center justify-between py-1 border-b border-line/40">
+                <span className="text-ink/60">Registered Name:</span>
+                <span className="font-medium text-ink truncate max-w-[150px]">{citizenName}</span>
+              </div>
+              {citizenProfile?.phone && (
+                <div className="flex items-center justify-between py-1 border-b border-line/40">
+                  <span className="text-ink/60">Contact Phone:</span>
+                  <span className="font-mono text-ink font-medium">{citizenProfile.phone}</span>
+                </div>
+              )}
+              <div className="flex items-center justify-between py-1 border-b border-line/40">
+                <span className="text-ink/60">Triage Priority:</span>
+                <span className="font-mono text-xs font-semibold text-ledger">
+                  {trustLevel === "TRUSTED"
+                    ? "Priority Dispatch"
+                    : trustLevel === "REGULAR"
+                      ? "Standard Verified"
+                      : "Standard Queue"}
+                </span>
+              </div>
+            </div>
+
+            <p className="font-body text-[11px] text-ink/65 leading-relaxed pt-1">
               {trustLevel === "TRUSTED"
-                ? "You hold our highest community trust score! Your reports bypass standard manual triage."
-                : trustLevel === "REGULAR"
-                  ? "You have a proven track record of accurate civic reporting. 3 more verified resolutions to reach Trusted."
-                  : "Welcome! Report issues with accurate photos and street addresses to build your reputation score."}
+                ? "You hold Trusted Citizen status! Your reported issues skip municipal triage backlogs and are dispatched immediately."
+                : "Verify completed repairs on resolved issues to build reputation score and unlock priority emergency dispatch."}
             </p>
+
+            <Button
+              asChild
+              variant="secondary"
+              size="sm"
+              className="w-full text-xs h-7.5 cursor-pointer active:translate-y-px rounded-xs font-medium"
+            >
+              <Link href="/citizen/profile">
+                Manage Profile & NID <ArrowRight className="size-3 ml-1 text-ink/50" />
+              </Link>
+            </Button>
           </div>
 
-          <div className="space-y-2 text-xs font-body text-ink/70">
-            <h4 className="font-medium text-ink text-xs uppercase font-mono tracking-wider">
-              Best practices
-            </h4>
-            <ul className="space-y-1.5 text-xs">
-              <li className="flex items-start gap-1.5">
-                <CheckCircle2 className="size-3.5 text-signal-resolved shrink-0 mt-0.5" />
-                <span>Upload clear, well-lit photos of the problem.</span>
-              </li>
-              <li className="flex items-start gap-1.5">
-                <CheckCircle2 className="size-3.5 text-signal-resolved shrink-0 mt-0.5" />
-                <span>Provide exact landmarks or door numbers.</span>
-              </li>
-              <li className="flex items-start gap-1.5">
-                <CheckCircle2 className="size-3.5 text-signal-resolved shrink-0 mt-0.5" />
-                <span>Rate resolutions once work is finished.</span>
-              </li>
-            </ul>
+          {/* Civic Emergency & Ward Helplines */}
+          <div className="rounded-xl border border-line/80 bg-paper p-5 space-y-3.5 shadow-2xs">
+            <div className="flex items-center gap-2 pb-2 border-b border-line/50">
+              <PhoneCall className="size-3.5 text-ink/50" />
+              <h4 className="text-xs font-mono uppercase tracking-wider text-ink/60 font-semibold">
+                Civic Helplines
+              </h4>
+            </div>
+
+            <div className="space-y-2.5 text-xs font-body">
+              <div className="flex items-center justify-between p-2 rounded-md bg-field/30 border border-line/50">
+                <div>
+                  <p className="font-semibold text-ink">Municipal Services & Info</p>
+                  <p className="text-[10px] text-ink/50">Public helpline & complaints</p>
+                </div>
+                <span className="font-mono font-bold text-sm text-ledger">333</span>
+              </div>
+
+              <div className="flex items-center justify-between p-2 rounded-md bg-field/30 border border-line/50">
+                <div>
+                  <p className="font-semibold text-ink">National Emergency</p>
+                  <p className="text-[10px] text-ink/50">Police, Fire & Ambulance</p>
+                </div>
+                <span className="font-mono font-bold text-sm text-signal-open">999</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-
-      {/* Details Sheet Modal */}
-      <CitizenRequestDetailModal
-        isOpen={!!selectedRequestId}
-        onClose={() => setSelectedRequestId(null)}
-        requestId={selectedRequestId}
-      />
-
-      {/* Direct Feedback Dialog from Pending Banner */}
-      {feedbackTargetRequest && (
-        <CitizenFeedbackDialog
-          isOpen={!!feedbackTargetRequest}
-          onClose={() => setFeedbackTargetRequest(null)}
-          serviceRequestId={feedbackTargetRequest.id}
-          resolutionId={feedbackTargetRequest.civicIssue?.workOrders?.[0]?.resolution?.id}
-          resolutionSummary={
-            feedbackTargetRequest.civicIssue?.workOrders?.[0]?.resolution?.summary ||
-            feedbackTargetRequest.resolutionNotes
-          }
-          resolutionAttachments={
-            feedbackTargetRequest.civicIssue?.workOrders?.[0]?.resolution?.attachments
-          }
-          trackingNumber={feedbackTargetRequest.trackingNumber}
-        />
-      )}
     </div>
   );
 }

@@ -135,14 +135,14 @@ export function CitizenFeedbackDialog({
                   onClick={() => setRating(star)}
                   onMouseEnter={() => setHoverRating(star)}
                   onMouseLeave={() => setHoverRating(null)}
-                  className="p-1 rounded-sm text-ink/30 transition-transform hover:scale-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-signal-open cursor-pointer"
+                  className="p-1 rounded-sm text-ink/30 transition-transform hover:scale-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-ledger cursor-pointer"
                   aria-label={`Rate ${star} star${star > 1 ? "s" : ""}`}
                 >
                   <Star
                     className={cn(
                       "size-7 transition-colors",
                       star <= activeRating
-                        ? "fill-amber-400 text-amber-500"
+                        ? "fill-signal-progress text-signal-progress"
                         : "text-ink/20 hover:text-ink/40",
                     )}
                   />

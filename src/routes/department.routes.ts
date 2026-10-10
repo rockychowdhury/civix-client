@@ -1,4 +1,4 @@
-import { BarChart3, CheckSquare, FileText, Home, ListTodo, Users, UserPlus } from "lucide-react";
+import { BarChart3, CheckSquare, FileText, Home, ListTodo, UserPlus, Users } from "lucide-react";
 import type { NavItem } from "./types";
 
 export const departmentRoutes: NavItem[] = [

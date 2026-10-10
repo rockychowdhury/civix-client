@@ -1,7 +1,23 @@
 "use client";
 
-import { ArrowRight, RotateCcw, Share2 } from "lucide-react";
+import {
+  ArrowRight,
+  Calendar,
+  Check,
+  Clock,
+  Copy,
+  Download,
+  FileCheck2,
+  Loader2,
+  MapPin,
+  RotateCcw,
+  Share2,
+  ShieldCheck,
+  Tag,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import type { ServiceRequestResponse } from "@/types";
@@ -19,164 +35,345 @@ export function ConfirmationStep({
   onRetryAttachments,
   onReset,
 }: ConfirmationStepProps) {
+  const [copiedIssue, setCopiedIssue] = useState(false);
+  const [copiedReq, setCopiedReq] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+
   if (!response) return null;
 
-  const { trackingNumber, civicIssue, category } = response;
+  const { trackingNumber, civicIssue, category, location } = response;
+  const issueNumber = civicIssue?.issueNumber || trackingNumber;
   const reportedCount = civicIssue?.reportedCount || 1;
 
   const appUrl =
     process.env.NEXT_PUBLIC_APP_URL ||
     (typeof window !== "undefined" ? window.location.origin : "");
-  const trackUrl = `${appUrl}/track?issueNumber=${trackingNumber}`;
+  const trackUrl = `${appUrl}/track?issueNumber=${issueNumber}`;
+
+  const formatDateTime = (dateStr?: string | null) => {
+    if (!dateStr) return null;
+    try {
+      const d = new Date(dateStr);
+      return d.toLocaleDateString("en-US", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+      });
+    } catch {
+      return dateStr;
+    }
+  };
+
+  const handleCopy = async (text: string, isIssue: boolean) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      if (isIssue) {
+        setCopiedIssue(true);
+        setTimeout(() => setCopiedIssue(false), 2000);
+        toast.success("Issue tracking ID copied to clipboard");
+      } else {
+        setCopiedReq(true);
+        setTimeout(() => setCopiedReq(false), 2000);
+        toast.success("Service request reference copied to clipboard");
+      }
+    } catch {
+      toast.error("Failed to copy to clipboard");
+    }
+  };
 
   const handleShare = async () => {
-    const summary = `I reported "${category?.name ?? "a civic issue"}" on Civix (Ref ${trackingNumber}).`;
+    const summary = `Civic Issue #${issueNumber}: "${category?.name || "Reported Issue"}" in ${location?.address || "your city"}. Track real-time progress:`;
     try {
       if (typeof navigator.share === "function") {
         await navigator.share({
-          title: "Civix report",
+          title: `Civix Issue ${issueNumber}`,
           text: summary,
           url: trackUrl,
         });
       } else {
-        const copyText = `${summary} Track it: ${trackUrl}`;
-        await navigator.clipboard.writeText(copyText);
-        toast.success("Share details copied to clipboard");
+        await navigator.clipboard.writeText(`${summary} ${trackUrl}`);
+        toast.success("Tracking link copied to clipboard");
       }
     } catch {
-      // User closed the share sheet or clipboard was unavailable — low-stakes, skip silently.
+      // User cancelled share
     }
   };
 
-  const handleCopyTrackingNumber = async () => {
+  const handleDownloadCard = async () => {
+    if (!cardRef.current) return;
     try {
-      await navigator.clipboard.writeText(trackingNumber);
-      toast.success("Tracking number copied to clipboard");
-    } catch {
-      toast.error("Failed to copy tracking number");
+      setIsDownloading(true);
+      const { toPng } = await import("html-to-image");
+      const dataUrl = await toPng(cardRef.current, {
+        cacheBust: true,
+        quality: 0.95,
+        pixelRatio: 2,
+        backgroundColor: "#FAF8F5",
+      });
+
+      const link = document.createElement("a");
+      link.download = `Civix-Issue-${issueNumber}.png`;
+      link.href = dataUrl;
+      link.click();
+      toast.success("Issue snapshot downloaded");
+    } catch (_err) {
+      toast.error("Could not generate snapshot download", {
+        description: "Please take a screenshot or copy the issue tracking ID.",
+      });
+    } finally {
+      setIsDownloading(false);
     }
   };
+
+  const submittedTime = formatDateTime(response.submittedAt || response.createdAt);
+  const resolutionDeadline = formatDateTime(civicIssue?.resolutionDeadlineAt);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] py-12">
-      <div className="w-full max-w-lg bg-paper border border-line rounded-xs overflow-hidden relative animate-slide-up motion-reduce:animate-none">
-        {/* Decorative receipt edge */}
-        <div className="absolute top-0 left-0 w-full h-2 bg-[radial-gradient(circle,transparent_4px,currentColor_5px)] bg-[size:10px_10px] -mt-1 text-paper" />
+    <div className="flex flex-col items-center justify-center min-h-[50vh] py-6 sm:py-10 animate-slide-up motion-reduce:animate-none">
+      {/* Official Civic Issue Tracking Card */}
+      <div
+        ref={cardRef}
+        className="w-full max-w-xl bg-paper border border-line/70 rounded-2xl overflow-hidden shadow-lg transition-all text-ink"
+      >
+        {/* Top Accent Strip */}
+        <div className="h-2 w-full bg-ledger" />
 
-        <div className="relative p-8 sm:p-12 text-center space-y-8">
-          {/* Official stamp — settles in with a single scale+opacity motion */}
-          <div
-            aria-hidden="true"
-            className="absolute right-6 top-8 h-24 w-24 -rotate-12 rounded-full border-2 border-dashed border-ledger/60 text-ledger animate-slide-up [animation-delay:150ms] motion-reduce:animate-none opacity-80 select-none"
-          >
-            <div className="flex h-full w-full items-center justify-center rounded-full">
-              <p className="px-2 font-mono text-[0.625rem] font-semibold uppercase tracking-[0.18em] text-center leading-relaxed">
-                Received
-                <span className="block">Civix</span>
-              </p>
+        <div className="p-6 sm:p-8 space-y-6">
+          {/* Header Row: Seal / Badges */}
+          <div className="flex items-start justify-between gap-4 pb-4 border-b border-line/40">
+            <div className="flex items-center gap-3">
+              <div className="h-11 w-11 rounded-xl bg-ledger/10 text-ledger flex items-center justify-center shrink-0 border border-ledger/20 shadow-xs">
+                <ShieldCheck className="h-6 w-6" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-[10px] uppercase font-bold tracking-widest text-ledger">
+                    CIVIX OFFICIAL DISPATCH
+                  </span>
+                  <span className="h-1 w-1 rounded-full bg-line" />
+                  <span className="font-mono text-[10px] text-ink/50 uppercase">
+                    {submittedTime ? submittedTime.split(",")[0] : "Verified"}
+                  </span>
+                </div>
+                <h3 className="font-display text-base font-bold text-ink">Civic Issue Manifest</h3>
+              </div>
+            </div>
+
+            <div className="flex flex-col items-end gap-1">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono font-medium bg-signal-resolved/10 text-signal-resolved border border-signal-resolved/20">
+                <span className="h-1.5 w-1.5 rounded-full bg-signal-resolved animate-pulse" />
+                {civicIssue?.status || response.status || "IN_PROGRESS"}
+              </span>
+              <span className="text-[10px] font-mono text-ink/45">Dispatched to Queue</span>
             </div>
           </div>
 
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-ledger/10 text-ledger">
-            <svg
-              viewBox="0 0 24 24"
-              className="h-8 w-8"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M20 6 9 17l-5-5" />
-            </svg>
-          </div>
+          {/* Primary Reference: Civic Issue Number */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-[11px] uppercase tracking-wider text-ink/55 font-medium flex items-center gap-1.5">
+                <FileCheck2 className="w-3.5 h-3.5 text-ledger" /> Primary Civic Issue ID
+              </span>
+              <span className="font-mono text-[10px] text-ink/45">Use for public lookup</span>
+            </div>
 
-          <div className="space-y-2">
-            <p className="font-mono text-xs uppercase tracking-[0.1em] text-ink/50">
-              Official Reference
-            </p>
-            <div className="flex items-center justify-center border-y border-line py-4">
-              <h2 className="font-mono text-2xl sm:text-3xl tracking-tight text-ink">
-                {trackingNumber}
-              </h2>
+            <div className="flex items-center justify-between gap-3 p-3.5 sm:p-4 rounded-xl border border-line/70 bg-field/30 shadow-xs">
+              <div className="min-w-0">
+                <span className="font-mono text-2xl sm:text-3xl font-extrabold tracking-tight text-ink select-all break-all">
+                  {issueNumber}
+                </span>
+              </div>
               <Button
                 variant="ghost"
-                size="icon"
-                onClick={handleCopyTrackingNumber}
-                className="ml-2 h-8 w-8 text-ink/50 hover:text-ink cursor-pointer"
-                title="Copy tracking number"
+                size="sm"
+                onClick={() => handleCopy(issueNumber, true)}
+                className="h-8 px-2.5 text-xs gap-1.5 text-ink/70 hover:text-ink hover:bg-field/70 cursor-pointer rounded-lg border border-line/50 shrink-0"
+                title="Copy issue tracking ID"
               >
-                <svg
-                  viewBox="0 0 24 24"
-                  className="h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
+                {copiedIssue ? (
+                  <>
+                    <Check className="h-3.5 w-3.5 text-ledger" />
+                    <span className="font-medium text-ledger">Copied</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-3.5 w-3.5" />
+                    <span>Copy</span>
+                  </>
+                )}
               </Button>
             </div>
           </div>
 
-          <div className="space-y-4 text-ink/80 font-body text-sm">
-            {reportedCount === 1 ? (
-              <p>
-                You&apos;re the first to report this. Thank you for keeping watch over your
-                neighborhood.
-              </p>
-            ) : (
-              <p>
-                You&apos;ve joined {reportedCount - 1} other neighbors already tracking this issue —
-                that helps it get prioritized.
-              </p>
-            )}
-
-            <div className="pt-4 border-t border-line border-dashed">
-              <p className="text-xs text-ink/60 uppercase tracking-wide mb-1">Routed to</p>
-              <p className="font-medium">{category?.name} Department</p>
+          {/* Secondary Statement: Service Request Reference */}
+          <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-field/15 border border-line/40 text-xs font-mono">
+            <span className="text-ink/60">Service Request:</span>
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-ink select-all">{trackingNumber}</span>
+              <button
+                type="button"
+                onClick={() => handleCopy(trackingNumber, false)}
+                className="text-ink/50 hover:text-ink cursor-pointer transition-colors p-0.5"
+                title="Copy service request number"
+              >
+                {copiedReq ? (
+                  <Check className="h-3.5 w-3.5 text-ledger" />
+                ) : (
+                  <Copy className="h-3.5 w-3.5" />
+                )}
+              </button>
             </div>
+          </div>
+
+          {/* Issue Details Grid */}
+          <div className="grid gap-3 sm:grid-cols-2 pt-1 font-body text-xs">
+            {/* Problem Type */}
+            <div className="p-3 rounded-xl border border-line/40 bg-field/20 space-y-1">
+              <div className="flex items-center gap-1.5 text-ink/50 font-mono text-[10px] uppercase tracking-wider">
+                <Tag className="w-3 h-3 text-ledger" /> Problem Type
+              </div>
+              <p className="font-display text-sm font-semibold text-ink">
+                {category?.name || "Civic Infrastructure"}
+              </p>
+              {civicIssue?.title && (
+                <p className="text-[11px] text-ink/65 line-clamp-1">{civicIssue.title}</p>
+              )}
+            </div>
+
+            {/* SLA / Timeline */}
+            <div className="p-3 rounded-xl border border-line/40 bg-field/20 space-y-1">
+              <div className="flex items-center gap-1.5 text-ink/50 font-mono text-[10px] uppercase tracking-wider">
+                <Clock className="w-3 h-3 text-ledger" /> Target Resolution
+              </div>
+              <p className="font-display text-sm font-semibold text-ink">
+                {resolutionDeadline || "Under SLA Dispatch"}
+              </p>
+              <p className="text-[11px] text-ink/65">
+                {reportedCount === 1 ? (
+                  <span className="flex items-center gap-1">
+                    <Users className="w-3 h-3 text-ledger" /> 1st Citizen Report
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1">
+                    <Users className="w-3 h-3 text-ledger" /> {reportedCount} Citizens Corroborated
+                  </span>
+                )}
+              </p>
+            </div>
+
+            {/* Location Details */}
+            <div className="sm:col-span-2 p-3 rounded-xl border border-line/40 bg-field/20 space-y-1.5">
+              <div className="flex items-center justify-between text-ink/50 font-mono text-[10px] uppercase tracking-wider">
+                <span className="flex items-center gap-1.5">
+                  <MapPin className="w-3 h-3 text-ledger" /> Physical Incident Site
+                </span>
+                {location?.latitude && location?.longitude && (
+                  <span className="text-[10px] text-ink/60 font-mono">
+                    {location.latitude.toFixed(4)}, {location.longitude.toFixed(4)}
+                  </span>
+                )}
+              </div>
+              <p className="font-medium text-ink text-xs sm:text-sm">
+                {location?.address || "Address Recorded"}
+              </p>
+              {(location?.landmark || location?.postalCode) && (
+                <p className="text-[11px] text-ink/65 flex items-center gap-2">
+                  {location.landmark && <span>Landmark: {location.landmark}</span>}
+                  {location.landmark && location.postalCode && <span>•</span>}
+                  {location.postalCode && <span>Postal: {location.postalCode}</span>}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Card Footer Stamp */}
+          <div className="pt-3 border-t border-line/40 flex items-center justify-between text-[11px] font-mono text-ink/45">
+            <span className="flex items-center gap-1">
+              <Calendar className="w-3 h-3 text-ledger" /> Logged: {submittedTime || "Today"}
+            </span>
+            <span>Civix Public Infrastructure</span>
           </div>
         </div>
       </div>
 
-      <div className="mt-8 space-y-4 w-full max-w-lg">
+      {/* Attachment status banner if uploading or errored */}
+      <div className="mt-6 space-y-4 w-full max-w-xl">
         {attachmentStatus === "uploading" && (
-          <div className="text-center text-sm text-ink/60 animate-dot motion-reduce:animate-none">
-            Attaching your photos...
+          <div className="text-center text-xs font-mono text-ink/60 animate-pulse flex items-center justify-center gap-2">
+            <Loader2 className="w-3.5 h-3.5 animate-spin" /> Synchronizing photo evidence to
+            repository...
           </div>
         )}
 
         {attachmentStatus === "error" && (
-          <div className="flex items-center justify-between gap-3 rounded-xs border border-signal-open/25 bg-signal-open/[0.06] p-4">
-            <p className="text-sm text-signal-open">
-              Some photos didn&apos;t upload — your report is safe. Would you like to retry?
+          <div className="flex items-center justify-between gap-3 rounded-xl border border-signal-open/30 bg-signal-open/[0.06] p-3.5 text-xs">
+            <p className="text-signal-open font-medium">
+              Report registered, but attached photos encountered a synchronization issue.
             </p>
-            <Button variant="secondary" size="sm" onClick={onRetryAttachments} className="gap-2">
-              <RotateCcw className="w-4 h-4" /> Retry
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={onRetryAttachments}
+              className="gap-1.5 shrink-0 cursor-pointer h-8 text-xs"
+            >
+              <RotateCcw className="w-3 h-3" /> Retry Upload
             </Button>
           </div>
         )}
 
-        <div className="flex flex-col gap-3">
-          {/* Typically navigates to a real tracking page, using href="#" for now */}
-          <Link href={`/track?issueNumber=${trackingNumber}`} className="w-full">
-            <Button size="lg" className="w-full gap-2 cursor-pointer">
-              Track this report <ArrowRight className="w-4 h-4" />
-            </Button>
-          </Link>
+        {/* Modern Action Buttons */}
+        <div className="space-y-3 pt-1">
+          <div className="flex flex-col sm:flex-row items-center gap-2.5">
+            <Link href={`/track?issueNumber=${issueNumber}`} className="w-full sm:flex-1">
+              <Button
+                size="default"
+                className="w-full h-10 px-4 text-xs sm:text-sm font-medium gap-2 cursor-pointer rounded-xl shadow-xs bg-ledger text-paper hover:bg-ledger/90"
+              >
+                Track Issue in Real-Time <ArrowRight className="w-4 h-4" />
+              </Button>
+            </Link>
 
-          <div className="flex flex-col items-center gap-1">
-            <Button variant="ghost" onClick={handleShare} className="gap-2 text-ink/50">
-              <Share2 className="h-4 w-4" /> Let others know this was reported
+            <Button
+              variant="secondary"
+              size="default"
+              onClick={handleDownloadCard}
+              disabled={isDownloading}
+              className="w-full sm:w-auto h-10 px-4 text-xs sm:text-sm font-medium gap-2 cursor-pointer rounded-xl border-line/70 bg-paper hover:bg-field/50 text-ink shadow-xs shrink-0"
+              title="Save issue snapshot as PNG image"
+            >
+              {isDownloading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" /> Saving...
+                </>
+              ) : (
+                <>
+                  <Download className="w-4 h-4" /> Snapshot
+                </>
+              )}
             </Button>
-            <Button variant="ghost" onClick={onReset} className="text-ink/60">
-              Report another issue
-            </Button>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-4 pt-2 text-xs font-medium">
+            <button
+              type="button"
+              onClick={handleShare}
+              className="inline-flex items-center gap-1.5 text-ink/65 hover:text-ink cursor-pointer transition-colors"
+            >
+              <Share2 className="h-3.5 w-3.5 text-ledger" /> Share Issue Link
+            </button>
+
+            <span className="text-line">•</span>
+
+            <button
+              type="button"
+              onClick={onReset}
+              className="inline-flex items-center gap-1.5 text-ink/65 hover:text-ink cursor-pointer transition-colors"
+            >
+              <RotateCcw className="h-3.5 w-3.5" /> Submit Another Report
+            </button>
           </div>
         </div>
       </div>

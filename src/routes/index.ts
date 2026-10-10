@@ -18,6 +18,7 @@ export * from "./citizen.routes";
 export * from "./city.routes";
 export * from "./department.routes";
 export * from "./municipality.routes";
+export * from "./navbar.routes";
 export * from "./system.routes";
 export * from "./technician.routes";
 export * from "./types";

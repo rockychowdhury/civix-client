@@ -1,14 +1,13 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
-import { ChevronDown, LayoutDashboard, LogOut } from "lucide-react";
+import { ArrowRight, ChevronDown, FilePlus2, LogIn, LogOut, Search } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Logo } from "@/components/shared/logo";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useGetMe, useLogout } from "@/hooks/auth.hook";
-import { getDashboardHref } from "@/lib/role-routing";
+import { getNavbarRoleMenu } from "@/routes";
 import { Container } from "./container";
 
 const RESOLVED_THIS_MONTH = "14,208";
@@ -33,7 +32,7 @@ export function Navbar() {
   const user = data?.data;
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    const handleScroll = () => setIsScrolled(window.scrollY > 15);
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
@@ -42,7 +41,7 @@ export function Navbar() {
   const handleLogout = () => {
     logoutMutation.mutate(undefined, {
       onSuccess: () => {
-        toast.success("Tata", {
+        toast.success("Signed out", {
           description: "Logged out successfully",
         });
         queryClient.removeQueries({ queryKey: ["user"] });
@@ -50,23 +49,25 @@ export function Navbar() {
       },
       onError: () => {
         toast.error("Logout failed", {
-          description: "Something went wrong",
+          description: "Something went wrong while signing out",
         });
       },
     });
   };
 
   const userName = user?.citizenProfile?.firstName
-    ? `${user.citizenProfile.firstName} ${user.citizenProfile.lastName}`
-    : user?.email;
+    ? `${user.citizenProfile.firstName} ${user.citizenProfile.lastName || ""}`.trim()
+    : user?.email?.split("@")[0] || "User";
 
-  let dashboardHref: string | undefined;
+  const userInitials = (
+    user?.citizenProfile?.firstName?.[0]
+      ? `${user.citizenProfile.firstName[0]}${user.citizenProfile?.lastName?.[0] || ""}`
+      : user?.email?.[0] || "U"
+  ).toUpperCase();
+
+  // Extract roles cleanly
+  const roles: string[] = [];
   if (user) {
-    const roles: string[] = [];
-
-    // The backend provides "userRoles" for this user schema.
-    // Prefer the stable role `code` ("SUPER_ADMIN") over the display `name`
-    // ("Super Admin") so downstream matching never misses.
     if (user.userRoles && Array.isArray(user.userRoles)) {
       roles.push(
         ...user.userRoles.map((ur: any) => ur?.role?.code || ur?.role?.name).filter(Boolean),
@@ -80,90 +81,194 @@ export function Navbar() {
     } else if (user.role) {
       roles.push(user.role);
     }
-    dashboardHref = getDashboardHref(roles);
   }
+
+  const roleMenu = getNavbarRoleMenu(roles);
 
   return (
     <nav
       aria-label="Main navigation"
-      className={`sticky top-0 z-[100] border-b border-paper/10 bg-ledger transition-[height] duration-200 ${
-        isScrolled ? "h-12" : "h-14"
+      className={`sticky top-0 z-[100] border-b border-paper/10 bg-ledger backdrop-blur-md transition-all duration-200 ${
+        isScrolled ? "h-13 shadow-md" : "h-15"
       }`}
     >
-      <Container className="flex h-full max-w-[1400px] items-center justify-between gap-4">
-        <div className="flex shrink-0 items-center gap-4">
-          <Logo className="text-paper" textClassName="text-[clamp(0.875rem,2vw,1rem)]" />
-          <span className="inline-flex items-center gap-1.5 font-body text-xs font-medium text-signal-resolved hidden sm:inline-flex">
+      <Container className="flex h-full max-w-[1400px] items-center justify-between gap-3">
+        {/* Left: Brand Logo & Live Stat Ticker */}
+        <div className="flex shrink-0 items-center gap-3 sm:gap-4">
+          <Logo className="text-paper" textClassName="text-[clamp(0.925rem,2vw,1.05rem)]" />
+
+          <div className="hidden lg:flex items-center gap-2 px-2.5 py-1 rounded-full bg-paper/10 border border-paper/10 font-body text-xs font-medium text-signal-resolved">
             <span
               className="size-1.5 shrink-0 animate-dot rounded-full bg-signal-resolved motion-reduce:animate-none"
               aria-hidden="true"
             />
-            {RESOLVED_THIS_MONTH} resolved this month
-          </span>
+            <span>{RESOLVED_THIS_MONTH} resolved this month</span>
+          </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-          <Button asChild variant="ghost" size="sm" className="px-0 text-paper/80 hover:text-paper">
-            <Link href="/track">Track a Report</Link>
-          </Button>
+        {/* Right Action Bar */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Public Track Link */}
+          <Link
+            href="/track"
+            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-paper/80 hover:text-paper hover:bg-paper/10 transition-colors cursor-pointer"
+          >
+            <Search className="size-3.5 text-paper/60" />
+            <span>Track Issue</span>
+          </Link>
 
-          <Button asChild variant="inverse" size="sm" className="shrink-0 px-4 py-2">
-            <Link href="/report">Report an Issue</Link>
-          </Button>
+          {/* Standout "Report an Issue" CTA */}
+          <Link
+            href="/report"
+            className="group relative inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold bg-paper text-ledger hover:bg-paper/90 transition-all shadow-xs hover:shadow-md hover:-translate-y-px active:translate-y-0 cursor-pointer shrink-0"
+          >
+            <FilePlus2 className="size-3.5 sm:size-4 text-ledger shrink-0 transition-transform group-hover:scale-110" />
+            <span>Report Issue</span>
+          </Link>
 
+          {/* Conditional Auth Section */}
           {!isLoading && user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="gap-2 px-2 text-paper hover:bg-paper/10 hover:text-paper focus:ring-0 focus-visible:ring-0 focus-visible:outline-none border-0 outline-none ring-0"
+                <button
+                  type="button"
+                  className="group flex items-center gap-2 p-1 sm:pr-2.5 rounded-full sm:rounded-xl bg-paper/10 hover:bg-paper/15 border border-paper/15 text-paper transition-all cursor-pointer shadow-xs outline-none focus-visible:ring-2 focus-visible:ring-paper/40"
                 >
-                  <span className="font-body text-sm font-medium">{userName}</span>
-                  <ChevronDown className="size-4 text-paper/70" />
-                </Button>
+                  <div className="size-7 sm:size-7.5 rounded-full bg-paper/20 border border-paper/30 text-paper flex items-center justify-center font-mono text-[11px] font-bold shrink-0 shadow-2xs">
+                    {userInitials}
+                  </div>
+                  <div className="hidden sm:flex flex-col items-start leading-none text-left">
+                    <span className="text-xs font-semibold text-paper max-w-[110px] truncate">
+                      {userName}
+                    </span>
+                    <span className="text-[9px] font-mono text-paper/60 uppercase tracking-wider mt-0.5">
+                      {roleMenu.badge}
+                    </span>
+                  </div>
+                  <ChevronDown className="size-3.5 text-paper/60 transition-transform duration-200 group-data-[state=open]:rotate-180 shrink-0 ml-0.5" />
+                </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 font-body">
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none text-ink">{userName}</p>
-                    <p className="text-xs leading-none text-ink/70">{user.email}</p>
+
+              <DropdownMenuContent
+                align="end"
+                className="w-68 sm:w-72 font-body p-1.5 bg-paper border border-line/70 shadow-xl rounded-2xl text-ink animate-slide-up"
+              >
+                {/* Profile Header */}
+                <DropdownMenuLabel className="p-0 font-normal">
+                  <div className="flex items-center gap-3 p-2.5 rounded-xl bg-field/30 border border-line/40">
+                    <div className="size-9 rounded-full bg-ledger text-paper flex items-center justify-center font-mono text-xs font-bold shrink-0 shadow-xs">
+                      {userInitials}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-bold text-ink truncate">{userName}</p>
+                      <p className="text-[11px] text-ink/55 truncate">{user.email}</p>
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded bg-ledger/10 text-ledger font-semibold border border-ledger/20">
+                          {roleMenu.badge}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {dashboardHref && dashboardHref !== "/" && (
+
+                {/* Role Specific Routes */}
+                <div className="px-2 pt-2.5 pb-1 text-[10px] font-mono uppercase tracking-wider text-ink/40 font-semibold">
+                  {roleMenu.title}
+                </div>
+
+                <div className="space-y-0.5">
+                  {roleMenu.routes.map((route) => {
+                    const Icon = route.icon;
+                    return (
+                      <DropdownMenuItem
+                        key={route.href}
+                        asChild
+                        className="rounded-lg py-2 px-2.5 cursor-pointer hover:bg-field/60 focus:bg-field/70 transition-colors"
+                      >
+                        <Link
+                          href={route.href}
+                          className="flex items-center justify-between w-full"
+                        >
+                          <div className="flex items-center gap-2.5 text-xs text-ink font-medium">
+                            <Icon className="size-3.5 text-ledger shrink-0" />
+                            <span>{route.label}</span>
+                          </div>
+                          <ArrowRight className="size-3 text-ink/30" />
+                        </Link>
+                      </DropdownMenuItem>
+                    );
+                  })}
+                </div>
+
+                <DropdownMenuSeparator className="my-1.5 bg-line/40" />
+
+                {/* Common Utilities */}
+                <div className="px-2 pt-1 pb-1 text-[10px] font-mono uppercase tracking-wider text-ink/40 font-semibold">
+                  Quick Actions
+                </div>
+
+                <div className="space-y-0.5">
                   <DropdownMenuItem
                     asChild
-                    className="cursor-pointer transition-colors focus:bg-ink/5"
+                    className="rounded-lg py-2 px-2.5 cursor-pointer hover:bg-field/60 focus:bg-field/70 transition-colors"
                   >
-                    <Link href={dashboardHref} className="flex items-center w-full">
-                      <LayoutDashboard className="mr-2 size-4 text-ink/70" />
-                      <span>Dashboard</span>
+                    <Link
+                      href="/report"
+                      className="flex items-center gap-2.5 text-xs text-ink font-medium"
+                    >
+                      <FilePlus2 className="size-3.5 text-ledger shrink-0" />
+                      <span>Report New Incident</span>
                     </Link>
                   </DropdownMenuItem>
-                )}
+
+                  <DropdownMenuItem
+                    asChild
+                    className="rounded-lg py-2 px-2.5 cursor-pointer hover:bg-field/60 focus:bg-field/70 transition-colors"
+                  >
+                    <Link href="/track" className="flex items-center gap-2.5 text-xs text-ink">
+                      <Search className="size-3.5 text-ink/60 shrink-0" />
+                      <span>Track Status by Reference</span>
+                    </Link>
+                  </DropdownMenuItem>
+                </div>
+
+                <DropdownMenuSeparator className="my-1.5 bg-line/40" />
+
+                {/* Logout Action */}
                 <DropdownMenuItem
                   onClick={handleLogout}
                   disabled={logoutMutation.isPending}
-                  className="cursor-pointer text-red-600 transition-colors focus:text-red-700 focus:bg-red-50 dark:focus:bg-red-950/50"
+                  className="rounded-lg py-2 px-2.5 cursor-pointer text-signal-open hover:bg-signal-open/10 focus:bg-signal-open/10 focus:text-signal-open transition-colors"
                 >
-                  <LogOut className="mr-2 size-4" />
-                  <span>{logoutMutation.isPending ? "Logging out..." : "Log out"}</span>
+                  <div className="flex items-center gap-2.5 text-xs font-medium">
+                    <LogOut className="size-3.5 shrink-0" />
+                    <span>{logoutMutation.isPending ? "Signing out..." : "Sign out"}</span>
+                  </div>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : !isLoading && !user ? (
-            <Button
-              asChild
-              variant="ghost"
-              size="sm"
-              className="px-0 text-paper/80 hover:text-paper"
-            >
-              <Link href="/login">Log in</Link>
-            </Button>
+            <div className="flex items-center gap-1.5">
+              <Link
+                href="/login"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-paper/85 hover:text-paper hover:bg-paper/10 transition-colors cursor-pointer"
+              >
+                <LogIn className="size-3.5 text-paper/70" />
+                <span>Log in</span>
+              </Link>
+              <Link
+                href="/register"
+                className="hidden sm:inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium bg-paper/15 hover:bg-paper/20 border border-paper/20 text-paper transition-all cursor-pointer shadow-xs"
+              >
+                Register
+              </Link>
+            </div>
           ) : null}
 
-          <ThemeToggle className="text-paper" />
+          {/* Theme Switcher */}
+          <div className="border-l border-paper/15 pl-2 sm:pl-3">
+            <ThemeToggle className="text-paper hover:bg-paper/10 rounded-lg size-8" />
+          </div>
         </div>
       </Container>
     </nav>

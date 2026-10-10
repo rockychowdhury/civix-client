@@ -85,7 +85,7 @@ export async function getMyProfile() {
 }
 
 /**
- * Update citizen profile details (name, phone, address).
+ * Update citizen profile details (name, phone, displayName, nidNumber).
  * PATCH /api/v1/users/me
  */
 export async function updateMyProfile(payload: UpdateMyProfilePayload) {
@@ -93,4 +93,22 @@ export async function updateMyProfile(payload: UpdateMyProfilePayload) {
     method: "PATCH",
     body: payload,
   });
+}
+
+/**
+ * Cancel an active service request submitted by citizen.
+ * PATCH /api/v1/service-requests/:id/status or /service-requests/:id
+ */
+export async function cancelServiceRequest(id: string, reason?: string) {
+  try {
+    return await apiClient<{ data: ServiceRequest }>(`/service-requests/${id}/status`, {
+      method: "PATCH",
+      body: { status: "CANCELLED", reason },
+    });
+  } catch (_err) {
+    return await apiClient<{ data: ServiceRequest }>(`/service-requests/${id}`, {
+      method: "PATCH",
+      body: { status: "CANCELLED", reason },
+    });
+  }
 }

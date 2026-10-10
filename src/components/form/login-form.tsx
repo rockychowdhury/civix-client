@@ -1,6 +1,7 @@
 "use client";
 
 import { useForm } from "@tanstack/react-form";
+import { useQueryClient } from "@tanstack/react-query";
 import { ArrowRight, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -51,6 +52,7 @@ const DEMO_ACCOUNTS = [
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { mutate: login, isPending: loginPending } = useLogin();
 
   const form = useForm({
@@ -69,9 +71,19 @@ export default function LoginForm() {
       };
 
       login(loginData, {
-        onSuccess: (res) => {
+        onSuccess: (res: any) => {
+          queryClient.invalidateQueries({ queryKey: ["user"] });
+          const userName =
+            res.data?.user?.displayName ||
+            (res.data?.user?.citizenProfile?.firstName
+              ? `${res.data.user.citizenProfile.firstName} ${res.data.user.citizenProfile.lastName || ""}`.trim()
+              : null) ||
+            res.data?.user?.email;
+
           toast.success("Welcome back", {
-            description: `${res.data?.user?.displayName} you are logged in successfully`,
+            description: userName
+              ? `${userName}, you are logged in successfully.`
+              : "You are logged in successfully.",
           });
           router.push("/");
         },
@@ -227,9 +239,17 @@ export default function LoginForm() {
                   login(
                     { email: account.email, password: account.password },
                     {
-                      onSuccess: (res) => {
+                      onSuccess: (res: any) => {
+                        queryClient.invalidateQueries({ queryKey: ["user"] });
+                        const userName =
+                          res.data?.user?.displayName ||
+                          (res.data?.user?.citizenProfile?.firstName
+                            ? `${res.data.user.citizenProfile.firstName} ${res.data.user.citizenProfile.lastName || ""}`.trim()
+                            : null) ||
+                          account.label;
+
                         toast.success("Welcome back", {
-                          description: `${res.data?.user?.displayName || account.label} you are logged in successfully`,
+                          description: `${userName}, you are logged in successfully.`,
                         });
                         router.push("/");
                       },

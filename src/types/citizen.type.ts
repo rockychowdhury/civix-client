@@ -6,6 +6,8 @@ export interface CitizenProfile {
   firstName?: string;
   lastName?: string;
   phone?: string | null;
+  displayName?: string | null;
+  nidNumber?: string | null;
   address?: string | null;
   trustLevel?: CitizenTrustLevel | string;
   reputationScore?: number;
@@ -20,6 +22,7 @@ export interface CurrentCitizenUser {
   email: string;
   phone?: string | null;
   displayName?: string | null;
+  nidNumber?: string | null;
   status: string;
   isEmailVerified?: boolean;
   isPhoneVerified?: boolean;
@@ -33,7 +36,8 @@ export interface UpdateMyProfilePayload {
   firstName?: string;
   lastName?: string;
   phone?: string;
-  address?: string;
+  displayName?: string;
+  nidNumber?: string;
 }
 
 export interface CreateFeedbackPayload {

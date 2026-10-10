@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
+  cancelServiceRequest,
   getCitizenFeedbackById,
   getCitizenServiceRequestById,
   getMyProfile,
@@ -13,6 +14,23 @@ import {
 import { getCivicIssueById } from "@/api/oversight.api";
 import { CITIZEN_QUERY_KEYS } from "@/constant/citizen.constant";
 import type { CreateFeedbackPayload, UpdateMyProfilePayload } from "@/types";
+
+export function useCancelServiceRequest() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, reason }: { id: string; reason?: string }) =>
+      cancelServiceRequest(id, reason),
+    onSuccess: () => {
+      toast.success("Service request cancelled successfully", { position: "bottom-right" });
+      queryClient.invalidateQueries({ queryKey: CITIZEN_QUERY_KEYS.myRequests });
+      queryClient.invalidateQueries({ queryKey: ["service-requests"] });
+    },
+    onError: (error: any) => {
+      const message = error?.data?.message || error?.message || "Failed to cancel request";
+      toast.error(message, { position: "bottom-right" });
+    },
+  });
+}
 
 export function useMyServiceRequests(params?: MyRequestsFilter) {
   return useQuery({
