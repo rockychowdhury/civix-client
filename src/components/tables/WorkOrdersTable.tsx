@@ -8,15 +8,18 @@ import {
   type SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp, ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
-import * as React from "react";
-import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Archive,
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  CheckCircle2,
+  Inbox,
+  Search,
+  ShieldCheck,
+  UserCheck,
+} from "lucide-react";
+import * as React from "react";
 import {
   Table,
   TableBody,
@@ -27,10 +30,61 @@ import {
 } from "@/components/ui/table";
 import type { WorkOrder } from "@/types";
 import { columns } from "./columns/work-order-columns";
+import { DataTablePagination } from "./DataTablePagination";
+
+function getEmptyState(tab: string, searchTerm?: string) {
+  if (searchTerm && searchTerm.trim()) {
+    return {
+      icon: Search,
+      title: `No work orders matching "${searchTerm.trim()}"`,
+      description:
+        "Try adjusting or clearing your search term to view other department work orders.",
+    };
+  }
+
+  switch (tab) {
+    case "WORK_ORDER_CREATED":
+      return {
+        icon: UserCheck,
+        title: "All Work Orders Assigned",
+        description:
+          "All work orders have already been handed over to a technician or maintenance crew. Newly created dispatches will appear here.",
+      };
+    case "ASSIGNED,TEAM_ASSIGNED,IN_PROGRESS":
+      return {
+        icon: CheckCircle2,
+        title: "No Active Field Operations",
+        description:
+          "There is currently no ongoing field work in progress. Work orders will appear here once assigned crews begin work.",
+      };
+    case "PENDING_VERIFICATION":
+      return {
+        icon: ShieldCheck,
+        title: "No Resolutions Awaiting Verification",
+        description:
+          "All submitted resolution records have been verified. Work orders will appear here when technicians finish field work and submit proof.",
+      };
+    case "RESOLVED,CLOSED":
+      return {
+        icon: Archive,
+        title: "No Completed Work Orders Yet",
+        description:
+          "No work orders have reached completed status yet. Verified and signed-off jobs will be archived here for record keeping.",
+      };
+    default:
+      return {
+        icon: Inbox,
+        title: "No Work Orders Found",
+        description: "There are currently no work orders recorded for this section.",
+      };
+  }
+}
 
 interface WorkOrdersTableProps {
   data: WorkOrder[];
   currentTab: string;
+  searchTerm?: string;
+  totalCount?: number;
   onRowClick?: (workOrder: WorkOrder, event: React.MouseEvent) => void;
   selectedId?: string;
   onAccept?: (assignmentId: string, e: React.MouseEvent) => void;
@@ -44,6 +98,8 @@ interface WorkOrdersTableProps {
 export function WorkOrdersTable({
   data,
   currentTab,
+  searchTerm,
+  totalCount,
   onRowClick,
   selectedId,
   onAccept,
@@ -54,6 +110,8 @@ export function WorkOrdersTable({
   isStarting,
 }: WorkOrdersTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const emptyState = getEmptyState(currentTab, searchTerm);
+  const EmptyIcon = emptyState.icon;
 
   const table = useReactTable({
     data,
@@ -137,12 +195,19 @@ export function WorkOrdersTable({
             ))
           ) : (
             <TableRow className="hover:bg-transparent border-none">
-              <TableCell colSpan={columns.length} className="h-64 text-center">
-                <div className="flex flex-col items-center justify-center space-y-3">
-                  <div className="h-12 w-12 rounded-full bg-ink/5 flex items-center justify-center mb-2">
-                    <span className="text-ink/20 text-xl font-display">?</span>
+              <TableCell colSpan={columns.length} className="h-72 text-center py-12">
+                <div className="flex flex-col items-center justify-center space-y-3.5 max-w-md mx-auto">
+                  <div className="h-12 w-12 rounded-full bg-field border border-line/40 flex items-center justify-center text-ledger shadow-xs">
+                    <EmptyIcon className="h-6 w-6 stroke-[1.75]" />
                   </div>
-                  <p className="text-ink/50 font-body text-lg">No work orders found.</p>
+                  <div className="space-y-1">
+                    <h3 className="text-base font-display font-medium text-ink tracking-tight">
+                      {emptyState.title}
+                    </h3>
+                    <p className="text-xs text-ink/60 font-body leading-relaxed max-w-sm mx-auto">
+                      {emptyState.description}
+                    </p>
+                  </div>
                 </div>
               </TableCell>
             </TableRow>
@@ -151,55 +216,7 @@ export function WorkOrdersTable({
       </Table>
 
       {/* Pagination */}
-      <div className="flex items-center justify-end space-x-6 lg:space-x-8 px-4 py-4">
-        <div className="flex items-center space-x-2">
-          <p className="text-sm font-medium text-ink/70">Rows per page</p>
-          <div className="relative">
-            <DropdownMenu modal={false}>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="h-8 w-[65px] px-2 justify-between border border-line bg-transparent hover:bg-ink/5 text-ink focus-visible:ring-1 focus-visible:ring-ledger cursor-pointer"
-                >
-                  {table.getState().pagination.pageSize}
-                  <ArrowDown className="h-3 w-3 opacity-50" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-[65px] min-w-0">
-                {[10, 20, 30, 40, 50].map((pageSize) => (
-                  <DropdownMenuItem
-                    key={pageSize}
-                    onClick={() => table.setPageSize(pageSize)}
-                    className="justify-center cursor-pointer"
-                  >
-                    {pageSize}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="ghost"
-            className="h-8 px-3 text-ink border-0 hover:bg-ink/5 cursor-pointer"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            <ChevronLeft className="mr-2 h-4 w-4" />
-            Previous
-          </Button>
-          <Button
-            variant="ghost"
-            className="h-8 px-3 text-ink border-0 hover:bg-ink/5 cursor-pointer"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-            <ChevronRight className="ml-2 h-4 w-4" />
-          </Button>
-        </div>
-      </div>
+      <DataTablePagination table={table} totalCount={totalCount} />
     </div>
   );
 }

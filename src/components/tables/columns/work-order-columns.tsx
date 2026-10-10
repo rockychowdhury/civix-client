@@ -79,26 +79,6 @@ export const columns: ColumnDef<WorkOrder, any>[] = [
     },
   },
   {
-    id: "timing",
-    header: "Timing",
-    cell: ({ row }: { row: any }) => {
-      const created = row.original.createdAt;
-      const scheduled = row.original.scheduledAt;
-      return (
-        <div className="flex flex-col text-xs text-ink/70 space-y-0.5">
-          {created && (
-            <span>Created: {formatDistanceToNow(new Date(created), { addSuffix: true })}</span>
-          )}
-          {scheduled && (
-            <span className="text-ledger font-medium">
-              Sched: {formatDistanceToNow(new Date(scheduled), { addSuffix: true })}
-            </span>
-          )}
-        </div>
-      );
-    },
-  },
-  {
     id: "resolutionDeadline",
     header: "Resolution Deadline",
     cell: ({ row }: { row: any }) => {

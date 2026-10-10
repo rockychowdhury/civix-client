@@ -69,10 +69,17 @@ export function AppSidebar({ userRoleCodes }: { userRoleCodes: string[] }) {
                         let isSubActive = false;
 
                         if (subParams.toString()) {
+                          const stageParam = subParams.get("stage");
                           const statusParam = subParams.get("status");
                           const filterParam = subParams.get("filter");
-                          if (statusParam) {
-                            const currentStatus = searchParams.get("status") || "on-queue";
+                          if (stageParam) {
+                            const currentStage = searchParams.get("stage") || "queue";
+                            isSubActive = currentStage === stageParam;
+                          } else if (statusParam) {
+                            const defaultStatus = pathname.includes("/work-orders")
+                              ? "WORK_ORDER_CREATED"
+                              : "on-queue";
+                            const currentStatus = searchParams.get("status") || defaultStatus;
                             isSubActive = currentStatus === statusParam;
                           } else if (filterParam) {
                             const currentFilter = searchParams.get("filter") || "today";

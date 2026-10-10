@@ -50,3 +50,13 @@ export function getSlaPolicies(categoryId?: string) {
   const params = categoryId ? { categoryId } : undefined;
   return apiClient<{ data: any[] }>("/sla-policies", { method: "GET", params });
 }
+
+export function getDepartmentOverview(departmentId: string, params?: { timeRange?: string }) {
+  return apiClient<{ data: any; message: string; success: boolean }>(
+    `/departments/${departmentId}/overview`,
+    {
+      method: "GET",
+      params: cleanParams(params),
+    },
+  );
+}

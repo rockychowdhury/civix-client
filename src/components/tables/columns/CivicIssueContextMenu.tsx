@@ -1,5 +1,5 @@
 import { addDays, format } from "date-fns";
-import { CalendarIcon, CalendarPlus, CheckCircle, History, RefreshCw } from "lucide-react";
+import { CalendarIcon, CalendarPlus, CheckCircle, Eye, History, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
@@ -52,6 +52,7 @@ interface CivicIssueContextMenuProps {
   isOpen: boolean;
   onClose: () => void;
   position: { x: number; y: number };
+  onViewDetails?: () => void;
 }
 
 export function CivicIssueContextMenu({
@@ -59,6 +60,7 @@ export function CivicIssueContextMenu({
   isOpen,
   onClose,
   position,
+  onViewDetails,
 }: CivicIssueContextMenuProps) {
   const updateStatus = useUpdateIssueStatus();
   const createWorkOrder = useCreateWorkOrder();
@@ -159,6 +161,19 @@ export function CivicIssueContextMenu({
           }}
         >
           <DropdownMenuLabel>Issue #{issue.issueNumber}</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+
+          <DropdownMenuItem
+            onClick={() => {
+              onClose();
+              onViewDetails?.();
+            }}
+            className="cursor-pointer"
+          >
+            <Eye className="mr-2 h-4 w-4" />
+            <span>View Issue Details</span>
+          </DropdownMenuItem>
+
           <DropdownMenuSeparator />
 
           <DropdownMenuSub>

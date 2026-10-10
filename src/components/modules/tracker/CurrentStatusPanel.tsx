@@ -27,7 +27,9 @@ export function CurrentStatusPanel({ issue }: { issue: CivicIssue }) {
 
         <div className="flex flex-col gap-1">
           <p>{issue.location.address}</p>
-          <p className="text-ink/60">{issue.municipality.name}</p>
+          {issue.municipality?.name && (
+            <p className="text-ink/60">{issue.municipality.name}</p>
+          )}
         </div>
 
         {issue.reportedCount > 1 && (

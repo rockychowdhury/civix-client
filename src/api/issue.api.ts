@@ -28,13 +28,44 @@ export async function getPublicCivicIssue(issueNumber: string): Promise<CivicIss
   return res.data as CivicIssue;
 }
 
+export interface DepartmentIssuesParams {
+  stage?: "queue" | "in_progress" | "resolved" | "escalated" | string;
+  status?: string;
+  priority?: string;
+  wardId?: string;
+  searchTerm?: string;
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+}
+
 export async function getDepartmentIssues(
   departmentId: string,
-  filters?: Record<string, string>,
-): Promise<{ data: CivicIssue[] }> {
-  const searchParams = new URLSearchParams(filters);
-  const res = await apiClient(`/civic-issues/department/${departmentId}`);
-  return res as { data: CivicIssue[] };
+  params?: DepartmentIssuesParams,
+): Promise<{
+  data: CivicIssue[];
+  meta?: { page: number; limit: number; total: number; totalPages: number };
+}> {
+  const { stage, ...queryParams } = params || {};
+  let path = `/civic-issues/department/${departmentId}`;
+
+  if (stage === "queue") {
+    path = `/civic-issues/department/${departmentId}/queue`;
+  } else if (stage === "in_progress" || stage === "in-progress") {
+    path = `/civic-issues/department/${departmentId}/in-progress`;
+  } else if (stage === "resolved") {
+    path = `/civic-issues/department/${departmentId}/resolved`;
+  } else if (stage === "escalated") {
+    path = `/civic-issues/department/${departmentId}/escalated`;
+  } else if (stage) {
+    (queryParams as any).stage = stage;
+  }
+
+  const res = await apiClient(path, {
+    params: cleanParams(queryParams),
+  });
+  return res as { data: CivicIssue[]; meta?: any };
 }
 
 export async function overrideIssuePriority(

@@ -8,17 +8,26 @@ export const departmentRoutes: NavItem[] = [
     url: "/department/work-orders",
     icon: CheckSquare,
     permission: "workorder:read",
+    items: [
+      { title: "Assign Crew", url: "/department/work-orders?status=WORK_ORDER_CREATED" },
+      { title: "Active", url: "/department/work-orders?status=ASSIGNED,TEAM_ASSIGNED,IN_PROGRESS" },
+      {
+        title: "Resolution Verification",
+        url: "/department/work-orders?status=PENDING_VERIFICATION",
+      },
+      { title: "Completed", url: "/department/work-orders?status=RESOLVED,CLOSED" },
+    ],
   },
   {
-    title: "Issue Queue",
+    title: "Civic Issues",
     url: "/department/issues",
     icon: ListTodo,
     permission: "issue:read",
     items: [
-      { title: "On Queue", url: "/department/issues?status=on-queue" },
-      { title: "Scheduled", url: "/department/issues?status=scheduled" },
-      { title: "Pending", url: "/department/issues?status=pending" },
-      { title: "All", url: "/department/issues?status=all" },
+      { title: "Issue Queue", url: "/department/issues?stage=queue" },
+      { title: "In-Progress", url: "/department/issues?stage=in_progress" },
+      { title: "Resolved", url: "/department/issues?stage=resolved" },
+      { title: "Escalated", url: "/department/issues?stage=escalated" },
     ],
   },
   {

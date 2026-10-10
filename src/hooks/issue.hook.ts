@@ -1,10 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  type DepartmentIssuesParams,
   getDepartmentIssues,
   getPublicCivicIssue,
   overrideIssuePriority,
   updateIssueStatus,
 } from "@/api/issue.api";
+import { getCivicIssueById } from "@/api/oversight.api";
 import type { CivicIssue } from "@/types";
 
 export function useCivicIssueTracking(issueNumber: string) {
@@ -18,10 +20,13 @@ export function useCivicIssueTracking(issueNumber: string) {
   });
 }
 
-export function useDepartmentIssues(departmentId?: string, filters?: Record<string, string>) {
+export function useDepartmentIssues(departmentId?: string, params?: DepartmentIssuesParams) {
   return useQuery({
-    queryKey: ["civic-issues", "department", departmentId, filters],
-    queryFn: () => getDepartmentIssues(departmentId!, filters),
+    queryKey: ["civic-issues", "department", departmentId, params],
+    queryFn: () => {
+      if (!departmentId) throw new Error("Department ID required");
+      return getDepartmentIssues(departmentId, params);
+    },
     enabled: !!departmentId,
   });
 }
@@ -59,5 +64,18 @@ export function useUpdateIssueStatus() {
       });
       queryClient.setQueryData(["civic-issue", "detail", updated.id], updated);
     },
+  });
+}
+
+export function useCivicIssueById(id?: string) {
+  return useQuery({
+    queryKey: ["civic-issue", "detail", id],
+    queryFn: async () => {
+      if (!id) throw new Error("Issue ID is required");
+      const res = await getCivicIssueById(id);
+      return res.data;
+    },
+    enabled: !!id,
+    staleTime: 2 * 60 * 1000,
   });
 }

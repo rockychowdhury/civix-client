@@ -8,6 +8,7 @@ import {
   getDepartmentWorkOrders,
   getMyQueue,
   getWorkOrderById,
+  getWorkOrderResolutions,
   getWorkOrderUpdates,
   type MyQueueFilter,
   rejectAssignment,
@@ -23,7 +24,7 @@ import type {
   ISubmitWorkUpdatePayload,
 } from "@/types";
 
-export function useDepartmentWorkOrders(departmentId?: string, filters?: Record<string, string>) {
+export function useDepartmentWorkOrders(departmentId?: string, filters?: Record<string, any>) {
   return useQuery({
     queryKey: ["department-work-orders", departmentId, filters],
     queryFn: () => {
@@ -56,6 +57,17 @@ export function useWorkOrderUpdates(id?: string) {
   });
 }
 
+export function useWorkOrderResolutions(workOrderId?: string) {
+  return useQuery({
+    queryKey: ["work-order-resolutions", workOrderId],
+    queryFn: () => {
+      if (!workOrderId) throw new Error("Work order ID is required");
+      return getWorkOrderResolutions(workOrderId);
+    },
+    enabled: !!workOrderId,
+  });
+}
+
 export function useUpdateWorkOrderStatus() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -77,7 +89,13 @@ export function useAssignTechnician() {
       payload,
     }: {
       id: string;
-      payload: { technicianId: string; reason?: string };
+      payload: {
+        technicianId?: string;
+        assignedToId?: string;
+        teamId?: string;
+        notes?: string;
+        reason?: string;
+      };
     }) => assignTechnician(id, payload),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["work-order", variables.id] });

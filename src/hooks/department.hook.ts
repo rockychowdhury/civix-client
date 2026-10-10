@@ -6,6 +6,7 @@ import {
   createDepartment,
   getDepartmentById,
   getDepartmentCategories,
+  getDepartmentOverview,
   getDepartments,
   getSlaPolicies,
   removeDepartmentServiceArea,
@@ -107,5 +108,23 @@ export function useRemoveDepartmentServiceArea() {
     onError: (error: any) => {
       toast.error(error?.data?.message || "Failed to remove service area");
     },
+  });
+}
+
+export function useDepartmentOverview(
+  departmentId?: string,
+  params?: { timeRange?: string },
+) {
+  return useQuery({
+    queryKey: ["department-overview", departmentId, params],
+    queryFn: async () => {
+      if (!departmentId) throw new Error("Department ID is required");
+      const res = await getDepartmentOverview(departmentId, params);
+      return res.data;
+    },
+    enabled: !!departmentId,
+    staleTime: 5 * 60 * 1000, // 5 minutes cache to reduce reload time
+    gcTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 }

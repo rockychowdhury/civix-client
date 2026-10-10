@@ -2,8 +2,8 @@ import { Suspense } from "react";
 import { IssuesClient } from "./IssuesClient";
 
 export const metadata = {
-  title: "Issue Queue | Civix",
-  description: "Manage operational civic issues",
+  title: "Civic Issues | Civix",
+  description: "Operational civic issues triage, field remediation, and resolution monitoring",
 };
 
 export default function IssuesPage() {

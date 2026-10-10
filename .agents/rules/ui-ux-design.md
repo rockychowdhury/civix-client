@@ -10,6 +10,8 @@ description: Principal Product Designer UI/UX Guidelines for Civix, focusing on 
 1. **NO grids of rounded feature cards with icons on top.**
 2. **NO generic linear gradients (e.g., purple-to-blue) or predictable hero layouts.**
 3. **NO dumping all information onto the screen at once.**
+4. **NO yellowish/warning styling on neutral cards or metadata:** Do NOT style issue tags (#ISS-...) or metadata icons (e.g., MapPin) with signal-progress/amber tones. Issue tags must use neutral architectural tokens (`bg-field/70`, `text-ink`, `border-line/60`). Only `StatusPill` may reflect live status colors.
+5. **NO instructional filler or generic placeholder text:** Avoid fake advice blocks ("Take clear photos", "Verify street name") or duplicated nested cards inside alert banners. Display only realistic civic data (active counts, verified profile standing, real emergency helplines like 333 & 999).
 
 ## 1. Cognitive Psychology & Attention Architecture
 - **Fitts’s Law & Focal Points:** Engineer a hyper-intentional visual hierarchy. Establish ONE absolute primary focal point per viewport using dramatic size/weight contrast, negative space, or isolated color accents.
@@ -27,7 +29,10 @@ description: Principal Product Designer UI/UX Guidelines for Civix, focusing on 
 
 ## 4. Component & Styling Implementation Rules
 - **Shadcn/UI Exclusively:** Use standard shadcn components (no raw custom builds for standard elements), but heavily customize them at the source (in `components/ui/`) to match the exact design tokens.
+- **Tabs & Navigation Groups:** Avoid generic shadcn unstyled pills (`bg-muted`, `rounded-lg`). Style `TabsList` with `bg-field/50 border border-line/60 rounded-sm p-1`, and `TabsTrigger` with `font-body text-xs rounded-xs data-[state=active]:bg-paper data-[state=active]:text-ink data-[state=active]:border-line/70`.
+- **Pagination:** Tables and grid views exceeding 10–12 records must use the standard shadcn pagination component (`components/ui/pagination.tsx`) styled with `bg-ledger text-paper` for the active page.
 - **No Hardcoded Values:** Use Tailwind CSS global CSS colors (`bg-paper`, `text-ink`) and fonts (`font-body`, `font-display`). Hardcoded colors (e.g., `bg-blue-500`) and fonts are strictly prohibited.
+- **Issue Number Precedence:** Always prioritize Civic Issue numbers (`ISS-...`) over internal request tracking numbers (`REQ-...`) when constructing tracker URLs (`/track?issueNumber=...`).
 - **Consistent Elements:** Buttons, cards, inputs, and alerts must be perfectly consistent across the app.
 - **Button States:** Always implement distinct hover and active states (e.g., tactile `translate-y` transforms) for buttons.
 - **Toast Notifications:** Toasts must be positioned on the **bottom-right**.

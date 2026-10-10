@@ -16,11 +16,12 @@ export async function createWorkOrder(payload: ICreateWorkOrderPayload): Promise
 
 export async function getDepartmentWorkOrders(
   departmentId: string,
-  filters?: Record<string, string>,
-): Promise<{ data: any[] }> {
-  const query = filters ? `?${new URLSearchParams(filters).toString()}` : "";
-  const res = await apiClient(`/work-orders/department/${departmentId}${query}`);
-  return res as { data: any[] };
+  filters?: Record<string, any>,
+): Promise<{ data: any[]; meta?: any }> {
+  const res = await apiClient<{ data: any[]; meta?: any }>(`/work-orders/department/${departmentId}`, {
+    params: cleanParams(filters),
+  });
+  return res as { data: any[]; meta?: any };
 }
 
 export async function getWorkOrderById(id: string): Promise<any> {
@@ -30,6 +31,11 @@ export async function getWorkOrderById(id: string): Promise<any> {
 
 export async function getWorkOrderUpdates(id: string): Promise<any> {
   const res = await apiClient(`/work-orders/${id}/updates`);
+  return res.data;
+}
+
+export async function getWorkOrderResolutions(workOrderId: string): Promise<any> {
+  const res = await apiClient(`/work-orders/${workOrderId}/resolutions`);
   return res.data;
 }
 
@@ -46,13 +52,21 @@ export async function updateWorkOrderStatus(
 
 export async function assignTechnician(
   id: string,
-  payload: { technicianId: string; reason?: string },
+  payload: {
+    technicianId?: string;
+    assignedToId?: string;
+    teamId?: string;
+    notes?: string;
+    reason?: string;
+  },
 ): Promise<any> {
   const res = await apiClient(`/assignments`, {
     method: "POST",
     body: JSON.stringify({
       workOrderId: id,
-      assignedToId: payload.technicianId,
+      assignedToId: payload.assignedToId || payload.technicianId || undefined,
+      teamId: payload.teamId || undefined,
+      notes: payload.notes || payload.reason || undefined,
     }),
   });
   return res.data;
