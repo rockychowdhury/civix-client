@@ -12,6 +12,9 @@ import { useGetAllStaff } from "@/hooks/staff.hook";
 import { useGetTeamById, useUpdateTeam } from "@/hooks/team.hook";
 import { type UpdateTeamValues, updateTeamFormSchema } from "@/validation";
 
+export const dynamic = "force-static";
+export const dynamicParams = true;
+
 export default function EditTeamPage() {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();

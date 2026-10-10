@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 import { TechnicianProfileClient } from "./TechnicianProfileClient";
 
+export const dynamic = "force-static";
+
 export const metadata = {
   title: "Profile & Shift | Technician Operations",
   description: "Technician field profile, shift availability, and operational metrics.",

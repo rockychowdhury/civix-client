@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 import { WorkOrderHistoryClient } from "./WorkOrderHistoryClient";
 
+export const dynamic = "force-static";
+
 export const metadata = {
   title: "Work Order History | Civix",
   description: "View the full lifecycle and history of a work order",

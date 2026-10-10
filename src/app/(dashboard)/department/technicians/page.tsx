@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useGetAllStaff } from "@/hooks/staff.hook";
 
+export const dynamic = "force-static";
+
 export default function StaffDirectoryPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch] = useDebounce(searchTerm, 500);

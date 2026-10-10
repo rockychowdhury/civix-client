@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 import { IssuesClient } from "./IssuesClient";
 
+export const dynamic = "force-static";
+
 export const metadata = {
   title: "Civic Issues | Civix",
   description: "Operational civic issues triage, field remediation, and resolution monitoring",

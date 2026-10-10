@@ -3,6 +3,7 @@ import { AdminSectionSkeleton } from "@/components/modules/admin";
 import { StaffDetailView } from "@/components/modules/admin/views/StaffDetailView";
 
 export const dynamic = "force-static";
+export const dynamicParams = true;
 
 export const metadata = { title: "Staff member — Civix" };
 

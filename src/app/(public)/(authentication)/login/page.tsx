@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 
 import LoginForm from "@/components/form/login-form";
 
+export const dynamic = "force-static";
+
 export const metadata: Metadata = {
   title: "Log in",
   description: "Log in to track your reports on Civix.",

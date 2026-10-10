@@ -3,6 +3,8 @@ import { Container } from "@/components/layout/public/container";
 import { Navbar } from "@/components/layout/public/navbar";
 import { ReportWizard } from "@/components/modules/report/ReportWizard";
 
+export const dynamic = "force-static";
+
 export const metadata: Metadata = {
   title: "Report an Issue | Civix",
   description:

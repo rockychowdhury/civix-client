@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 import { WorkOrdersClient } from "./WorkOrdersClient";
 
+export const dynamic = "force-static";
+
 export const metadata = {
   title: "Work Orders | Civix",
   description: "Manage departmental work orders and dispatch technicians",

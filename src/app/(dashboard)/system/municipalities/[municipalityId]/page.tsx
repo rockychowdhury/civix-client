@@ -3,6 +3,7 @@ import { AdminSectionSkeleton } from "@/components/modules/admin";
 import { MunicipalityDetailView } from "@/components/modules/admin/views/MunicipalityDetailView";
 
 export const dynamic = "force-static";
+export const dynamicParams = true;
 
 export const metadata = { title: "Municipality — Civix" };
 

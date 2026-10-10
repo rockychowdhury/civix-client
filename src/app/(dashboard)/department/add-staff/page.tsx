@@ -3,6 +3,8 @@ import Link from "next/link";
 import { AddStaffForm } from "@/components/form/add-staff-form";
 import { Badge } from "@/components/ui/badge";
 
+export const dynamic = "force-static";
+
 export const metadata = {
   title: "Onboard Staff | Civix",
   description: "Provision operational accounts for department technicians and dispatchers",

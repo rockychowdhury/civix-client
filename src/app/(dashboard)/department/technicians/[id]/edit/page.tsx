@@ -11,6 +11,9 @@ import { Input } from "@/components/ui/input";
 import { useGetStaffById, useUpdateStaff } from "@/hooks/staff.hook";
 import { type UpdateStaffValues, updateStaffFormSchema } from "@/validation";
 
+export const dynamic = "force-static";
+export const dynamicParams = true;
+
 export default function EditStaffPage() {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();

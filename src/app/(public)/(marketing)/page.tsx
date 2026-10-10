@@ -13,6 +13,8 @@ import { UnderTheHood } from "@/components/modules/landing/under-the-hood";
 import { VerifiedTrusted } from "@/components/modules/landing/verified-trusted";
 import { WhereCivixRuns } from "@/components/modules/landing/where-civix-runs";
 
+export const dynamic = "force-static";
+
 export default function Home() {
   return (
     <>

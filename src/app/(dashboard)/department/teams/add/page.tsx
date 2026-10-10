@@ -5,6 +5,8 @@ import Link from "next/link";
 import { AddTeamForm } from "@/components/form/add-team-form";
 import { Button } from "@/components/ui/button";
 
+export const dynamic = "force-static";
+
 export default function AddTeamPage() {
   return (
     <div className="flex flex-col items-center pb-24 w-full">

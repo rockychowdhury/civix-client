@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 import { CitizenReportsClient } from "./CitizenReportsClient";
 
+export const dynamic = "force-static";
+
 export const metadata = {
   title: "Citizen Reports | Civix",
   description: "Manage individual citizen submissions",

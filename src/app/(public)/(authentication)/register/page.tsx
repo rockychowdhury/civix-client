@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 
 import { RegisterForm } from "@/components/form/register-form";
 
+export const dynamic = "force-static";
+
 export const metadata: Metadata = {
   title: "Create your account",
   description:
