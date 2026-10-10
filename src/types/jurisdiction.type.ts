@@ -10,8 +10,10 @@ export interface AdminZone {
 export interface AdminWard {
   id: string;
   name: string;
-  number: number;
+  // Backend stores ward numbers as strings (`z.string()`).
+  number: string;
   zoneId: string;
+  zone?: { id?: string; name?: string };
   coverageStatus?: string;
   createdAt?: string;
   updatedAt?: string;
@@ -30,14 +32,14 @@ export interface UpdateZonePayload {
 
 export interface CreateWardPayload {
   name: string;
-  number?: number;
+  number: string;
   zoneId: string;
   coverageStatus?: string;
 }
 
 export interface UpdateWardPayload {
   name?: string;
-  number?: number;
+  number?: string;
   zoneId?: string;
   coverageStatus?: string;
 }

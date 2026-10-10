@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ADMIN_QUERY_KEYS } from "@/constant/admin.constant";
 import type { JurisdictionFilter } from "@/types";
@@ -21,6 +21,7 @@ export function useGetAdminZones(params?: JurisdictionFilter) {
   return useQuery({
     queryKey: [...ADMIN_QUERY_KEYS.zones, params],
     queryFn: () => getAdminZones(params),
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -79,6 +80,7 @@ export function useGetAdminWards(params?: JurisdictionFilter) {
   return useQuery({
     queryKey: [...ADMIN_QUERY_KEYS.wards, params],
     queryFn: () => getAdminWards(params),
+    placeholderData: keepPreviousData,
   });
 }
 

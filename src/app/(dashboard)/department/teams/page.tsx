@@ -1,13 +1,13 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
-import { TeamTable } from "@/components/tables/TeamTable";
-import { useGetTeams } from "@/hooks/team.hook";
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
 import { useDebounce } from "use-debounce";
+import { TeamTable } from "@/components/tables/TeamTable";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useGetTeams } from "@/hooks/team.hook";
 
 export default function TeamsPage() {
   const [searchTerm, setSearchTerm] = useState("");

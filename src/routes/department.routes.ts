@@ -35,6 +35,12 @@ export const departmentRoutes: NavItem[] = [
     url: "/department/citizen-reports",
     icon: FileText,
     permission: "issue:read",
+    items: [
+      { title: "Request Queue", url: "/department/citizen-reports?stage=queue" },
+      { title: "In-Progress", url: "/department/citizen-reports?stage=in_progress" },
+      { title: "Resolved", url: "/department/citizen-reports?stage=resolved" },
+      { title: "All Reports", url: "/department/citizen-reports?stage=all" },
+    ],
   },
   {
     title: "Staff Directory",

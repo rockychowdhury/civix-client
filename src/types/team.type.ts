@@ -41,6 +41,8 @@ export interface IUpdateTeamPayload {
 
 export interface ITeamFilter {
   searchTerm?: string;
+  departmentId?: string;
+  status?: string;
   page?: number;
   limit?: number;
 }

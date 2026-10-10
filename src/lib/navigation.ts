@@ -39,14 +39,20 @@ const PORTAL_NAV: Record<PortalId, PortalNav> = {
     portalLabel: "Technician",
     items: [
       {
-        label: "Inbox",
-        href: "/technician/inbox",
+        label: "Overview",
+        href: "/technician/overview",
         permission: "workorder:read",
         mobileTab: true,
       },
       {
-        label: "My Work",
-        href: "/technician/queue",
+        label: "Work Orders",
+        href: "/technician/work-orders",
+        permission: "workorder:read",
+        mobileTab: true,
+      },
+      {
+        label: "Inbox",
+        href: "/technician/inbox",
         permission: "workorder:read",
         mobileTab: true,
       },
@@ -54,7 +60,7 @@ const PORTAL_NAV: Record<PortalId, PortalNav> = {
         label: "History",
         href: "/technician/history",
         permission: "workorder:read",
-        mobileTab: true,
+        mobileTab: false,
       },
       {
         label: "Profile",

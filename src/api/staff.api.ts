@@ -4,6 +4,7 @@ import type {
   IStaffFilter,
   IStaffListResponse,
   IStaffProfile,
+  ITechnicianDashboardData,
   IUpdateStaffPayload,
 } from "@/types";
 
@@ -48,4 +49,17 @@ export function updateStaff(id: string, payload: IUpdateStaffPayload) {
 
 export function updateStaffStatus(id: string, status: string) {
   return apiClient<{ data: any }>(`/staff/${id}/status`, { method: "PATCH", body: { status } });
+}
+
+export function getTechnicianDashboard() {
+  return apiClient<{ data: ITechnicianDashboardData }>("/staff/me/technician-dashboard", {
+    method: "GET",
+  });
+}
+
+export function updateTechnicianAvailability(isAvailable: boolean) {
+  return apiClient<{ data: any }>("/staff/me/availability", {
+    method: "PATCH",
+    body: { isAvailable },
+  });
 }

@@ -53,7 +53,7 @@ export function WhereCivixRuns() {
           {municipalities.map((municipality) => (
             <div
               key={municipality.name}
-              className="grid grid-cols-1 gap-6 border-b border-line px-8 py-6 transition-colors odd:bg-paper even:bg-ink/[0.02] hover:bg-ledger/[0.04]"
+              className="grid grid-cols-1 gap-6 border-b border-line px-4 sm:px-8 py-6 transition-colors odd:bg-paper even:bg-ink/[0.02] hover:bg-ledger/[0.04]"
             >
               <div className="flex flex-col gap-1">
                 <p className="font-display text-[clamp(1rem,2vw,1.125rem)] font-normal leading-tight text-ink">

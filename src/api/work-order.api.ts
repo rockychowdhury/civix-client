@@ -18,9 +18,12 @@ export async function getDepartmentWorkOrders(
   departmentId: string,
   filters?: Record<string, any>,
 ): Promise<{ data: any[]; meta?: any }> {
-  const res = await apiClient<{ data: any[]; meta?: any }>(`/work-orders/department/${departmentId}`, {
-    params: cleanParams(filters),
-  });
+  const res = await apiClient<{ data: any[]; meta?: any }>(
+    `/work-orders/department/${departmentId}`,
+    {
+      params: cleanParams(filters),
+    },
+  );
   return res as { data: any[]; meta?: any };
 }
 
@@ -149,12 +152,102 @@ export async function submitWorkUpdate(
 }
 
 export async function submitResolution(
-  id: string,
-  payload: ISubmitResolutionPayload,
+  payload: ISubmitResolutionPayload | { workOrderId: string; [key: string]: any },
+  legacyId?: string,
 ): Promise<any> {
-  const res = await apiClient(`/work-orders/${id}/resolutions`, {
-    method: "POST",
+  const workOrderId = payload.workOrderId || legacyId;
+  const body = {
+    workOrderId,
+    rootCause: payload.rootCause,
+    notes: payload.notes || payload.summary,
+    summary: payload.summary || payload.notes,
+    costIncurred: payload.costIncurred ?? payload.actualCost,
+    actualCost: payload.actualCost ?? payload.costIncurred,
+    attachmentIds: payload.attachmentIds || [],
+  };
+
+  try {
+    const res = await apiClient(`/resolutions`, {
+      method: "POST",
+      body: JSON.stringify(body),
+    });
+    return res.data;
+  } catch (err) {
+    if (workOrderId) {
+      const res = await apiClient(`/work-orders/${workOrderId}/resolutions`, {
+        method: "POST",
+        body: JSON.stringify(body),
+      });
+      return res.data;
+    }
+    throw err;
+  }
+}
+
+export async function updateWorkOrderTask(
+  workOrderId: string,
+  taskId: string,
+  payload: { isCompleted: boolean },
+): Promise<any> {
+  const res = await apiClient(`/work-orders/${workOrderId}/tasks/${taskId}`, {
+    method: "PATCH",
     body: JSON.stringify(payload),
+  });
+  return res.data;
+}
+
+export interface MyWorkOrdersFilter {
+  stage?: "active" | "pending" | "verification" | "completed" | string;
+  status?: string;
+  priority?: string;
+  searchTerm?: string;
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+}
+
+export async function getMyWorkOrders(filters?: MyWorkOrdersFilter): Promise<{
+  data: any[];
+  meta?: { page: number; limit: number; total: number; totalPages: number };
+}> {
+  const res = await apiClient<{ data: any[]; meta?: any }>(`/work-orders/my-work-orders`, {
+    params: cleanParams(filters),
+  });
+  return res as { data: any[]; meta?: any };
+}
+
+export async function quickActionWorkOrder(
+  id: string,
+  payload: {
+    action: "START" | "PAUSE" | "RESUME";
+    reason?: string;
+    notes?: string;
+    attachmentIds?: string[];
+  },
+): Promise<any> {
+  const res = await apiClient(`/work-orders/${id}/quick-action`, {
+    method: "PATCH",
+    body: JSON.stringify({
+      action: payload.action,
+      reason: payload.reason || payload.notes,
+      notes: payload.notes || payload.reason,
+      attachmentIds: payload.attachmentIds,
+    }),
+  });
+  return res.data;
+}
+
+export async function uploadFieldAttachment(
+  file: File,
+  purpose: "BEFORE_WORK" | "DURING_WORK" | "AFTER_WORK" | "VERIFICATION" = "AFTER_WORK",
+): Promise<{ id: string; url: string }> {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("purpose", purpose);
+  const res = await apiClient<{ data: { id: string; url: string } }>("/attachments", {
+    method: "POST",
+    body: formData,
   });
   return res.data;
 }

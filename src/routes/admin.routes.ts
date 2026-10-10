@@ -4,7 +4,6 @@ import {
   Eye,
   Home,
   Map as MapIcon,
-  Settings,
   ShieldAlert,
   ShieldCheck,
   Tags,
@@ -39,25 +38,12 @@ export const adminRoutes: NavItem[] = [
     url: "/system/users",
     icon: Users,
     permission: "user:read",
-    items: [
-      { title: "All Users", url: "/system/users" },
-      { title: "Suspended", url: "/system/users?status=SUSPENDED" },
-      { title: "Deactivated", url: "/system/users?status=INACTIVE" },
-    ],
   },
   {
     title: "Staff",
     url: "/system/staff",
     icon: UserPlus,
     permission: "staff:read",
-    items: [
-      { title: "All Staff", url: "/system/staff" },
-      { title: "Platform Admins", url: "/system/staff?role=PLATFORM_ADMIN" },
-      { title: "City Admins", url: "/system/staff?role=CITY_ADMIN" },
-      { title: "Managers", url: "/system/staff?role=DEPARTMENT_MANAGER" },
-      { title: "Dispatchers", url: "/system/staff?role=DISPATCHER" },
-      { title: "Technicians", url: "/system/staff?role=TECHNICIAN" },
-    ],
   },
   {
     title: "Roles & Access",
@@ -109,12 +95,6 @@ export const adminRoutes: NavItem[] = [
       { title: "Service Requests", url: "/system/oversight/requests" },
       { title: "Feedback", url: "/system/oversight/feedback" },
     ],
-  },
-  {
-    title: "Platform Settings",
-    url: "/system/platform-settings",
-    icon: Settings,
-    permission: "system:read",
   },
   {
     title: "System Health",

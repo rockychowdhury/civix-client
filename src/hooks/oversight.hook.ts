@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ADMIN_QUERY_KEYS } from "@/constant/admin.constant";
 import type { OversightFilter } from "@/types";
@@ -16,6 +16,7 @@ export function useGetAllCivicIssues(params?: OversightFilter) {
   return useQuery({
     queryKey: [...ADMIN_QUERY_KEYS.oversightIssues, params],
     queryFn: () => getAllCivicIssues(params),
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -60,6 +61,7 @@ export function useGetAllServiceRequests(params?: OversightFilter) {
   return useQuery({
     queryKey: [...ADMIN_QUERY_KEYS.oversightRequests, params],
     queryFn: () => getAllServiceRequests(params),
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -75,5 +77,6 @@ export function useGetAllFeedback(params?: OversightFilter) {
   return useQuery({
     queryKey: [...ADMIN_QUERY_KEYS.oversightFeedback, params],
     queryFn: () => getAllFeedback(params),
+    placeholderData: keepPreviousData,
   });
 }

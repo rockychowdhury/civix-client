@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ADMIN_QUERY_KEYS } from "@/constant/admin.constant";
 import {
@@ -18,6 +18,7 @@ export function useGetRoles(params?: { page?: number; limit?: number; searchTerm
   return useQuery({
     queryKey: [...ADMIN_QUERY_KEYS.roles, params],
     queryFn: () => getRoles(params),
+    placeholderData: keepPreviousData,
   });
 }
 

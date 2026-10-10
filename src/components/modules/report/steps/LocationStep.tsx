@@ -295,12 +295,12 @@ function LocationContent({
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-2.5 pt-2">
+          <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-center gap-2.5 pt-2">
             <Button
               onClick={handleGeolocation}
               disabled={isLocating}
               size="sm"
-              className="h-9 px-4 text-xs font-medium gap-2 cursor-pointer rounded-lg shadow-xs bg-ledger text-paper hover:bg-ledger/90"
+              className="h-10 sm:h-9 px-4 text-xs font-medium gap-2 cursor-pointer rounded-lg shadow-xs bg-ledger text-paper hover:bg-ledger/90"
               type="button"
             >
               {isLocating ? (
@@ -318,7 +318,7 @@ function LocationContent({
               variant="secondary"
               size="sm"
               onClick={() => setShowManual(true)}
-              className="h-9 px-3.5 text-xs font-medium text-ink/75 hover:text-ink cursor-pointer rounded-lg border-line/70 bg-paper hover:bg-field/50"
+              className="h-10 sm:h-9 px-3.5 text-xs font-medium text-ink/75 hover:text-ink cursor-pointer rounded-lg border-line/70 bg-paper hover:bg-field/50"
               type="button"
             >
               Enter manually
@@ -351,7 +351,7 @@ function LocationContent({
                 onClick={handleGeolocation}
                 disabled={isLocating}
                 type="button"
-                className="text-xs h-7 px-2.5 text-ledger hover:text-ledger hover:bg-ledger/10 cursor-pointer rounded-md shrink-0"
+                className="text-xs h-9 sm:h-7 px-2.5 text-ledger hover:text-ledger hover:bg-ledger/10 cursor-pointer rounded-md shrink-0"
               >
                 {isLocating ? "Updating..." : "Re-detect GPS"}
               </Button>
@@ -367,7 +367,7 @@ function LocationContent({
                 onClick={handleGeolocation}
                 disabled={isLocating}
                 type="button"
-                className="text-xs h-7 px-2.5 gap-1.5 cursor-pointer rounded-md"
+                className="text-xs h-9 sm:h-7 px-2.5 gap-1.5 cursor-pointer rounded-md shrink-0"
               >
                 <Compass className="h-3 w-3" /> Get GPS
               </Button>

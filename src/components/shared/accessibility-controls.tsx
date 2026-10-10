@@ -46,7 +46,7 @@ export function AccessibilityControls({ className }: { className?: string }) {
             aria-label={option.ariaLabel}
             onClick={() => setStoredValue(TEXT_KEY, String(option.value))}
             className={cn(
-              "rounded-xs border border-paper/20 px-1.5 py-0.5 transition-colors hover:text-paper",
+              "rounded-xs border border-paper/20 px-2.5 py-1.5 transition-colors hover:text-paper cursor-pointer",
               scale === option.value && "border-paper/60 text-paper",
             )}
           >
@@ -61,7 +61,7 @@ export function AccessibilityControls({ className }: { className?: string }) {
         aria-checked={contrast}
         onClick={() => setStoredValue(CONTRAST_KEY, contrast ? "false" : "true")}
         className={cn(
-          "rounded-xs border border-paper/20 px-2 py-0.5 transition-colors hover:text-paper",
+          "rounded-xs border border-paper/20 px-2.5 py-1.5 transition-colors hover:text-paper cursor-pointer",
           contrast && "border-paper/60 text-paper",
         )}
       >

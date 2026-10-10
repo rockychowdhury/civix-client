@@ -1,11 +1,11 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
-import { useWorkOrderById, useWorkOrderUpdates } from "@/hooks/work-order.hook";
-import { Loader2, MoveLeft, MapPin, Tag } from "lucide-react";
-import Link from "next/link";
 import { format } from "date-fns";
+import { Loader2, MapPin, MoveLeft, Tag } from "lucide-react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
+import { useWorkOrderById, useWorkOrderUpdates } from "@/hooks/work-order.hook";
 
 export function WorkOrderHistoryClient() {
   const searchParams = useSearchParams();
@@ -93,7 +93,7 @@ export function WorkOrderHistoryClient() {
             </Badge>
           </div>
 
-          <h1 className="font-display text-3xl font-semibold text-ink leading-tight mb-4">
+          <h1 className="font-display text-2xl sm:text-3xl font-semibold text-ink leading-tight mb-4 break-words">
             {workOrder.title}
           </h1>
 
@@ -102,17 +102,17 @@ export function WorkOrderHistoryClient() {
               <span className="text-xs font-semibold uppercase tracking-wider text-ink/50">
                 Attached Issue
               </span>
-              <div className="flex items-center gap-4 text-sm text-ink/80">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-ink/80">
                 <Link
                   href={`/track?issueNumber=${workOrder.civicIssue.issueNumber}`}
-                  className="flex items-center gap-1.5 font-mono hover:text-ledger cursor-pointer"
+                  className="flex min-w-0 items-center gap-1.5 font-mono hover:text-ledger cursor-pointer"
                 >
-                  <Tag className="h-4 w-4" />
-                  {workOrder.civicIssue.issueNumber}
+                  <Tag className="h-4 w-4 shrink-0" />
+                  <span className="truncate">{workOrder.civicIssue.issueNumber}</span>
                 </Link>
-                <span className="flex items-center gap-1.5">
-                  <MapPin className="h-4 w-4" />
-                  {workOrder.civicIssue.location?.address}
+                <span className="flex min-w-0 items-center gap-1.5">
+                  <MapPin className="h-4 w-4 shrink-0" />
+                  <span className="truncate">{workOrder.civicIssue.location?.address}</span>
                 </span>
               </div>
             </div>

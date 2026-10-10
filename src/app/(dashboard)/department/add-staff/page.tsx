@@ -1,37 +1,47 @@
-import { AddStaffForm } from "@/components/form/add-staff-form";
-import { ChevronLeft, Info } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { AddStaffForm } from "@/components/form/add-staff-form";
+import { Badge } from "@/components/ui/badge";
+
+export const metadata = {
+  title: "Onboard Staff | Civix",
+  description: "Provision operational accounts for department technicians and dispatchers",
+};
 
 export default function AddStaffPage() {
   return (
-    <div className="flex flex-col items-center pb-24 w-full">
-      <div className="w-full max-w-2xl flex flex-col gap-8 pt-4">
-        <Link href="/department/technicians" className="w-fit">
-          <Button
-            variant="ghost"
-            className="pl-0 h-auto hover:bg-transparent text-ink/40 hover:text-ink font-body transition-colors mb-2 cursor-pointer"
-          >
-            <ChevronLeft className="h-4 w-4 mr-1" />
-            Back to Directory
-          </Button>
+    <div className="flex-1 flex flex-col min-h-[calc(100vh-4rem)] max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6 animate-slide-up">
+      {/* Top Header Row with Breadcrumb */}
+      <div className="flex flex-col gap-2 border-b border-line/40 pb-5">
+        <Link
+          href="/department/technicians"
+          className="inline-flex items-center text-xs font-medium text-ink/50 hover:text-ink transition-colors cursor-pointer w-fit group"
+        >
+          <ChevronLeft className="size-3.5 mr-1 group-hover:-translate-x-0.5 transition-transform" />
+          Back to Staff Directory
         </Link>
 
-        <div className="bg-signal-progress/10 border border-signal-progress/20 p-4 rounded-xl flex items-start gap-3">
-          <Info className="w-5 h-5 text-signal-progress shrink-0 mt-0.5" />
-          <div className="flex flex-col gap-1">
-            <h3 className="font-display font-medium text-ink">Manager Approval Required</h3>
-            <p className="font-body text-sm text-ink/60">
-              The staff profile will be created immediately, but their access to the department
-              portal will remain pending until a manager reviews and activates the account.
-            </p>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1">
+          <div className="flex items-center gap-3">
+            <h1 className="font-display text-2xl font-semibold text-ink tracking-tight">
+              Onboard Department Staff
+            </h1>
+            <Badge
+              variant="secondary"
+              className="bg-ink/5 text-ink/70 border-line/40 font-mono text-[11px] px-2 py-0.5"
+            >
+              Provisioning Portal
+            </Badge>
           </div>
-        </div>
-
-        <div className="mt-8">
-          <AddStaffForm />
+          <p className="text-xs text-ink/60 max-w-md">
+            Configure role permissions and generate credentials for field technicians and dispatch
+            staff.
+          </p>
         </div>
       </div>
+
+      {/* Main Grid Form */}
+      <AddStaffForm />
     </div>
   );
 }

@@ -1,156 +1,407 @@
-# Civix — Department Dashboard: Citizen Reports Page
-### Companion to `civix-dashboards-spec.md`. Matches the current shell exactly (ledger sidebar, breadcrumb topbar, theme toggle, notification bell, user chip) shown in the current build. SSG page shell, TanStack Table/Query for live data.
+Implementation Completed: Municipality Overview Endpoint
+The Municipality Dashboard Overview telemetry endpoint has been created and verified:
 
-> **Note on scope**: I wasn't able to pull the live schema/route list from `civix-api` directly, so the actions below are modeled on the service-request workflow already established earlier in this project (category confirmation, civic-issue matching/merging, dedup handling). Confirm exact endpoint names/payloads against the actual controller before wiring — the UI structure and interaction design below hold regardless of minor contract differences.
+Endpoint: GET /api/v1/municipalities/:municipalityId/overview
+Controller: 
 
----
+MunicipalityController.getMunicipalityOverview
+Service: 
 
-## 1. Where this fits and what it's *for*
+MunicipalityService.getMunicipalityOverview
+Route: 
 
-"Issue Queue" (already in the sidebar) manages `CivicIssue` — the refined, department-routed operational record. **This new "Citizen Reports" page manages `ServiceRequest`** — the raw, as-submitted citizen records before/alongside that refinement. A department needs this as a distinct view because a handful of real actions only make sense at the `ServiceRequest` level, not the `CivicIssue` level:
-
-1. **Reclassify a miscategorized request** — when the citizen's chosen category didn't match their description well (the low-confidence case designed earlier), a staff member corrects it here, which re-triggers routing.
-2. **Manually link a request to an existing `CivicIssue`** — the low-confidence duplicate-match case: the system wasn't sure two reports were the same issue, so it surfaces them for a human to confirm and merge rather than guessing.
-3. **Review attachments and raw description** — the citizen's actual words and photos, which the `CivicIssue` summary condenses.
-4. **Flag a request as invalid/spam** — a request that shouldn't generate or remain attached to an operational issue at all.
-
-Keep this distinction explicit in the UI (a short line under the page title: *"Manage individual citizen submissions — confirmed issues are tracked in Issue Queue."*) so staff don't confuse the two views.
-
----
-
-## 2. Page shell — match the existing layout exactly
-
-- Sidebar: add **"Citizen Reports"** as a new item between "Issue Queue" and (if present) other items, same icon style (outline, monochrome, matches "Work Orders"/"Issue Queue" weight) — do not introduce a new icon style or size.
-- Breadcrumb: `Department / Citizen Reports`, same topbar pattern already built (collapse toggle, theme toggle, notification bell, user chip) — nothing about the shell changes, only the sidebar entry and page content.
-- Page heading: `Citizen Reports` in `font-display`, same size/weight as the existing "Work Orders" heading shown in the current build — consistency here matters more than any new styling idea.
-- Page content area keeps the `--color-paper` background and the same content padding already established — do not introduce a new background treatment for this page.
-
----
-
-## 3. Rendering strategy
-
-- `app/(portal)/department/citizen-reports/page.tsx` is a **Server Component, statically generated** — it renders the page shell (heading, filter bar skeleton, table container) with no request-time data fetching.
-- All actual data (the request list, filters, mutations) is client-rendered via **TanStack Query**, inside a client component tree mounted by the page. This keeps the shell instant and cacheable while the operational data — which changes constantly — stays live and interactive.
-- No `revalidate`/ISR needed here since nothing on this page is meant to be publicly cached; it's an authenticated operational view, SSG only buys shell speed, not data freshness.
-
----
-
-## 4. Layered architecture (follows the client's existing structure)
-
-```
-app/(portal)/department/citizen-reports/
-  page.tsx                          — Server: static shell only
-
-providers/
-  query-provider.tsx                 — existing TanStack QueryClientProvider (reused, not new)
-
-api/
-  service-requests.ts                — typed fetch functions:
-                                        getServiceRequests(filters), getServiceRequestById(id),
-                                        reclassifyServiceRequest(id, categoryId),
-                                        linkServiceRequestToIssue(id, civicIssueId),
-                                        flagServiceRequestInvalid(id, reason)
-
-hooks/
-  useServiceRequests.ts              — useQuery wrapper for the list (filters as query key)
-  useServiceRequestDetail.ts         — useQuery wrapper for one record (drives the detail Sheet)
-  useReclassifyServiceRequest.ts     — useMutation + cache update (Section 7)
-  useLinkServiceRequestToIssue.ts    — useMutation + cache update
-  useFlagServiceRequestInvalid.ts    — useMutation + cache update
-  useNearbyCivicIssues.ts            — useQuery for the "link to existing issue" search control
-
-components/
-  tables/
-    ServiceRequestsTable.tsx         — the TanStack Table instance for this page (and any other
-                                        page that lists ServiceRequests — keep all table
-                                        instances here, per the existing convention)
-    columns/service-request-columns.tsx — column defs (separate from the table component itself,
-                                        so columns can be unit-tested/reused independently)
-  forms/
-    ReclassifyRequestForm.tsx        — category combobox + submit, used inside the detail Sheet
-    LinkToIssueForm.tsx              — searchable civic-issue combobox + submit
-    FlagInvalidForm.tsx              — reason textarea + confirm, used inside the destructive dialog
-  service-requests/
-    ServiceRequestDetailSheet.tsx    — the right-side drawer (shadcn Sheet, already customized
-                                        per the design system doc) composing the forms above
-    ServiceRequestFilters.tsx        — status tabs, category filter, ward filter, date range
-    AttachmentGallery.tsx            — shared component (reused from the citizen report flow's
-                                        attachment preview) — do not rebuild a second image viewer
-```
-
-This mirrors the convention already in place: **tables live together under `components/tables/`, forms under `components/forms/`**, regardless of which page consumes them — a future page that also needs a `ServiceRequestsTable` (e.g., a municipality-level cross-department view) imports the same component rather than forking it.
-
----
-
-## 5. The table — TanStack Table, instant updates, no full reloads
-
-`ServiceRequestsTable` is a TanStack Table instance (headless) rendered with the shadcn `Table` primitives, styled per the dashboard console rules already established: hairline row dividers, no zebra striping, status via the shared `StatusPill`.
-
-**Columns:**
-| Column | Notes |
-|---|---|
-| Tracking # | `font-mono`, links to open the detail Sheet (not a page navigation) |
-| Category | Shows current category; a small inline indicator (e.g., a dot in `--color-signal-open`) if the request is flagged for review |
-| Description preview | Truncated to one line, full text in the detail Sheet |
-| Location | Ward/zone + short address |
-| Status | Shared `StatusPill` |
-| Linked Issue | Either the `issueNumber` as a quiet link, or a "Needs review" badge if unmatched/ambiguous |
-| Attachments | Small count indicator (e.g., "2 photos") only if present — no empty icon clutter when zero |
-| Submitted | Relative time (e.g., "3h ago"), exact timestamp on hover |
-
-**Instant updates, no reload**: every mutation (Section 7) updates the TanStack Query cache directly — either via `setQueryData` to patch the specific row optimistically, or by invalidating just the affected query key — so the table re-renders the changed row in place. The table itself never triggers a full page refresh or a manual re-fetch-everything call; this is the concrete meaning of "instant data change without reload" and should be treated as a hard requirement when building the mutation hooks, not an incidental side effect.
-
-**Filters** (`ServiceRequestFilters`, sits above the table, drives the TanStack Query key): a segmented control (shadcn `Tabs`, re-skinned per the design system — text-forward, underline-style active state, not pill buttons) for `All / Needs Review / Unlinked / Linked`, plus a category combobox and a date range control. Filter state lives in the URL (`?status=needs-review`) so a filtered view is shareable/bookmarkable within the team, consistent with the URL-state pattern already used on the public tracker page.
-
----
-
-## 6. Detail Sheet — where the actions live
-
-Clicking a row (not a separate page — stays in context, per the design system's existing rule to prefer a right-side `Sheet` over full navigation for this kind of detail-and-act interaction) opens `ServiceRequestDetailSheet`:
-
-- Top: tracking number, status pill, submitted timestamp, citizen's raw description in full (not truncated) — this is the one place staff read the citizen's actual words unedited.
-- `AttachmentGallery`: thumbnails with click-to-enlarge, reusing the same component built for the citizen report flow.
-- Location block: address/ward/zone text plus the same static map-preview treatment used elsewhere in the product (never a different map style per page).
-- **Action area, three distinct controls, visually separated by the department staff member's actual decision, not stacked as generic buttons:**
-
-### 6.1 Reclassify (`ReclassifyRequestForm`)
-- A single category combobox (reuse the same category-picker logic from the citizen report flow, condensed to a searchable `Command`/`Popover` combobox rather than the full two-tier tile browser — staff already know what they're looking for, unlike a first-time citizen) pre-filled with the current category.
-- Submitting calls `reclassifyServiceRequest`, which should re-trigger backend routing — reflect this honestly in the UI with a short confirmation line after success: *"Recategorized — this may update routing and priority."*
-- Button: the customized `primary` variant, but **secondary-weight here** (this isn't the page's single North Star action the way "Report an Issue" was on the citizen side — multiple actions coexist in this Sheet, so none should visually dominate the way a single CTA does elsewhere).
-
-### 6.2 Link to existing issue (`LinkToIssueForm`)
-- Only rendered/enabled when the request is unlinked or flagged "needs review" — hide it entirely for already-linked requests rather than disabling it, to avoid visual clutter on records that don't need this action.
-- A searchable combobox (`useNearbyCivicIssues`, scoped server-side to the same category + ward/zone, mirroring the matching logic designed earlier) showing candidate issues by issue number + short title, so staff are picking from a short, relevant list rather than searching blind.
-- Confirming calls `linkServiceRequestToIssue` and updates the row's "Linked Issue" cell immediately via cache update.
-
-### 6.3 Flag as invalid (`FlagInvalidForm`, destructive path)
-- The one genuinely destructive-feeling action here, so it's the one that **does** warrant a confirmation step (per the design system's standing rule: confirmations are reserved for higher-stakes, less-reversible actions, not sprinkled everywhere) — a short `AlertDialog` asking for a one-line reason before committing.
-- Styled using `--color-signal-open` for the trigger (never a generic red), consistent with the rule established in the auth/design-system doc that destructive actions reuse the platform's existing semantic color rather than introducing a new one.
-
----
-
-## 7. Mutations — pattern to follow for all three actions
-
-```ts
-// hooks/useReclassifyServiceRequest.ts
-export function useReclassifyServiceRequest() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: reclassifyServiceRequest,
-    onSuccess: (updated, variables) => {
-      queryClient.setQueryData(["service-requests", "detail", variables.id], updated);
-      queryClient.setQueriesData({ queryKey: ["service-requests", "list"] }, (old) =>
-        patchRowInList(old, updated) // replace just the affected row, not a refetch
-      );
+MunicipalityRoutes
+Query Parameters:
+timeRange: "today" | "this_week" | "this_month" | "this_year" | "all_time"
+startDate: ISO 8601 string (e.g., "2026-10-01T00:00:00.000Z")
+endDate: ISO 8601 string (e.g., "2026-10-10T23:59:59.999Z")
+Response Payload Structure:
+json
+{
+  "success": true,
+  "message": "Municipality overview telemetry retrieved successfully",
+  "data": {
+    "municipality": {
+      "id": "uuid",
+      "name": "Dhaka North City Corporation",
+      "code": "DNCC",
+      "countryCode": "BGD",
+      "timezone": "Asia/Dhaka",
+      "coverageStatus": "ACTIVE",
+      "counts": {
+        "totalDepartments": 8,
+        "totalZones": 10,
+        "totalWards": 54,
+        "totalStaff": 120,
+        "totalSlaPolicies": 6
+      }
     },
-  });
+    "timeRange": {
+      "filter": "this_week",
+      "startDate": "2026-10-03T00:00:00.000Z",
+      "endDate": "2026-10-10T20:00:00.000Z"
+    },
+    "issueStats": {
+      "total": 1250,
+      "periodTotal": 85,
+      "openTotal": 42,
+      "unassignedQueue": 14,
+      "escalatedCount": 3,
+      "overdueCount": 5,
+      "resolvedTotal": 1150,
+      "closedTotal": 58,
+      "resolutionRate": 96.6,
+      "byStatus": { "IN_PROGRESS": 25, "RESOLVED": 1150, "SUBMITTED": 14 },
+      "byPriority": [
+        { "id": "p-1", "code": "CRITICAL", "name": "Critical", "weight": 50, "colorCode": "#EF4444", "count": 8 }
+      ]
+    },
+    "serviceRequestStats": {
+      "total": 1800,
+      "periodTotal": 110,
+      "queueCount": 18,
+      "inProgressCount": 32,
+      "resolvedCount": 1750,
+      "byStatus": { "SUBMITTED": 12, "ASSIGNED": 15, "RESOLVED": 1750 }
+    },
+    "workOrderStats": {
+      "total": 920,
+      "periodTotal": 64,
+      "needCrew": 8,
+      "assigned": 12,
+      "inProgress": 22,
+      "pendingVerification": 7,
+      "resolved": 850,
+      "closed": 21,
+      "activeTotal": 49,
+      "overdueCount": 2
+    },
+    "staffStats": {
+      "totalStaff": 120,
+      "byRole": { "DEPARTMENT_MANAGER": 8, "DISPATCHER": 16, "TECHNICIAN": 96 },
+      "technicians": { "total": 96, "available": 72, "busy": 24 }
+    },
+    "departmentPerformance": [
+      {
+        "id": "dept-1",
+        "name": "Waste Management",
+        "code": "WM",
+        "staffCount": 35,
+        "activeWorkOrders": 14,
+        "openIssues": 12,
+        "resolvedIssues": 430,
+        "escalatedIssues": 0
+      }
+    ],
+    "wardHotspots": [
+      {
+        "id": "ward-12",
+        "wardNumber": "12",
+        "name": "Mirpur-1",
+        "zoneName": "Zone 4",
+        "openIssuesCount": 9,
+        "totalIssuesCount": 9
+      }
+    ],
+    "citizenSatisfaction": {
+      "averageRating": 4.65,
+      "totalFeedbacks": 320,
+      "ratingDistribution": { "1": 5, "2": 8, "3": 25, "4": 110, "5": 172 }
+    },
+    "quickQueues": {
+      "criticalEscalatedIssues": [],
+      "overdueWorkOrders": [],
+      "recentIssues": []
+    }
+  }
 }
-```
+2. Full City Admin API Endpoints Reference
+Below is the comprehensive list of endpoints accessible by the City Admin for implementation in the City Dashboard client.
 
-Apply the same shape to the link and flag mutations. This is what makes the table feel instantaneous — the Sheet can close immediately on success while the table underneath has already updated, rather than the common pattern of closing a drawer and triggering a visible full-list refetch/spinner.
-
----
-
-## 8. Buttons & interactive details (reiterating the standing rule, applied here)
-
-Every button on this page — table row actions, the three Sheet actions, filter tab triggers — uses the **customized shadcn `Button`** from the design system doc (the lift-on-hover, compress-on-press interaction, the crossfade loading label for the two network-bound actions). No raw `<button>` elements anywhere on this page, and no unstyled default shadcn variants — if a button here still looks like default shadcn output, it hasn't been themed correctly per the existing design system doc.
+1. Municipality & Geospatial Management
+1.1 Get Municipality Profile
+Method & URL: GET /api/v1/municipalities/:municipalityId
+Query Params: None
+1.2 Update Municipality Settings
+Method & URL: PATCH /api/v1/municipalities/:municipalityId
+Payload:
+json
+{
+  "name": "Dhaka North City Corporation",
+  "countryCode": "BGD",
+  "timezone": "Asia/Dhaka",
+  "coverageStatus": "ACTIVE" // "ACTIVE" | "INACTIVE"
+}
+1.3 List Zones in Municipality
+Method & URL: GET /api/v1/zones
+Query Params: municipalityId, searchTerm, page, limit, sortBy, sortOrder
+1.4 Create Zone
+Method & URL: POST /api/v1/zones
+Payload:
+json
+{
+  "municipalityId": "uuid",
+  "name": "Zone 04 (Mirpur)",
+  "code": "ZONE-04"
+}
+1.5 List Wards in Municipality/Zone
+Method & URL: GET /api/v1/wards
+Query Params: zoneId, searchTerm, page, limit, sortBy, sortOrder
+1.6 Create Ward
+Method & URL: POST /api/v1/wards
+Payload:
+json
+{
+  "zoneId": "uuid",
+  "name": "Ward 12",
+  "number": "12",
+  "coverageStatus": "ACTIVE"
+}
+2. Department Management
+2.1 List All Departments in Municipality
+Method & URL: GET /api/v1/departments
+Query Params: municipalityId (e.g. ?municipalityId=uuid)
+2.2 Create Department
+Method & URL: POST /api/v1/departments
+Payload:
+json
+{
+  "municipalityId": "uuid",
+  "name": "Waste Management & Sanitation",
+  "code": "WM-SAN",
+  "description": "Responsible for municipal solid waste collection and road cleaning.",
+  "email": "sanitation@dncc.gov.bd",
+  "phone": "+8801700000000"
+}
+2.3 Get Department Details & Configured Areas
+Method & URL: GET /api/v1/departments/:id
+Query Params: None
+2.4 Update Department
+Method & URL: PATCH /api/v1/departments/:id
+Payload:
+json
+{
+  "name": "Waste Management & Sanitation",
+  "description": "Updated description",
+  "email": "sanitation@dncc.gov.bd",
+  "phone": "+8801700000000",
+  "status": "ACTIVE" // "ACTIVE" | "INACTIVE"
+}
+2.5 Link Service Area (Ward) to Department
+Method & URL: POST /api/v1/departments/:id/service-areas
+Payload:
+json
+{
+  "wardId": "uuid"
+}
+2.6 Remove Service Area (Ward) from Department
+Method & URL: DELETE /api/v1/departments/:id/service-areas/:areaId
+3. Staff & Hierarchy Management
+3.1 List All City Staff
+Method & URL: GET /api/v1/staff
+Query Params:
+departmentId: Filter by department
+role: Filter by role code (e.g. "DEPARTMENT_MANAGER", "DISPATCHER", "TECHNICIAN")
+status: "ACTIVE" | "INACTIVE" | "SUSPENDED"
+page, limit, searchTerm
+3.2 Create Department Manager
+Method & URL: POST /api/v1/staff/department-manager
+Payload:
+json
+{
+  "email": "manager.road@dncc.gov.bd",
+  "password": "SecurePassword123!",
+  "firstName": "Karim",
+  "lastName": "Chowdhury",
+  "employeeId": "EMP-ROAD-001",
+  "departmentId": "uuid",
+  "designation": "Chief Executive Engineer",
+  "phone": "+8801711111111"
+}
+3.3 Create Dispatcher
+Method & URL: POST /api/v1/staff/dispatcher
+Payload:
+json
+{
+  "email": "dispatcher.wm@dncc.gov.bd",
+  "password": "SecurePassword123!",
+  "firstName": "Salma",
+  "lastName": "Khatun",
+  "employeeId": "EMP-DISP-004",
+  "departmentId": "uuid",
+  "designation": "Central Dispatch Officer",
+  "phone": "+8801722222222"
+}
+3.4 Create Technician
+Method & URL: POST /api/v1/staff/technician
+Payload:
+json
+{
+  "email": "tech.electric@dncc.gov.bd",
+  "password": "SecurePassword123!",
+  "firstName": "Rafiqul",
+  "lastName": "Islam",
+  "employeeId": "EMP-TECH-108",
+  "departmentId": "uuid",
+  "designation": "Senior Lineman",
+  "phone": "+8801733333333",
+  "maxWorkload": 5
+}
+3.5 Update Staff Profile & Workload Limits
+Method & URL: PATCH /api/v1/staff/:id
+Payload:
+json
+{
+  "firstName": "Rafiqul",
+  "lastName": "Islam",
+  "designation": "Lead Technician",
+  "maxWorkload": 8,
+  "isAvailable": true
+}
+3.6 Update Staff Active/Suspension Status
+Method & URL: PATCH /api/v1/staff/:id/status
+Payload:
+json
+{
+  "status": "ACTIVE" // "ACTIVE" | "INACTIVE" | "SUSPENDED"
+}
+4. Team Operations Management
+4.1 List Teams
+Method & URL: GET /api/v1/teams
+Query Params: departmentId, status, searchTerm, page, limit
+4.2 Create Team
+Method & URL: POST /api/v1/teams
+Payload:
+json
+{
+  "departmentId": "uuid",
+  "name": "Rapid Pothole Repair Unit 2",
+  "code": "RPR-02",
+  "leaderId": "staff-user-id", // optional
+  "memberIds": ["staff-user-id-1", "staff-user-id-2"] // optional
+}
+4.3 Update Team
+Method & URL: PATCH /api/v1/teams/:id
+Payload:
+json
+{
+  "name": "Rapid Pothole Repair Unit 2",
+  "leaderId": "staff-user-id",
+  "status": "ACTIVE" // "ACTIVE" | "INACTIVE"
+}
+5. Civic Issues Management
+5.1 List Municipality Civic Issues
+Method & URL: GET /api/v1/civic-issues/municipality/:municipalityId
+Query Params:
+departmentId: Filter by department
+wardId: Filter by ward
+categoryId: Filter by service category
+status: SUBMITTED | TRIAGED | ASSIGNED | IN_PROGRESS | PENDING_VERIFICATION | RESOLVED | CLOSED | CANCELLED
+priorityId: Filter by priority ID
+searchTerm, page, limit, sortBy, sortOrder
+5.2 Get Issue Full Details
+Method & URL: GET /api/v1/civic-issues/:id
+Includes: Location, ward, reporters, photos, linked service requests, work orders, escalation logs, timeline.
+5.3 Update Issue Status
+Method & URL: PATCH /api/v1/civic-issues/:id/status
+Payload:
+json
+{
+  "status": "TRIAGED", // LifecycleStatus enum
+  "comment": "Triaged by City Admin, assigned to Roads Department"
+}
+5.4 Reopen Closed/Resolved Issue
+Method & URL: POST /api/v1/civic-issues/:id/reopen
+Payload:
+json
+{
+  "reason": "Citizen reported water leakage recurred 24 hours after repair"
+}
+6. Service Requests Management
+6.1 List Municipality Service Requests
+Method & URL: GET /api/v1/service-requests/municipality/:municipalityId
+Query Params:
+status: SUBMITTED | TRIAGED | ASSIGNED | IN_PROGRESS | PENDING_VERIFICATION | RESOLVED | CLOSED
+categoryId: Filter by category
+page, limit, searchTerm
+6.2 Get Service Request Details
+Method & URL: GET /api/v1/service-requests/:id
+7. Work Orders Management
+7.1 List Municipality Work Orders
+Method & URL: GET /api/v1/work-orders/municipality/:municipalityId
+Query Params:
+departmentId: Filter by department
+status: WORK_ORDER_CREATED | ASSIGNED | IN_PROGRESS | PAUSED | PENDING_VERIFICATION | RESOLVED | CLOSED
+priority: LOW | MEDIUM | HIGH | URGENT | CRITICAL
+page, limit, searchTerm, sortBy, sortOrder
+7.2 Create Work Order
+Method & URL: POST /api/v1/work-orders
+Payload:
+json
+{
+  "civicIssueId": "uuid",
+  "departmentId": "uuid",
+  "title": "Repair Broken Water Main on 12/A",
+  "description": "Excavate surface, weld pipe rupture, resurface asphalt.",
+  "scheduledAt": "2026-10-12T08:00:00.000Z" // optional
+}
+7.3 Assign Team or Technician to Work Order
+Method & URL: POST /api/v1/assignments
+Payload:
+json
+{
+  "workOrderId": "uuid",
+  "assignmentType": "TEAM", // "TEAM" | "INDIVIDUAL"
+  "teamId": "uuid", // if TEAM
+  "staffId": "uuid", // if INDIVIDUAL
+  "notes": "Emergency response crew deployed"
+}
+7.4 Update Work Order Status
+Method & URL: PATCH /api/v1/work-orders/:id/status
+Payload:
+json
+{
+  "status": "IN_PROGRESS",
+  "notes": "Work on site has commenced"
+}
+8. Quality Verification & Citizen Feedback
+8.1 Verify Work Order Resolution
+Method & URL: POST /api/v1/resolutions/:id/verify
+Payload:
+json
+{
+  "status": "VERIFIED", // "VERIFIED" | "REJECTED"
+  "notes": "Field inspection confirmed water line is fully sealed and road repaved."
+}
+8.2 Get Feedback across Municipality
+Method & URL: GET /api/v1/feedback/municipality/:municipalityId
+Query Params: page, limit, sortBy, sortOrder
+9. Service Policies & Categories
+9.1 List Service Categories
+Method & URL: GET /api/v1/categories
+Query Params: isActive=true
+9.2 Create / Update Service Category
+Method & URL: POST /api/v1/categories | PATCH /api/v1/categories/:categoryId
+Payload:
+json
+{
+  "name": "Street Light Defect",
+  "code": "STREET_LIGHT",
+  "description": "Malfunctioning or flickering street lights",
+  "departmentId": "uuid",
+  "parentId": "parent-category-id" // optional
+}
+9.3 List Municipality SLA Policies
+Method & URL: GET /api/v1/sla-policies
+Query Params: municipalityId
+9.4 Create SLA Policy
+Method & URL: POST /api/v1/sla-policies
+Payload:
+json
+{
+  "municipalityId": "uuid",
+  "priorityLevelId": "uuid",
+  "responseDeadlineHours": 4,
+  "resolutionDeadlineHours": 24,
+  "escalationThresholdHours": 18
+}

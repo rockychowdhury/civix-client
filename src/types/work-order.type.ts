@@ -97,6 +97,16 @@ export interface IVerifyResolutionPayload {
   notes?: string;
 }
 
+export interface WorkOrderTask {
+  id: string;
+  workOrderId?: string;
+  title: string;
+  description?: string | null;
+  isCompleted: boolean;
+  completedAt?: string | null;
+  order?: number;
+}
+
 export interface WorkOrder {
   id: string;
   title: string;
@@ -117,6 +127,19 @@ export interface WorkOrder {
     resolutionDeadlineAt?: string | null;
     attachments?: Array<{ id: string; url: string; fileType?: string }>;
     category?: { id: string; name: string };
+    reportedBy?: {
+      id?: string;
+      firstName?: string;
+      lastName?: string;
+      phone?: string;
+      email?: string;
+    } | null;
+    citizen?: {
+      firstName?: string;
+      lastName?: string;
+      phone?: string;
+      email?: string;
+    } | null;
   };
 
   department?: { id: string; name: string } | null;
@@ -137,9 +160,10 @@ export interface WorkOrder {
     id: string;
     status: string;
     assignedTo?: { employeeId?: string; firstName: string; lastName: string } | null;
-    team?: { name: string } | null;
+    team?: { id?: string; name: string; code?: string } | null;
   }>;
 
+  tasks?: WorkOrderTask[];
   updates?: WorkUpdate[];
   resolution?: WorkResolution | null;
 
@@ -168,5 +192,11 @@ export interface ISubmitWorkUpdatePayload {
 }
 
 export interface ISubmitResolutionPayload {
-  summary: string;
+  workOrderId?: string;
+  rootCause?: string;
+  notes?: string;
+  summary?: string;
+  costIncurred?: number;
+  actualCost?: number;
+  attachmentIds?: string[];
 }

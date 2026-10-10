@@ -236,34 +236,34 @@ function CityIssuesContent({ municipalityId }: { municipalityId: string }) {
           onValueChange={(val) => setActiveTab(val as StatusTab)}
           className="w-full lg:w-auto"
         >
-          <TabsList className="bg-field/50 border border-line/20 p-1">
+          <TabsList className="bg-field/50 border border-line/60 rounded-sm p-1">
             <TabsTrigger
               value="ALL"
-              className="text-xs uppercase tracking-wider font-display data-[state=active]:bg-ledger data-[state=active]:text-paper cursor-pointer"
+              className="font-body text-xs rounded-xs data-[state=active]:bg-paper data-[state=active]:text-ink data-[state=active]:border data-[state=active]:border-line/70 cursor-pointer px-3 py-1.5"
             >
               All ({issues.length})
             </TabsTrigger>
             <TabsTrigger
               value="NEEDS_ACTION"
-              className="text-xs uppercase tracking-wider font-display data-[state=active]:bg-ledger data-[state=active]:text-paper cursor-pointer"
+              className="font-body text-xs rounded-xs data-[state=active]:bg-paper data-[state=active]:text-ink data-[state=active]:border data-[state=active]:border-line/70 cursor-pointer px-3 py-1.5"
             >
               Needs Action
             </TabsTrigger>
             <TabsTrigger
               value="IN_PROGRESS"
-              className="text-xs uppercase tracking-wider font-display data-[state=active]:bg-ledger data-[state=active]:text-paper cursor-pointer"
+              className="font-body text-xs rounded-xs data-[state=active]:bg-paper data-[state=active]:text-ink data-[state=active]:border data-[state=active]:border-line/70 cursor-pointer px-3 py-1.5"
             >
               In Progress
             </TabsTrigger>
             <TabsTrigger
               value="CRITICAL"
-              className="text-xs uppercase tracking-wider font-display data-[state=active]:bg-ledger data-[state=active]:text-paper cursor-pointer"
+              className="font-body text-xs rounded-xs data-[state=active]:bg-paper data-[state=active]:text-ink data-[state=active]:border data-[state=active]:border-line/70 cursor-pointer px-3 py-1.5"
             >
               Critical / High
             </TabsTrigger>
             <TabsTrigger
               value="RESOLVED"
-              className="text-xs uppercase tracking-wider font-display data-[state=active]:bg-ledger data-[state=active]:text-paper cursor-pointer"
+              className="font-body text-xs rounded-xs data-[state=active]:bg-paper data-[state=active]:text-ink data-[state=active]:border data-[state=active]:border-line/70 cursor-pointer px-3 py-1.5"
             >
               Resolved
             </TabsTrigger>

@@ -199,8 +199,12 @@ export function CitizenOverviewView() {
             <Clock className="size-4 text-ink/40" />
           </div>
           <div className="mt-3">
-            <p className="font-display text-2xl sm:text-3xl font-semibold text-ink">{stats.active}</p>
-            <p className="font-body text-[11px] text-ink/60 mt-0.5">Assigned or under active repair</p>
+            <p className="font-display text-2xl sm:text-3xl font-semibold text-ink">
+              {stats.active}
+            </p>
+            <p className="font-body text-[11px] text-ink/60 mt-0.5">
+              Assigned or under active repair
+            </p>
           </div>
         </div>
 
@@ -210,7 +214,9 @@ export function CitizenOverviewView() {
             <CheckCircle2 className="size-4 text-signal-resolved" />
           </div>
           <div className="mt-3">
-            <p className="font-display text-2xl sm:text-3xl font-semibold text-ink">{stats.resolved}</p>
+            <p className="font-display text-2xl sm:text-3xl font-semibold text-ink">
+              {stats.resolved}
+            </p>
             <p className="font-body text-[11px] text-ink/60 mt-0.5">Repairs completed</p>
           </div>
         </div>
@@ -242,7 +248,9 @@ export function CitizenOverviewView() {
             <FileText className="size-4 text-ink/40" />
           </div>
           <div className="mt-3">
-            <p className="font-display text-2xl sm:text-3xl font-semibold text-ink">{stats.total}</p>
+            <p className="font-display text-2xl sm:text-3xl font-semibold text-ink">
+              {stats.total}
+            </p>
             <p className="font-body text-[11px] text-ink/60 mt-0.5">Lifetime citizen reports</p>
           </div>
         </div>
@@ -260,7 +268,12 @@ export function CitizenOverviewView() {
               </p>
             </div>
 
-            <Button asChild variant="ghost" size="sm" className="cursor-pointer text-xs self-start sm:self-auto h-7 px-2">
+            <Button
+              asChild
+              variant="ghost"
+              size="sm"
+              className="cursor-pointer text-xs self-start sm:self-auto h-7 px-2"
+            >
               <Link href="/citizen/my-reports">
                 View all ({stats.total}) <ArrowRight className="size-3.5 ml-1" />
               </Link>
@@ -303,7 +316,12 @@ export function CitizenOverviewView() {
                   Notice a broken streetlight, pothole, or garbage accumulation in your ward?
                 </p>
               </div>
-              <Button asChild variant="primary" size="sm" className="cursor-pointer text-xs active:translate-y-px">
+              <Button
+                asChild
+                variant="primary"
+                size="sm"
+                className="cursor-pointer text-xs active:translate-y-px"
+              >
                 <Link href="/report">Report an Issue</Link>
               </Button>
             </div>
@@ -334,12 +352,13 @@ export function CitizenOverviewView() {
                           type="button"
                           onClick={(e) => handleCopy(primaryId, e)}
                           title="Copy reference ID"
-                          className="p-0.5 text-ink/40 hover:text-ink transition-colors cursor-pointer"
+                          aria-label="Copy reference ID"
+                          className="p-2 -m-1.5 text-ink/40 hover:text-ink transition-colors cursor-pointer rounded-xs"
                         >
                           {copiedTrackingNum === primaryId ? (
-                            <Check className="size-3 text-signal-resolved" />
+                            <Check className="size-3.5 text-signal-resolved" />
                           ) : (
-                            <Copy className="size-3" />
+                            <Copy className="size-3.5" />
                           )}
                         </button>
                         {request.category && (

@@ -28,7 +28,7 @@ export type ZoneFormValues = z.infer<typeof zoneFormSchema>;
 
 export const wardFormSchema = z.object({
   name: z.string().min(1, "Ward name is required").max(100),
-  number: z.number({ error: "Ward number is required" }).int().min(1),
+  number: z.string().min(1, "Ward number is required").max(20),
   zoneId: z.string().min(1, "Zone is required"),
   coverageStatus: z.enum(["ACTIVE", "INACTIVE", "PLANNED"]).optional(),
 });
@@ -41,7 +41,7 @@ export const categoryFormSchema = z.object({
   description: z.string().max(500).optional(),
   parentId: z.string().optional(),
   departmentId: z.string().optional(),
-  baseSeverity: z.number().int().min(1).max(5).optional(),
+  baseSeverity: z.number().int().min(1).max(10).optional(),
   sortOrder: z.number().int().min(0).optional(),
   isActive: z.boolean().optional(),
 });

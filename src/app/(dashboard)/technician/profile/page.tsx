@@ -2,21 +2,20 @@ import { Suspense } from "react";
 import { TechnicianProfileClient } from "./TechnicianProfileClient";
 
 export const metadata = {
-  title: "Profile | Technician Dashboard",
+  title: "Profile & Shift | Technician Operations",
+  description: "Technician field profile, shift availability, and operational metrics.",
 };
 
-export default function Page() {
+export default function TechnicianProfilePage() {
   return (
-    <div className="flex flex-col gap-6">
-      <Suspense
-        fallback={
-          <div className="h-64 flex items-center justify-center text-ink/40 font-body animate-pulse">
-            Loading profile...
-          </div>
-        }
-      >
-        <TechnicianProfileClient />
-      </Suspense>
-    </div>
+    <Suspense
+      fallback={
+        <div className="h-64 flex items-center justify-center text-ink/40 font-body animate-pulse">
+          Loading profile...
+        </div>
+      }
+    >
+      <TechnicianProfileClient />
+    </Suspense>
   );
 }

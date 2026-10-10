@@ -65,6 +65,7 @@ import {
   useCreateTechnician,
   useGetAllStaff,
   useGetDepartments,
+  useUpdateStaff,
   useUpdateStaffStatus,
 } from "@/hooks";
 import { useCityScope } from "@/hooks/city.hook";
@@ -151,6 +152,9 @@ function CityStaffContent({ municipalityId }: { municipalityId: string }) {
   const [activeTab, setActiveTab] = useState<StaffRoleTab>("ALL");
   const [selectedDepartment, setSelectedDepartment] = useState<string>("ALL");
   const [isProvisionOpen, setIsProvisionOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editDesignation, setEditDesignation] = useState("");
+  const [editPhone, setEditPhone] = useState("");
   const [selectedStaff, setSelectedStaff] = useState<IStaffProfile | null>(null);
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -185,6 +189,7 @@ function CityStaffContent({ municipalityId }: { municipalityId: string }) {
   const createDispatcher = useCreateDispatcher();
   const createTechnician = useCreateTechnician();
   const updateStatus = useUpdateStaffStatus();
+  const updateStaff = useUpdateStaff();
 
   const isSubmitting =
     createManager.isPending || createDispatcher.isPending || createTechnician.isPending;
@@ -284,28 +289,28 @@ function CityStaffContent({ municipalityId }: { municipalityId: string }) {
           onValueChange={(val) => setActiveTab(val as StaffRoleTab)}
           className="w-full lg:w-auto"
         >
-          <TabsList className="bg-field/50 border border-line/20 p-1">
+          <TabsList className="bg-field/50 border border-line/60 rounded-sm p-1">
             <TabsTrigger
               value="ALL"
-              className="text-xs uppercase tracking-wider font-display data-[state=active]:bg-ledger data-[state=active]:text-paper cursor-pointer"
+              className="font-body text-xs rounded-xs data-[state=active]:bg-paper data-[state=active]:text-ink data-[state=active]:border data-[state=active]:border-line/70 cursor-pointer px-3 py-1.5"
             >
               All Workforce ({staffList.length})
             </TabsTrigger>
             <TabsTrigger
               value="DEPARTMENT_MANAGER"
-              className="text-xs uppercase tracking-wider font-display data-[state=active]:bg-ledger data-[state=active]:text-paper cursor-pointer"
+              className="font-body text-xs rounded-xs data-[state=active]:bg-paper data-[state=active]:text-ink data-[state=active]:border data-[state=active]:border-line/70 cursor-pointer px-3 py-1.5"
             >
               Managers
             </TabsTrigger>
             <TabsTrigger
               value="DISPATCHER"
-              className="text-xs uppercase tracking-wider font-display data-[state=active]:bg-ledger data-[state=active]:text-paper cursor-pointer"
+              className="font-body text-xs rounded-xs data-[state=active]:bg-paper data-[state=active]:text-ink data-[state=active]:border data-[state=active]:border-line/70 cursor-pointer px-3 py-1.5"
             >
               Dispatchers
             </TabsTrigger>
             <TabsTrigger
               value="TECHNICIAN"
-              className="text-xs uppercase tracking-wider font-display data-[state=active]:bg-ledger data-[state=active]:text-paper cursor-pointer"
+              className="font-body text-xs rounded-xs data-[state=active]:bg-paper data-[state=active]:text-ink data-[state=active]:border data-[state=active]:border-line/70 cursor-pointer px-3 py-1.5"
             >
               Technicians
             </TabsTrigger>
@@ -520,6 +525,18 @@ function CityStaffContent({ municipalityId }: { municipalityId: string }) {
               <div className="pt-6 border-t border-line space-y-2">
                 <Button
                   type="button"
+                  variant="secondary"
+                  className="w-full cursor-pointer text-xs"
+                  onClick={() => {
+                    setEditDesignation(selectedStaff.designation || "");
+                    setEditPhone(selectedStaff.phone || "");
+                    setIsEditOpen(true);
+                  }}
+                >
+                  Edit details
+                </Button>
+                <Button
+                  type="button"
                   variant={
                     (selectedStaff.user?.status || selectedStaff.status)?.toUpperCase() === "ACTIVE"
                       ? "destructive"
@@ -550,10 +567,10 @@ function CityStaffContent({ municipalityId }: { municipalityId: string }) {
 
       {/* Onboard Staff Dialog */}
       <Dialog open={isProvisionOpen} onOpenChange={setIsProvisionOpen}>
-        <DialogContent className="sm:max-w-md bg-paper border border-line text-ink">
+        <DialogContent className="sm:max-w-md max-h-[85vh] overflow-y-auto bg-paper border border-line text-ink p-5">
           <form onSubmit={handleProvisionSubmit} className="space-y-4">
             <DialogHeader>
-              <DialogTitle className="font-display text-lg">Onboard Municipal Staff</DialogTitle>
+              <DialogTitle className="font-display text-base">Onboard Municipal Staff</DialogTitle>
               <DialogDescription className="text-xs text-ink/60">
                 Provision a new department manager, dispatcher, or field technician.
               </DialogDescription>
@@ -694,6 +711,86 @@ function CityStaffContent({ municipalityId }: { municipalityId: string }) {
                 className="cursor-pointer text-xs"
               >
                 {isSubmitting ? "Provisioning..." : "Provision Staff"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Staff Dialog — PATCH /staff/:id */}
+      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+        <DialogContent className="sm:max-w-md max-h-[85vh] overflow-y-auto bg-paper border border-line text-ink p-5">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const staffId = selectedStaff?.userId || selectedStaff?.id;
+              if (!staffId) return;
+              updateStaff.mutate(
+                {
+                  id: staffId,
+                  payload: {
+                    designation: editDesignation.trim() || undefined,
+                    phone: editPhone.trim() || undefined,
+                  },
+                },
+                {
+                  onSuccess: () => {
+                    setIsEditOpen(false);
+                    staffQuery.refetch();
+                  },
+                },
+              );
+            }}
+            className="space-y-3.5"
+          >
+            <DialogHeader className="space-y-1">
+              <DialogTitle className="font-display text-base">Edit staff details</DialogTitle>
+              <DialogDescription className="text-xs text-ink/60">
+                Update designation, contact, or department assignment.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-1">
+              <label htmlFor="staff-edit-designation" className="text-xs font-medium text-ink/80">
+                Designation
+              </label>
+              <Input
+                id="staff-edit-designation"
+                value={editDesignation}
+                onChange={(e) => setEditDesignation(e.target.value)}
+                placeholder="e.g. Senior Technician"
+                className="h-8.5 text-xs bg-paper border-line rounded-xs"
+              />
+            </div>
+            <div className="space-y-1">
+              <label htmlFor="staff-edit-phone" className="text-xs font-medium text-ink/80">
+                Phone
+              </label>
+              <Input
+                id="staff-edit-phone"
+                value={editPhone}
+                onChange={(e) => setEditPhone(e.target.value)}
+                placeholder="+1 (555) 000-0000"
+                className="h-8.5 text-xs bg-paper border-line rounded-xs"
+              />
+            </div>
+            <DialogFooter className="pt-1">
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => setIsEditOpen(false)}
+                className="cursor-pointer text-xs"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                variant="primary"
+                size="sm"
+                disabled={updateStaff.isPending}
+                className="cursor-pointer text-xs"
+              >
+                {updateStaff.isPending ? "Saving…" : "Save changes"}
               </Button>
             </DialogFooter>
           </form>

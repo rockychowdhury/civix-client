@@ -70,7 +70,7 @@ export function StatusCard({ className }: { className?: string }) {
             <div
               key={status.label}
               className={cn(
-                "flex items-center gap-6 py-4",
+                "flex flex-wrap items-center gap-x-4 gap-y-2 py-4 sm:gap-6",
                 i < progress.length - 1 && "border-b border-line",
               )}
             >
@@ -98,7 +98,7 @@ export function StatusCard({ className }: { className?: string }) {
                 <p className="mt-0.5 font-mono text-[0.6875rem] text-paper/50">{status.meta}</p>
               </div>
               {status.state === "current" && (
-                <span className="rounded-xs bg-signal-open/15 px-2 py-0.5 font-mono text-[0.625rem] font-medium uppercase tracking-[0.05em] text-signal-open">
+                <span className="rounded-xs bg-signal-open/15 px-2 py-0.5 font-mono text-[0.625rem] font-medium uppercase tracking-[0.05em] text-signal-open shrink-0">
                   Active
                 </span>
               )}

@@ -1,16 +1,15 @@
 "use client";
 
-import * as React from "react";
 import {
   flexRender,
   getCoreRowModel,
-  getSortedRowModel,
   getPaginationRowModel,
-  SortingState,
+  getSortedRowModel,
+  type SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp, ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
+import * as React from "react";
 
 import {
   Table,
@@ -20,14 +19,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { teamColumns } from "./columns/team-columns";
 import type { ITeam } from "@/types";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { teamColumns } from "./columns/team-columns";
+import { DataTablePagination } from "./DataTablePagination";
 
 interface TeamTableProps {
   data: ITeam[];
@@ -123,55 +117,7 @@ export function TeamTable({ data, isLoading }: TeamTableProps) {
       </Table>
 
       {/* Pagination */}
-      <div className="flex items-center justify-end space-x-6 lg:space-x-8 px-4 py-4">
-        <div className="flex items-center space-x-2">
-          <p className="text-sm font-medium text-ink/70">Rows per page</p>
-          <div className="relative">
-            <DropdownMenu modal={false}>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="h-8 w-[65px] px-2 justify-between border border-line bg-transparent hover:bg-ink/5 text-ink focus-visible:ring-1 focus-visible:ring-ledger cursor-pointer"
-                >
-                  {table.getState().pagination.pageSize}
-                  <ArrowDown className="h-3 w-3 opacity-50" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-[65px] min-w-0">
-                {[10, 20, 30, 40, 50].map((pageSize) => (
-                  <DropdownMenuItem
-                    key={pageSize}
-                    onClick={() => table.setPageSize(pageSize)}
-                    className="justify-center cursor-pointer"
-                  >
-                    {pageSize}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="ghost"
-            className="h-8 px-3 text-ink border-0 hover:bg-ink/5 cursor-pointer"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            <ChevronLeft className="mr-2 h-4 w-4" />
-            Previous
-          </Button>
-          <Button
-            variant="ghost"
-            className="h-8 px-3 text-ink border-0 hover:bg-ink/5 cursor-pointer"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-            <ChevronRight className="ml-2 h-4 w-4" />
-          </Button>
-        </div>
-      </div>
+      <DataTablePagination table={table} />
     </div>
   );
 }

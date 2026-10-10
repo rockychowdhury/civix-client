@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import {
   acceptWorkOrder,
   assignTechnician,
@@ -7,16 +8,20 @@ import {
   getAssignmentById,
   getDepartmentWorkOrders,
   getMyQueue,
+  getMyWorkOrders,
   getWorkOrderById,
   getWorkOrderResolutions,
   getWorkOrderUpdates,
   type MyQueueFilter,
+  type MyWorkOrdersFilter,
+  quickActionWorkOrder,
   rejectAssignment,
   startWorkOrder,
   submitResolution,
   submitWorkUpdate,
   updateAssignmentStatus,
   updateWorkOrderStatus,
+  updateWorkOrderTask,
 } from "@/api/work-order.api";
 import type {
   ICreateWorkOrderPayload,
@@ -218,12 +223,86 @@ export function useSubmitWorkUpdate() {
 export function useSubmitResolution() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: ISubmitResolutionPayload }) =>
-      submitResolution(id, payload),
+    mutationFn: (
+      args: { id?: string; payload: ISubmitResolutionPayload } | ISubmitResolutionPayload,
+    ) => {
+      const payload = "payload" in args ? args.payload : args;
+      const id = "id" in args ? args.id : payload.workOrderId;
+      return submitResolution(payload, id);
+    },
     onSuccess: (_, variables) => {
+      const id =
+        "id" in variables ? variables.id : (variables as ISubmitResolutionPayload).workOrderId;
+      if (id) {
+        queryClient.invalidateQueries({ queryKey: ["work-order", id] });
+        queryClient.invalidateQueries({ queryKey: ["work-order-updates", id] });
+      }
+      queryClient.invalidateQueries({ queryKey: ["technician-queue"] });
+      queryClient.invalidateQueries({ queryKey: ["my-work-orders"] });
+      queryClient.invalidateQueries({ queryKey: ["technician-dashboard"] });
+    },
+  });
+}
+
+export function useUpdateWorkOrderTask() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      workOrderId,
+      taskId,
+      payload,
+    }: {
+      workOrderId: string;
+      taskId: string;
+      payload: { isCompleted: boolean };
+    }) => updateWorkOrderTask(workOrderId, taskId, payload),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["work-order", variables.workOrderId] });
+      queryClient.invalidateQueries({ queryKey: ["my-work-orders"] });
+    },
+    onError: (error: any) => {
+      toast.error(error?.data?.message || "Failed to update task");
+    },
+  });
+}
+
+export function useMyWorkOrders(filters?: MyWorkOrdersFilter) {
+  return useQuery({
+    queryKey: ["my-work-orders", filters],
+    queryFn: () => getMyWorkOrders(filters),
+  });
+}
+
+export function useQuickActionWorkOrder() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: string;
+      payload: {
+        action: "START" | "PAUSE" | "RESUME";
+        reason?: string;
+        notes?: string;
+        attachmentIds?: string[];
+      };
+    }) => quickActionWorkOrder(id, payload),
+    onSuccess: (_data, variables) => {
+      const actionLabels = {
+        START: "Work started: Status marked as IN PROGRESS",
+        PAUSE: "Work paused",
+        RESUME: "Work resumed: Status back to IN PROGRESS",
+      };
+      toast.success(actionLabels[variables.payload.action] || "Action updated successfully");
       queryClient.invalidateQueries({ queryKey: ["work-order", variables.id] });
       queryClient.invalidateQueries({ queryKey: ["work-order-updates", variables.id] });
+      queryClient.invalidateQueries({ queryKey: ["my-work-orders"] });
       queryClient.invalidateQueries({ queryKey: ["technician-queue"] });
+      queryClient.invalidateQueries({ queryKey: ["technician-dashboard"] });
+    },
+    onError: (error: any) => {
+      toast.error(error?.data?.message || "Failed to update work order action");
     },
   });
 }

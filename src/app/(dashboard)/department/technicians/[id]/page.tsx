@@ -1,19 +1,19 @@
 "use client";
 
-import { useGetStaffById } from "@/hooks/staff.hook";
 import {
+  BadgeInfo,
+  Building2,
   ChevronLeft,
   Mail,
   Phone,
-  Building2,
-  ShieldCheck,
   ShieldAlert,
-  BadgeInfo,
+  ShieldCheck,
 } from "lucide-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { useParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useGetStaffById } from "@/hooks/staff.hook";
 
 export default function StaffProfilePage() {
   const { id } = useParams<{ id: string }>();

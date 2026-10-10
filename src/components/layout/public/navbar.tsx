@@ -1,7 +1,7 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
-import { ArrowRight, ChevronDown, FilePlus2, LogIn, LogOut, Search } from "lucide-react";
+import { ArrowRight, ChevronDown, FilePlus2, LogIn, LogOut, Search, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -19,8 +19,6 @@ import {
 import { useGetMe, useLogout } from "@/hooks/auth.hook";
 import { getNavbarRoleMenu } from "@/routes";
 import { Container } from "./container";
-
-const RESOLVED_THIS_MONTH = "14,208";
 
 export function Navbar() {
   const router = useRouter();
@@ -93,17 +91,9 @@ export function Navbar() {
       }`}
     >
       <Container className="flex h-full max-w-[1400px] items-center justify-between gap-3">
-        {/* Left: Brand Logo & Live Stat Ticker */}
+        {/* Left: Brand Logo */}
         <div className="flex shrink-0 items-center gap-3 sm:gap-4">
           <Logo className="text-paper" textClassName="text-[clamp(0.925rem,2vw,1.05rem)]" />
-
-          <div className="hidden lg:flex items-center gap-2 px-2.5 py-1 rounded-full bg-paper/10 border border-paper/10 font-body text-xs font-medium text-signal-resolved">
-            <span
-              className="size-1.5 shrink-0 animate-dot rounded-full bg-signal-resolved motion-reduce:animate-none"
-              aria-hidden="true"
-            />
-            <span>{RESOLVED_THIS_MONTH} resolved this month</span>
-          </div>
         </div>
 
         {/* Right Action Bar */}
@@ -111,10 +101,11 @@ export function Navbar() {
           {/* Public Track Link */}
           <Link
             href="/track"
-            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-paper/80 hover:text-paper hover:bg-paper/10 transition-colors cursor-pointer"
+            aria-label="Track issue"
+            className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-lg text-xs font-medium text-paper/80 hover:text-paper hover:bg-paper/10 transition-colors cursor-pointer"
           >
-            <Search className="size-3.5 text-paper/60" />
-            <span>Track Issue</span>
+            <Search className="size-4 sm:size-3.5 text-paper/60" />
+            <span className="hidden sm:inline">Track Issue</span>
           </Link>
 
           {/* Standout "Report an Issue" CTA */}
@@ -151,7 +142,7 @@ export function Navbar() {
 
               <DropdownMenuContent
                 align="end"
-                className="w-68 sm:w-72 font-body p-1.5 bg-paper border border-line/70 shadow-xl rounded-2xl text-ink animate-slide-up"
+                className="w-68 sm:w-72 max-w-[calc(100vw-2rem)] font-body p-1.5 bg-paper border border-line/70 shadow-xl rounded-2xl text-ink animate-slide-up"
               >
                 {/* Profile Header */}
                 <DropdownMenuLabel className="p-0 font-normal">
@@ -258,16 +249,18 @@ export function Navbar() {
               </Link>
               <Link
                 href="/register"
-                className="hidden sm:inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium bg-paper/15 hover:bg-paper/20 border border-paper/20 text-paper transition-all cursor-pointer shadow-xs"
+                aria-label="Register"
+                className="inline-flex items-center px-2.5 sm:px-3 py-2 rounded-lg text-xs font-medium bg-paper/15 hover:bg-paper/20 border border-paper/20 text-paper transition-all cursor-pointer shadow-xs"
               >
-                Register
+                <UserPlus className="size-4 sm:size-3.5 sm:mr-1.5 text-paper/80" />
+                <span className="hidden sm:inline">Register</span>
               </Link>
             </div>
           ) : null}
 
           {/* Theme Switcher */}
           <div className="border-l border-paper/15 pl-2 sm:pl-3">
-            <ThemeToggle className="text-paper hover:bg-paper/10 rounded-lg size-8" />
+            <ThemeToggle className="text-paper hover:bg-paper/10 rounded-lg size-9" />
           </div>
         </div>
       </Container>

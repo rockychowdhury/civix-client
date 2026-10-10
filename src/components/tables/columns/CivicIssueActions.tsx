@@ -1,5 +1,12 @@
 import { addDays, format } from "date-fns";
-import { CalendarIcon, CalendarPlus, CheckCircle, MoreHorizontal, RefreshCw } from "lucide-react";
+import {
+  CalendarIcon,
+  CalendarPlus,
+  CheckCircle,
+  MoreHorizontal,
+  RefreshCw,
+  X,
+} from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -23,7 +30,6 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
@@ -50,6 +56,7 @@ export function CivicIssueActions({ issue }: { issue: CivicIssue }) {
   const createWorkOrder = useCreateWorkOrder();
 
   const [isWorkOrderModalOpen, setIsWorkOrderModalOpen] = useState(false);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [scheduledAt, setScheduledAt] = useState<Date | undefined>(addDays(new Date(), 1));
@@ -75,7 +82,7 @@ export function CivicIssueActions({ issue }: { issue: CivicIssue }) {
       },
       {
         onSuccess: () => {
-          toast.success("Custom work order created successfully");
+          toast.success("Work order created successfully");
           setIsWorkOrderModalOpen(false);
         },
       },
@@ -158,71 +165,130 @@ export function CivicIssueActions({ issue }: { issue: CivicIssue }) {
             disabled={issue.hasWorkOrder || createWorkOrder.isPending}
           >
             <CalendarPlus className="mr-2 h-4 w-4" />
-            <span>Custom Work Order</span>
+            <span>Create Work Order</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <Dialog open={isWorkOrderModalOpen} onOpenChange={setIsWorkOrderModalOpen}>
+      <Dialog
+        open={isWorkOrderModalOpen}
+        onOpenChange={(open) => {
+          setIsWorkOrderModalOpen(open);
+          if (!open) {
+            setIsCalendarOpen(false);
+          }
+        }}
+      >
         <DialogContent
-          className="sm:max-w-md bg-paper border-line"
+          className="sm:max-w-md bg-paper border border-line/40 rounded-lg p-6 shadow-xl"
           onClick={(e) => e.stopPropagation()}
         >
-          <DialogHeader>
-            <DialogTitle>Custom Work Order</DialogTitle>
-            <DialogDescription>
-              Create a custom work order for issue {issue.issueNumber}.
+          <DialogHeader className="text-left space-y-1 pb-1 border-b border-line/30">
+            <DialogTitle className="font-display text-lg font-semibold text-ink tracking-tight">
+              Create Work Order
+            </DialogTitle>
+            <DialogDescription className="text-xs text-ink/60 font-body">
+              Create an actionable work order for issue {issue.issueNumber}.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4 py-4">
-            <Field>
-              <FieldLabel htmlFor="title">Work Order Title</FieldLabel>
+          <div className="space-y-4 py-3">
+            <div className="space-y-1.5">
+              <label htmlFor="wo-title-act" className="text-xs font-medium text-ink block">
+                Work Order Title <span className="text-signal-open">*</span>
+              </label>
               <Input
-                id="title"
+                id="wo-title-act"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="E.g., Repair Pothole"
+                className="h-9 text-xs bg-field/30 hover:bg-field/50 border-line/40 rounded-md focus-visible:ring-1 focus-visible:ring-ledger font-body text-ink placeholder:text-ink/40"
               />
-            </Field>
+            </div>
 
-            <Field>
-              <FieldLabel>Scheduled For (Optional)</FieldLabel>
-              <Popover>
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <label htmlFor="wo-date-act" className="text-xs font-medium text-ink">
+                  Scheduled For
+                </label>
+                <span className="text-[10px] font-mono text-ink/40">Optional</span>
+              </div>
+              <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
                 <PopoverTrigger asChild>
                   <Button
+                    id="wo-date-act"
+                    type="button"
                     variant="ghost"
                     className={cn(
-                      "flex h-11 w-full appearance-none rounded-xs border border-line bg-field px-3.5 py-2 font-body text-base text-ink justify-start text-left font-normal hover:bg-field hover:border-ink/45 focus-visible:border-ledger focus-visible:ring-2 focus-visible:ring-ledger/25 focus-visible:outline-none transition-[border-color,box-shadow,background-color] duration-150",
-                      !scheduledAt && "text-ink/50",
+                      "flex h-9 w-full rounded-md border border-line/40 bg-field/30 hover:bg-field/50 px-3 py-2 font-body text-xs text-ink justify-start text-left font-normal cursor-pointer focus-visible:ring-1 focus-visible:ring-ledger",
+                      !scheduledAt && "text-ink/40",
                     )}
                   >
-                    <CalendarIcon className="mr-2 h-4 w-4 opacity-50" />
-                    {scheduledAt ? format(scheduledAt, "PPP") : <span>Pick a date</span>}
+                    <CalendarIcon className="mr-2 h-3.5 w-3.5 text-ink/40 shrink-0" />
+                    <span className="flex-1 truncate">
+                      {scheduledAt ? format(scheduledAt, "PPP") : "Pick a date"}
+                    </span>
+                    {scheduledAt && (
+                      <span
+                        role="none"
+                        className="p-0.5 rounded-xs hover:bg-ink/10 text-ink/40 hover:text-ink cursor-pointer ml-1 inline-flex items-center"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setScheduledAt(undefined);
+                        }}
+                      >
+                        <X className="size-3" />
+                      </span>
+                    )}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 border-line bg-paper shadow-xl" align="start">
-                  <Calendar mode="single" selected={scheduledAt} onSelect={setScheduledAt} />
+                <PopoverContent
+                  className="w-auto p-0 border border-line/40 bg-paper shadow-xl z-[70]"
+                  align="start"
+                  onInteractOutside={() => setIsCalendarOpen(false)}
+                >
+                  <Calendar
+                    mode="single"
+                    selected={scheduledAt}
+                    onSelect={(date) => {
+                      setScheduledAt(date);
+                      setIsCalendarOpen(false);
+                    }}
+                  />
                 </PopoverContent>
               </Popover>
-            </Field>
+            </div>
 
-            <Field>
-              <FieldLabel htmlFor="description">Task Description</FieldLabel>
+            <div className="space-y-1.5">
+              <label htmlFor="wo-description-act" className="text-xs font-medium text-ink block">
+                Task Description
+              </label>
               <Textarea
-                id="description"
+                id="wo-description-act"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                rows={3}
                 placeholder="Detailed description of the task..."
+                className="min-h-[85px] text-xs bg-field/30 hover:bg-field/50 border-line/40 rounded-md focus-visible:ring-1 focus-visible:ring-ledger font-body text-ink placeholder:text-ink/40 p-3 leading-relaxed"
               />
-            </Field>
+            </div>
           </div>
 
-          <DialogFooter>
-            <Button variant="ghost" onClick={() => setIsWorkOrderModalOpen(false)}>
+          <DialogFooter className="pt-2 flex items-center justify-end gap-2 border-t border-line/30">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsWorkOrderModalOpen(false)}
+              className="h-8 text-xs text-ink/60 hover:text-ink cursor-pointer"
+            >
               Cancel
             </Button>
-            <Button onClick={handleCreateWorkOrder} disabled={createWorkOrder.isPending || !title}>
+            <Button
+              size="sm"
+              onClick={handleCreateWorkOrder}
+              disabled={createWorkOrder.isPending || !title.trim()}
+              className="h-8 text-xs font-medium bg-ledger text-paper hover:bg-ledger/90 shadow-2xs cursor-pointer px-4"
+            >
               {createWorkOrder.isPending ? "Creating..." : "Create Work Order"}
             </Button>
           </DialogFooter>

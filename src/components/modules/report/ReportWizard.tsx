@@ -491,7 +491,7 @@ export function ReportWizard() {
                     }}
                     disabled={!isPassed && !isCurrent}
                     className={cn(
-                      "flex items-center gap-2.5 py-1 px-2.5 rounded-lg text-left transition-all shrink-0",
+                      "flex min-h-[2.75rem] items-center gap-2.5 py-1 px-2.5 rounded-lg text-left transition-all shrink-0",
                       isPassed && "cursor-pointer hover:bg-field/40",
                       isCurrent && "bg-ledger/10 text-ledger font-medium",
                       !isPassed && !isCurrent && "opacity-40 cursor-not-allowed",
@@ -509,7 +509,7 @@ export function ReportWizard() {
                     >
                       {isPassed ? <CheckCircle2 className="h-3.5 w-3.5" /> : idx + 1}
                     </span>
-                    <div className="hidden sm:block">
+                    <div className="hidden min-[420px]:block">
                       <p className="font-display text-xs font-medium leading-none">{step.title}</p>
                       <p className="font-body text-[10px] text-ink/50 mt-0.5">{step.label}</p>
                     </div>
@@ -662,25 +662,25 @@ export function ReportWizard() {
                       )}
                     </div>
 
-                    <div className="flex items-center justify-between pt-2">
+                    <div className="flex flex-col-reverse sm:flex-row sm:items-center gap-2.5 sm:justify-between pt-2">
                       {currentStep > 0 ? (
                         <Button
                           variant="ghost"
                           onClick={prevStep}
                           type="button"
-                          className="h-9 px-3 text-xs sm:text-sm font-normal gap-1.5 text-ink/70 hover:text-ink cursor-pointer"
+                          className="h-10 sm:h-9 px-3 text-xs sm:text-sm font-normal gap-1.5 text-ink/70 hover:text-ink cursor-pointer w-full sm:w-auto"
                         >
                           <ArrowLeft className="w-3.5 h-3.5" /> Back
                         </Button>
                       ) : (
-                        <div />
+                        <div className="hidden sm:block" />
                       )}
 
                       {currentStep < 4 ? (
                         <Button
                           onClick={nextStep}
                           type="button"
-                          className="h-9 px-4 text-xs sm:text-sm font-medium gap-1.5 cursor-pointer min-w-[130px] rounded-lg shadow-xs"
+                          className="h-10 sm:h-9 px-4 text-xs sm:text-sm font-medium gap-1.5 cursor-pointer min-w-[130px] w-full sm:w-auto rounded-lg shadow-xs"
                         >
                           {currentStep === 0 && "Continue to Problem"}
                           {currentStep === 1 && "Continue to Location"}
@@ -695,7 +695,7 @@ export function ReportWizard() {
                             <Button
                               type="submit"
                               disabled={isSubmittingLocal || isSubmittingForm}
-                              className="h-9 px-4.5 text-xs sm:text-sm font-medium gap-2 cursor-pointer min-w-[145px] rounded-lg shadow-xs bg-ledger text-paper hover:bg-ledger/90"
+                              className="h-10 sm:h-9 px-4.5 text-xs sm:text-sm font-medium gap-2 cursor-pointer min-w-[145px] w-full sm:w-auto rounded-lg shadow-xs bg-ledger text-paper hover:bg-ledger/90"
                             >
                               {isSubmittingLocal || isSubmittingForm ? (
                                 "Transmitting Report..."

@@ -9,6 +9,7 @@ export function useAdminListParams(extraKey?: string) {
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 500);
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState<number>(ADMIN_PAGINATION_DEFAULTS.limit);
 
   useEffect(() => {
     setPage(1);
@@ -20,6 +21,7 @@ export function useAdminListParams(extraKey?: string) {
     debouncedSearch,
     page,
     setPage,
-    limit: ADMIN_PAGINATION_DEFAULTS.limit,
+    limit,
+    setLimit,
   };
 }

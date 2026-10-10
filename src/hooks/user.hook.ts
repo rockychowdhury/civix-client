@@ -1,13 +1,24 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ADMIN_QUERY_KEYS } from "@/constant/admin.constant";
-import type { AdminUserFilter } from "@/types";
-import { deleteUser, getUserById, getUsers, restoreUser, updateUserStatus } from "../api";
+import type { AdminUserFilter, UpdateMyProfilePayload } from "@/types";
+import {
+  deleteUser,
+  getMyProfile,
+  getUserById,
+  getUsers,
+  restoreUser,
+  updateMyProfile,
+  updateUserStatus,
+} from "../api";
 
 export function useGetUsers(params?: AdminUserFilter) {
   return useQuery({
     queryKey: [...ADMIN_QUERY_KEYS.users, params],
     queryFn: () => getUsers(params),
+    // Keep the previous page visible while search/filters refetch —
+    // otherwise every keystroke remounts the full-page skeleton.
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -58,6 +69,31 @@ export function useDeleteUser() {
     },
     onError: (error: any) => {
       toast.error(error?.data?.message || "Failed to remove user");
+    },
+  });
+}
+
+/** City Admin — GET /users/me (profile + municipality metadata). */
+export function useGetMyCityProfile() {
+  return useQuery({
+    queryKey: ["city-admin", "profile"],
+    queryFn: () => getMyProfile(),
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+/** City Admin — PATCH /users/me (own contact info + profile details). */
+export function useUpdateMyCityProfile() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: UpdateMyProfilePayload) => updateMyProfile(payload),
+    onSuccess: () => {
+      toast.success("Profile updated successfully");
+      queryClient.invalidateQueries({ queryKey: ["city-admin", "profile"] });
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+    },
+    onError: (error: any) => {
+      toast.error(error?.data?.message || "Failed to update profile");
     },
   });
 }

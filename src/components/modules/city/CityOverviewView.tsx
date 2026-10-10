@@ -141,10 +141,10 @@ function CityOverviewContent({ municipalityId }: { municipalityId: string }) {
         </div>
 
         <div className="space-y-1">
-          <dt className="font-mono text-[11px] uppercase tracking-wider text-amber-600">
+          <dt className="font-mono text-[11px] uppercase tracking-wider text-signal-progress">
             Breached SLAs
           </dt>
-          <dd className="font-display text-3xl font-semibold text-amber-600">
+          <dd className="font-display text-3xl font-semibold text-signal-progress">
             {stats?.breachedIssues ? stats.breachedIssues.toLocaleString() : "0"}
           </dd>
           <p className="text-[11px] font-body text-ink/60">Target deadlines exceeded</p>

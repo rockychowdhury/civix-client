@@ -2,6 +2,7 @@ import Link from "next/link";
 import { AccessibilityControls } from "@/components/shared/accessibility-controls";
 import { Logo } from "@/components/shared/logo";
 import { Container } from "./container";
+import { ScrollTopButton } from "./scroll-top-button";
 
 const footerMunicipalities = [
   "Dhaka North",
@@ -12,11 +13,30 @@ const footerMunicipalities = [
   "Khulna",
 ];
 
-const footerLinks = {
-  Product: ["Track a Report", "For Municipalities", "Public Data", "API Documentation"],
-  Company: ["About", "Careers", "Press", "Contact"],
-  Legal: ["Privacy Policy", "Terms of Service", "Data Processing", "System Status"],
-};
+const footerLinks: { category: string; links: { label: string; href: string }[] }[] = [
+  {
+    category: "Product",
+    links: [
+      { label: "Track a Report", href: "/track" },
+      { label: "Report an Issue", href: "/report" },
+      { label: "For Municipalities", href: "/for-municipalities" },
+    ],
+  },
+  {
+    category: "Company",
+    links: [
+      { label: "About", href: "/about" },
+      { label: "Contact", href: "/contact" },
+    ],
+  },
+  {
+    category: "Legal",
+    links: [
+      { label: "Privacy Policy", href: "/privacy-policy" },
+      { label: "Terms of Service", href: "/terms-of-service" },
+    ],
+  },
+];
 
 export function Footer() {
   return (
@@ -51,24 +71,24 @@ export function Footer() {
             </div>
 
             <div className="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-8">
-              {Object.entries(footerLinks).map(([category, links]) => (
-                <div key={category}>
+              {footerLinks.map(({ category, links }) => (
+                <nav key={category} aria-label={`Footer — ${category}`}>
                   <p className="mb-4 font-body text-xs font-medium uppercase tracking-[0.05em] text-signal-resolved">
                     {category}
                   </p>
                   <ul className="m-0 list-none p-0">
                     {links.map((link) => (
-                      <li key={link} className="mb-2">
+                      <li key={link.href} className="mb-2">
                         <Link
-                          href={`/${link.toLowerCase().replace(/\s+/g, "-")}`}
+                          href={link.href}
                           className="font-body text-sm text-paper/70 transition-colors hover:text-paper"
                         >
-                          {link}
+                          {link.label}
                         </Link>
                       </li>
                     ))}
                   </ul>
-                </div>
+                </nav>
               ))}
             </div>
           </div>
@@ -81,15 +101,11 @@ export function Footer() {
             <AccessibilityControls />
           </div>
 
-          <div className="flex flex-col gap-6 border-t border-line/20 pt-8">
-            <p className="m-0 flex flex-wrap items-center gap-6 font-mono text-xs text-paper/50">
-              <span>System status: operational</span>
-              <span>Uptime: 99.97%</span>
-              <Link href="/status" className="text-paper/50 transition-colors hover:text-paper">
-                Incident log
-              </Link>
-              <span>© {new Date().getFullYear()} Civix</span>
+          <div className="flex items-center justify-between gap-6 border-t border-line/20 pt-8">
+            <p className="m-0 font-mono text-xs text-paper/50">
+              © {new Date().getFullYear()} Civix
             </p>
+            <ScrollTopButton />
           </div>
         </div>
       </Container>

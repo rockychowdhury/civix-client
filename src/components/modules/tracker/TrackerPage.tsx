@@ -89,7 +89,7 @@ export function TrackerPage() {
   // Success state with data
   if (data) {
     return (
-      <div className="relative flex h-dvh w-full flex-col lg:flex-row bg-paper">
+      <div className="relative flex min-h-dvh w-full flex-col bg-paper lg:h-dvh lg:flex-row">
         {/* Left pane: Fixed, 40% width on desktop */}
         <div className="flex shrink-0 flex-col bg-paper p-6 sm:p-8 lg:w-2/5 lg:border-r lg:border-ink/10 lg:items-end">
           <div className="relative w-full pt-16 sm:pt-20 lg:pt-28 lg:max-w-md xl:max-w-lg lg:pr-8 xl:pr-12">
@@ -116,8 +116,8 @@ export function TrackerPage() {
         </div>
 
         {/* Right pane: Scrollable, 60% width on desktop */}
-        <div className="flex-1 overflow-hidden bg-paper/50 p-6 sm:p-8 flex justify-start">
-          <div className="w-full h-full pt-8 sm:pt-12 lg:pt-20 lg:max-w-3xl lg:pl-8 xl:pl-12">
+        <div className="flex-1 overflow-visible bg-paper/50 p-6 pt-2 sm:p-8 sm:pt-4 lg:overflow-hidden lg:pt-8 flex justify-start">
+          <div className="w-full pt-8 sm:pt-12 lg:h-full lg:overflow-y-auto lg:pt-20 lg:max-w-3xl lg:pl-8 xl:pl-12">
             <StatusHistoryLedger history={data.statusHistory} />
           </div>
         </div>

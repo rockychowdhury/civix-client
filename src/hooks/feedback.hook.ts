@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { CITY_QUERY_KEYS } from "@/constant/city.constant";
 import {
@@ -15,6 +15,7 @@ export function useGetMunicipalityFeedback(municipalityId: string, params?: Feed
     queryKey: [...CITY_QUERY_KEYS.feedback, "municipality", municipalityId, params],
     queryFn: () => getMunicipalityFeedback(municipalityId, params),
     enabled: !!municipalityId,
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -23,6 +24,7 @@ export function useGetDepartmentFeedback(departmentId: string, params?: Feedback
     queryKey: [...CITY_QUERY_KEYS.feedback, "department", departmentId, params],
     queryFn: () => getDepartmentFeedback(departmentId, params),
     enabled: !!departmentId,
+    placeholderData: keepPreviousData,
   });
 }
 

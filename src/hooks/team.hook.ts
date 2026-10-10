@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import type { ITeamFilter } from "@/types";
 import { createTeam, deleteTeam, getTeamById, getTeams, updateTeam } from "../api/team.api";
@@ -7,6 +7,7 @@ export function useGetTeams(params?: ITeamFilter) {
   return useQuery({
     queryKey: ["teams", params],
     queryFn: () => getTeams(params),
+    placeholderData: keepPreviousData,
   });
 }
 

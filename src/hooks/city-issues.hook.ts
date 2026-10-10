@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { CITY_QUERY_KEYS } from "@/constant/city.constant";
 import { getMunicipalityIssues } from "../api/issue.api";
 import {
@@ -23,6 +23,7 @@ export function useGetCityIssues(municipalityId: string, params?: CityIssueFilte
     queryKey: [...CITY_QUERY_KEYS.cityIssues, municipalityId, params],
     queryFn: () => getMunicipalityIssues(municipalityId, params),
     enabled: !!municipalityId,
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -31,6 +32,7 @@ export function useGetCityRequests(municipalityId: string, params?: Municipality
     queryKey: [...CITY_QUERY_KEYS.cityRequests, municipalityId, params],
     queryFn: () => getMunicipalityServiceRequests(municipalityId, params),
     enabled: !!municipalityId,
+    placeholderData: keepPreviousData,
   });
 }
 

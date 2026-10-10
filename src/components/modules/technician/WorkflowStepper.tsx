@@ -23,12 +23,15 @@ export function stageForStatus(status?: string): number {
 export function WorkflowStepper({ status }: { status?: string }) {
   const current = stageForStatus(status);
   return (
-    <ol aria-label="Work progress" className="flex items-center gap-0">
+    <ol
+      aria-label="Work progress"
+      className="flex items-center gap-0 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+    >
       {TECH_WORKFLOW_STAGES.map((stage, i) => {
         const done = i < current;
         const active = i === current;
         return (
-          <li key={stage} className="flex min-w-0 flex-1 items-center last:flex-none">
+          <li key={stage} className="flex min-w-[4.5rem] flex-1 items-center last:flex-none">
             <div className="flex flex-col items-center gap-1.5">
               <span
                 aria-hidden="true"

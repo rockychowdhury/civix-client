@@ -12,6 +12,8 @@ export const CITY_PATHS = {
   categories: "/municipality/categories",
   slaPolicies: "/municipality/sla-policies",
   feedback: "/municipality/feedback",
+  notifications: "/municipality/notifications",
+  profile: "/municipality/profile",
 } as const;
 
 /** React Query key roots — one per city domain. */

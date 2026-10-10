@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { ADMIN_QUERY_KEYS } from "@/constant/admin.constant";
 import { getPermissionById, getPermissions } from "../api";
 
@@ -12,6 +12,7 @@ export function useGetPermissions(params?: {
   return useQuery({
     queryKey: [...ADMIN_QUERY_KEYS.permissions, params],
     queryFn: () => getPermissions(params),
+    placeholderData: keepPreviousData,
   });
 }
 

@@ -93,7 +93,7 @@ export function HowCivixWorks() {
               How Civix works
             </h2>
           </div>
-          <div className="hidden gap-2 sm:flex">
+          <div className="flex gap-2">
             <button
               type="button"
               onClick={() => scrollToStep(active - 1)}

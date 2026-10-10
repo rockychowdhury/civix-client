@@ -6,7 +6,8 @@ export const dynamic = "force-static";
 
 export const metadata = {
   title: "Department Overview — Civix",
-  description: "Operational dispatch command — issue triage, work order assignment, and field readiness.",
+  description:
+    "Operational dispatch command — issue triage, work order assignment, and field readiness.",
 };
 
 export default function Page() {

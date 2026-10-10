@@ -3,6 +3,7 @@ import type {
   AdminMunicipality,
   CreateMunicipalityPayload,
   MunicipalityFilter,
+  MunicipalityOverviewData,
   PaginatedResponse,
   UpdateMunicipalityPayload,
 } from "@/types";
@@ -26,6 +27,19 @@ export function getMunicipalityById(municipalityId: string) {
   return apiClient<{ data: AdminMunicipality }>(`/municipalities/${municipalityId}`, {
     method: "GET",
   });
+}
+
+export function getMunicipalityOverview(
+  municipalityId: string,
+  params?: { timeRange?: string; startDate?: string; endDate?: string },
+) {
+  return apiClient<{ data: MunicipalityOverviewData }>(
+    `/municipalities/${municipalityId}/overview`,
+    {
+      method: "GET",
+      params: cleanParams(params),
+    },
+  );
 }
 
 export function updateMunicipality(municipalityId: string, payload: UpdateMunicipalityPayload) {

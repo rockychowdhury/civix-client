@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ADMIN_QUERY_KEYS } from "@/constant/admin.constant";
 import type { MunicipalityFilter } from "@/types";
@@ -7,6 +7,7 @@ import {
   deleteMunicipality,
   getAdminMunicipalities,
   getMunicipalityById,
+  getMunicipalityOverview,
   updateMunicipality,
 } from "../api";
 
@@ -14,6 +15,7 @@ export function useGetAdminMunicipalities(params?: MunicipalityFilter) {
   return useQuery({
     queryKey: [...ADMIN_QUERY_KEYS.municipalities, params],
     queryFn: () => getAdminMunicipalities(params),
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -22,6 +24,15 @@ export function useGetMunicipalityById(id: string) {
     queryKey: [...ADMIN_QUERY_KEYS.municipalities, id],
     queryFn: () => getMunicipalityById(id),
     enabled: !!id,
+  });
+}
+
+export function useGetMunicipalityOverview(id: string) {
+  return useQuery({
+    queryKey: [...ADMIN_QUERY_KEYS.municipalities, id, "overview"],
+    queryFn: () => getMunicipalityOverview(id),
+    enabled: !!id,
+    staleTime: 2 * 60 * 1000,
   });
 }
 

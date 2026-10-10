@@ -1,8 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ADMIN_QUERY_KEYS } from "@/constant/admin.constant";
 import {
-  attachDepartmentServiceAreas,
+  attachDepartmentServiceArea,
   createDepartment,
   getDepartmentById,
   getDepartmentCategories,
@@ -44,6 +44,7 @@ export function useGetDepartments(params?: {
   return useQuery({
     queryKey: [...ADMIN_QUERY_KEYS.departments, params],
     queryFn: () => getDepartments(params),
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -79,15 +80,11 @@ export function useUpdateDepartment() {
 export function useAttachDepartmentServiceAreas() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({
-      id,
-      payload,
-    }: {
-      id: string;
-      payload: { areaIds?: string[]; wardIds?: string[] };
-    }) => attachDepartmentServiceAreas(id, payload),
+    // Backend attaches ONE ward per call: POST /:id/service-areas { wardId }.
+    // Callers attach multiple wards sequentially.
+    mutationFn: ({ id, wardId }: { id: string; wardId: string }) =>
+      attachDepartmentServiceArea(id, wardId),
     onSuccess: () => {
-      toast.success("Service areas attached successfully");
       queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.departments });
     },
     onError: (error: any) => {
@@ -111,10 +108,7 @@ export function useRemoveDepartmentServiceArea() {
   });
 }
 
-export function useDepartmentOverview(
-  departmentId?: string,
-  params?: { timeRange?: string },
-) {
+export function useDepartmentOverview(departmentId?: string, params?: { timeRange?: string }) {
   return useQuery({
     queryKey: ["department-overview", departmentId, params],
     queryFn: async () => {

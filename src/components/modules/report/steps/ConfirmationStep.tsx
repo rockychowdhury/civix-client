@@ -143,8 +143,8 @@ export function ConfirmationStep({
 
         <div className="p-6 sm:p-8 space-y-6">
           {/* Header Row: Seal / Badges */}
-          <div className="flex items-start justify-between gap-4 pb-4 border-b border-line/40">
-            <div className="flex items-center gap-3">
+          <div className="flex items-start justify-between gap-3 sm:gap-4 pb-4 border-b border-line/40">
+            <div className="flex min-w-0 items-center gap-3">
               <div className="h-11 w-11 rounded-xl bg-ledger/10 text-ledger flex items-center justify-center shrink-0 border border-ledger/20 shadow-xs">
                 <ShieldCheck className="h-6 w-6" />
               </div>
@@ -162,7 +162,7 @@ export function ConfirmationStep({
               </div>
             </div>
 
-            <div className="flex flex-col items-end gap-1">
+            <div className="flex flex-col items-end gap-1 shrink-0">
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono font-medium bg-signal-resolved/10 text-signal-resolved border border-signal-resolved/20">
                 <span className="h-1.5 w-1.5 rounded-full bg-signal-resolved animate-pulse" />
                 {civicIssue?.status || response.status || "IN_PROGRESS"}
@@ -190,7 +190,7 @@ export function ConfirmationStep({
                 variant="ghost"
                 size="sm"
                 onClick={() => handleCopy(issueNumber, true)}
-                className="h-8 px-2.5 text-xs gap-1.5 text-ink/70 hover:text-ink hover:bg-field/70 cursor-pointer rounded-lg border border-line/50 shrink-0"
+                className="h-10 sm:h-8 px-2.5 text-xs gap-1.5 text-ink/70 hover:text-ink hover:bg-field/70 cursor-pointer rounded-lg border border-line/50 shrink-0"
                 title="Copy issue tracking ID"
               >
                 {copiedIssue ? (
@@ -209,14 +209,15 @@ export function ConfirmationStep({
           </div>
 
           {/* Secondary Statement: Service Request Reference */}
-          <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-field/15 border border-line/40 text-xs font-mono">
+          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 py-2 px-3 rounded-lg bg-field/15 border border-line/40 text-xs font-mono">
             <span className="text-ink/60">Service Request:</span>
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-ink select-all">{trackingNumber}</span>
+            <div className="flex min-w-0 items-center gap-1.5">
+              <span className="font-bold text-ink select-all break-all">{trackingNumber}</span>
               <button
                 type="button"
                 onClick={() => handleCopy(trackingNumber, false)}
-                className="text-ink/50 hover:text-ink cursor-pointer transition-colors p-0.5"
+                aria-label="Copy service request number"
+                className="text-ink/50 hover:text-ink cursor-pointer transition-colors p-1.5 -m-0.5 shrink-0"
                 title="Copy service request number"
               >
                 {copiedReq ? (

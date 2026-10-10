@@ -49,7 +49,7 @@ export function SplitFlapBoard() {
           </span>
           <p
             aria-hidden="true"
-            className="flex min-h-6 items-center gap-x-[0.4em] overflow-hidden font-mono text-[clamp(0.75rem,1.5vw,0.875rem)] leading-6 text-ink/90 [perspective:600px]"
+            className="flex min-h-6 items-center gap-x-[0.4em] overflow-hidden font-mono text-[clamp(0.75rem,1.5vw,0.875rem)] leading-6 text-ink/90 [perspective:600px] [mask-image:linear-gradient(to_right,black_82%,transparent)] sm:[mask-image:none]"
           >
             {keyedWords.map((entry, i) => (
               <span

@@ -32,7 +32,7 @@ export function DataTablePagination<TData>({ table, totalCount }: DataTablePagin
         of <span className="font-semibold text-ink">{currentTotal}</span> record(s)
       </div>
 
-      <div className="flex items-center space-x-6 lg:space-x-8">
+      <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 lg:space-x-8">
         <div className="flex items-center space-x-2">
           <p className="text-xs font-medium text-ink/70">Rows per page</p>
           <div className="relative">
@@ -61,7 +61,7 @@ export function DataTablePagination<TData>({ table, totalCount }: DataTablePagin
           </div>
         </div>
 
-        <div className="flex items-center space-x-1.5">
+        <div className="flex flex-wrap items-center justify-center gap-1.5">
           <span className="text-xs font-mono text-ink/50 mr-2">
             Page {pageIndex + 1} of {Math.max(1, pageCount)}
           </span>

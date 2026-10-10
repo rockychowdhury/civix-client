@@ -10,10 +10,12 @@ export const workUpdateFormSchema = z.object({
 export type WorkUpdateFormValues = z.infer<typeof workUpdateFormSchema>;
 
 export const resolutionFormSchema = z.object({
-  summary: z
+  rootCause: z.string().max(500, "Root cause must be under 500 characters").optional(),
+  notes: z
     .string()
     .min(10, "Describe the fix in at least 10 characters")
-    .max(1000, "Summary must be under 1000 characters"),
+    .max(1000, "Notes must be under 1000 characters"),
+  summary: z.string().optional(),
 });
 
 export type ResolutionFormValues = z.infer<typeof resolutionFormSchema>;

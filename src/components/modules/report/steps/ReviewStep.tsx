@@ -42,17 +42,17 @@ export function ReviewStep({ form, selectedCategory, files, onEditStep }: Review
             </div>
 
             <div className="rounded-xl border border-line/60 bg-paper overflow-hidden shadow-xs">
-              <div className="bg-field/30 border-b border-line/40 px-5 py-3.5 flex items-center justify-between">
-                <div className="flex items-center gap-2">
+              <div className="bg-field/30 border-b border-line/40 px-5 py-3.5 flex flex-wrap items-center gap-x-3 gap-y-2 justify-between">
+                <div className="flex min-w-0 flex-wrap items-center gap-2">
                   <h3 className="font-display text-sm font-semibold text-ink">
                     Report Dispatch Manifest
                   </h3>
-                  <span className="font-mono text-[10px] uppercase tracking-wider px-2 py-0.5 rounded bg-paper border border-line/40 text-ink/60">
+                  <span className="font-mono text-[10px] uppercase tracking-wider px-2 py-0.5 rounded bg-paper border border-line/40 text-ink/60 shrink-0">
                     Draft Verified
                   </span>
                 </div>
                 {selectedCategory?.department?.name && (
-                  <span className="font-mono text-xs text-ledger font-medium">
+                  <span className="font-mono text-xs text-ledger font-medium truncate max-w-full">
                     → {selectedCategory.department.name}
                   </span>
                 )}

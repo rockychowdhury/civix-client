@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ADMIN_QUERY_KEYS } from "@/constant/admin.constant";
 import {
@@ -25,6 +25,7 @@ export function useGetAdminCategories(params?: {
   return useQuery({
     queryKey: [...ADMIN_QUERY_KEYS.categories, params],
     queryFn: () => getAdminCategories(params),
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -91,6 +92,7 @@ export function useGetAdminSlaPolicies(params?: { municipalityId?: string; categ
   return useQuery({
     queryKey: [...ADMIN_QUERY_KEYS.slaPolicies, params],
     queryFn: () => getAdminSlaPolicies(params),
+    placeholderData: keepPreviousData,
   });
 }
 

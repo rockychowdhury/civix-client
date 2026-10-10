@@ -103,7 +103,10 @@ export function TransparencyDashboard() {
                 ))}
               </svg>
 
-              <div aria-hidden="true" className="absolute inset-x-6 bottom-6 flex flex-wrap gap-6">
+              <div
+                aria-hidden="true"
+                className="mt-3 flex flex-wrap gap-x-6 gap-y-2 sm:absolute sm:inset-x-6 sm:bottom-6 sm:mt-0"
+              >
                 <span className="flex items-center gap-2 font-body text-xs text-paper/60">
                   <span className="size-2.5 rounded-full bg-signal-open/60" />
                   Open density

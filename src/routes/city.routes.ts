@@ -1,10 +1,12 @@
 import {
+  Bell,
   Building2,
   Eye,
   Home,
   Map as MapIcon,
   MessageSquareHeart,
   Tags,
+  User,
   UserPlus,
   Users,
 } from "lucide-react";
@@ -81,5 +83,17 @@ export const cityRoutes: NavItem[] = [
     url: "/municipality/feedback",
     icon: MessageSquareHeart,
     permission: "oversight:read",
+  },
+  {
+    title: "Notifications",
+    url: "/municipality/notifications",
+    icon: Bell,
+    permission: "notification:read",
+  },
+  {
+    title: "Profile",
+    url: "/municipality/profile",
+    icon: User,
+    permission: "profile:read",
   },
 ];

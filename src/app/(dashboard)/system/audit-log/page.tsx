@@ -1,14 +1,17 @@
+import { Suspense } from "react";
+import { AdminSectionSkeleton } from "@/components/modules/admin";
+import { AuditLogView } from "@/components/modules/admin/views/AuditLogView";
+
+export const dynamic = "force-static";
+
+export const metadata = { title: "Audit Log — Civix" };
+
 export default function Page() {
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-semibold text-ink">Audit Log</h1>
-      </div>
-      <div className="rounded-lg border border-line/20 bg-field/20 p-12 text-center border-dashed">
-        <p className="font-body text-sm text-ink/60">
-          This section is currently being constructed.
-        </p>
-      </div>
+    <div className="flex flex-col gap-8 w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-6">
+      <Suspense fallback={<AdminSectionSkeleton />}>
+        <AuditLogView />
+      </Suspense>
     </div>
   );
 }

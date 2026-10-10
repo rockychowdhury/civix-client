@@ -25,13 +25,10 @@ export function updateDepartment(id: string, payload: Record<string, unknown>) {
   return apiClient<{ data: any }>(`/departments/${id}`, { method: "PATCH", body: payload });
 }
 
-export function attachDepartmentServiceAreas(
-  id: string,
-  payload: { areaIds?: string[]; wardIds?: string[] },
-) {
+export function attachDepartmentServiceArea(id: string, wardId: string) {
   return apiClient<{ data: any }>(`/departments/${id}/service-areas`, {
     method: "POST",
-    body: payload,
+    body: { wardId },
   });
 }
 

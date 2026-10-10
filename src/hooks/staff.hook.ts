@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import type { IStaffFilter } from "@/types";
 import {
@@ -10,8 +10,10 @@ import {
   getAllStaff,
   getAllTechnicians,
   getStaffById,
+  getTechnicianDashboard,
   updateStaff,
   updateStaffStatus,
+  updateTechnicianAvailability,
 } from "../api";
 
 export function useCreatePlatformAdmin() {
@@ -88,6 +90,7 @@ export function useGetAllStaff(params?: IStaffFilter) {
   return useQuery({
     queryKey: ["staff", params],
     queryFn: () => getAllStaff(params),
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -95,6 +98,7 @@ export function useGetAllTechnicians(params?: IStaffFilter) {
   return useQuery({
     queryKey: ["staff", "technicians", params],
     queryFn: () => getAllTechnicians(params),
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -132,6 +136,33 @@ export function useUpdateStaffStatus() {
     },
     onError: (error: any) => {
       toast.error(error?.data?.message || "Failed to update status");
+    },
+  });
+}
+
+export function useTechnicianDashboard() {
+  return useQuery({
+    queryKey: ["technician-dashboard"],
+    queryFn: async () => {
+      const res = await getTechnicianDashboard();
+      return res.data;
+    },
+  });
+}
+
+export function useUpdateTechnicianAvailability() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (isAvailable: boolean) => updateTechnicianAvailability(isAvailable),
+    onSuccess: (_, isAvailable) => {
+      toast.success(
+        isAvailable ? "Shift active: You are now On Duty" : "You are now Off Duty / on break",
+      );
+      queryClient.invalidateQueries({ queryKey: ["technician-dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["me"] });
+    },
+    onError: (error: any) => {
+      toast.error(error?.data?.message || "Failed to update availability");
     },
   });
 }

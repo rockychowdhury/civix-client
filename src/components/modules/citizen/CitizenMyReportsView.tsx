@@ -1,16 +1,7 @@
 "use client";
 
 import { format } from "date-fns";
-import {
-  ArrowUpRight,
-  Check,
-  Copy,
-  MapPin,
-  PlusCircle,
-  Search,
-  Sparkles,
-  X,
-} from "lucide-react";
+import { ArrowUpRight, Check, Copy, MapPin, PlusCircle, Search, Sparkles, X } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { StatusPill } from "@/components/layout/dashboard/StatusPill";
@@ -171,7 +162,9 @@ export function CitizenMyReportsView() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-semibold text-ink tracking-tight">My Reports</h1>
+          <h1 className="font-display text-2xl font-semibold text-ink tracking-tight">
+            My Reports
+          </h1>
           <p className="font-body text-xs text-ink/60 mt-0.5">
             Overview of your reported civic issues and active municipal status.
           </p>
@@ -199,21 +192,36 @@ export function CitizenMyReportsView() {
           }}
           className="w-full sm:w-auto"
         >
-          <TabsList className="bg-field/50 border border-line/60 p-1 rounded-sm gap-1">
-            <TabsTrigger value="ALL" className="font-body text-xs cursor-pointer">
+          <TabsList className="bg-field/50 border border-line/60 p-1 rounded-sm gap-1 flex-wrap h-auto max-w-full">
+            <TabsTrigger
+              value="ALL"
+              className="font-body text-xs rounded-xs data-[state=active]:bg-paper data-[state=active]:text-ink data-[state=active]:border data-[state=active]:border-line/70 cursor-pointer px-3 py-1.5"
+            >
               All ({counts.all})
             </TabsTrigger>
-            <TabsTrigger value="IN_PROGRESS" className="font-body text-xs cursor-pointer">
+            <TabsTrigger
+              value="IN_PROGRESS"
+              className="font-body text-xs rounded-xs data-[state=active]:bg-paper data-[state=active]:text-ink data-[state=active]:border data-[state=active]:border-line/70 cursor-pointer px-3 py-1.5"
+            >
               In Progress ({counts.inProgress})
             </TabsTrigger>
-            <TabsTrigger value="SUBMITTED" className="font-body text-xs cursor-pointer">
+            <TabsTrigger
+              value="SUBMITTED"
+              className="font-body text-xs rounded-xs data-[state=active]:bg-paper data-[state=active]:text-ink data-[state=active]:border data-[state=active]:border-line/70 cursor-pointer px-3 py-1.5"
+            >
               Submitted ({counts.submitted})
             </TabsTrigger>
-            <TabsTrigger value="RESOLVED" className="font-body text-xs cursor-pointer">
+            <TabsTrigger
+              value="RESOLVED"
+              className="font-body text-xs rounded-xs data-[state=active]:bg-paper data-[state=active]:text-ink data-[state=active]:border data-[state=active]:border-line/70 cursor-pointer px-3 py-1.5"
+            >
               Resolved ({counts.resolved})
             </TabsTrigger>
             {counts.cancelled > 0 && (
-              <TabsTrigger value="CANCELLED" className="font-body text-xs cursor-pointer">
+              <TabsTrigger
+                value="CANCELLED"
+                className="font-body text-xs rounded-xs data-[state=active]:bg-paper data-[state=active]:text-ink data-[state=active]:border data-[state=active]:border-line/70 cursor-pointer px-3 py-1.5"
+              >
                 Cancelled ({counts.cancelled})
               </TabsTrigger>
             )}
@@ -239,7 +247,8 @@ export function CitizenMyReportsView() {
                 setSearchQuery("");
                 setCurrentPage(1);
               }}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-ink/40 hover:text-ink cursor-pointer"
+              aria-label="Clear search"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 text-ink/40 hover:text-ink cursor-pointer p-2"
             >
               <X className="size-3.5" />
             </button>
@@ -305,7 +314,9 @@ export function CitizenMyReportsView() {
 
               const primaryDisplayId = civicIssueNumber || request.trackingNumber;
               const secondaryRefId =
-                civicIssueNumber && request.trackingNumber && civicIssueNumber !== request.trackingNumber
+                civicIssueNumber &&
+                request.trackingNumber &&
+                civicIssueNumber !== request.trackingNumber
                   ? request.trackingNumber
                   : null;
 
@@ -326,12 +337,13 @@ export function CitizenMyReportsView() {
                             type="button"
                             onClick={() => handleCopy(primaryDisplayId)}
                             title="Copy issue reference"
-                            className="p-1 text-ink/40 hover:text-ink cursor-pointer transition-colors active:translate-y-px rounded-xs hover:bg-field/50"
+                            aria-label="Copy issue reference"
+                            className="p-2 -m-1 text-ink/40 hover:text-ink cursor-pointer transition-colors active:translate-y-px rounded-xs hover:bg-field/50"
                           >
                             {copiedId === primaryDisplayId ? (
-                              <Check className="size-3 text-signal-resolved" />
+                              <Check className="size-3.5 text-signal-resolved" />
                             ) : (
-                              <Copy className="size-3" />
+                              <Copy className="size-3.5" />
                             )}
                           </button>
                         </div>

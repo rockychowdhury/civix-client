@@ -5,6 +5,10 @@ export interface OversightFilter {
   wardId?: string;
   priority?: string;
   status?: string;
+  requestType?: string;
+  unTriaged?: boolean;
+  rating?: number;
+  citizenId?: string;
   page?: number;
   limit?: number;
 }

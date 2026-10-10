@@ -277,7 +277,8 @@ export function CityIssueDetailSheet({
                   onClick={() => setIsPriorityModalOpen(true)}
                   className="cursor-pointer text-xs"
                 >
-                  <AlertTriangle className="size-3.5 mr-1.5 text-amber-500" /> Override Priority
+                  <AlertTriangle className="size-3.5 mr-1.5 text-signal-progress" /> Override
+                  Priority
                 </Button>
 
                 <Button
@@ -294,7 +295,7 @@ export function CityIssueDetailSheet({
                     variant="secondary"
                     size="sm"
                     onClick={() => setIsReopenModalOpen(true)}
-                    className="cursor-pointer text-xs border-amber-300 text-amber-700 hover:bg-amber-50"
+                    className="cursor-pointer text-xs border-line text-ink hover:bg-field/40"
                   >
                     <RefreshCw className="size-3.5 mr-1.5" /> Reopen Issue
                   </Button>
@@ -307,7 +308,7 @@ export function CityIssueDetailSheet({
 
       {/* Override Priority Dialog */}
       <Dialog open={isPriorityModalOpen} onOpenChange={setIsPriorityModalOpen}>
-        <DialogContent className="sm:max-w-md bg-paper border border-line text-ink">
+        <DialogContent className="sm:max-w-md max-h-[85vh] overflow-y-auto bg-paper border border-line text-ink p-5">
           <DialogHeader>
             <DialogTitle className="font-display text-lg">Override Issue Priority</DialogTitle>
             <DialogDescription className="text-xs text-ink/60">
@@ -373,7 +374,7 @@ export function CityIssueDetailSheet({
 
       {/* Update Status Dialog */}
       <Dialog open={isStatusModalOpen} onOpenChange={setIsStatusModalOpen}>
-        <DialogContent className="sm:max-w-md bg-paper border border-line text-ink">
+        <DialogContent className="sm:max-w-md max-h-[85vh] overflow-y-auto bg-paper border border-line text-ink p-5">
           <DialogHeader>
             <DialogTitle className="font-display text-lg">Update Issue Status</DialogTitle>
             <DialogDescription className="text-xs text-ink/60">
@@ -439,7 +440,7 @@ export function CityIssueDetailSheet({
 
       {/* Reopen Issue Dialog */}
       <Dialog open={isReopenModalOpen} onOpenChange={setIsReopenModalOpen}>
-        <DialogContent className="sm:max-w-md bg-paper border border-line text-ink">
+        <DialogContent className="sm:max-w-md max-h-[85vh] overflow-y-auto bg-paper border border-line text-ink p-5">
           <DialogHeader>
             <DialogTitle className="font-display text-lg">Reopen Civic Issue</DialogTitle>
             <DialogDescription className="text-xs text-ink/60">

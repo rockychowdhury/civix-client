@@ -1,18 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { CheckCircle2, Clock, RefreshCw, Search, ShieldAlert, Users, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useDepartmentWorkOrders } from "@/hooks/work-order.hook";
-import { useGetMe } from "@/hooks/auth.hook";
+import { useState } from "react";
+import { useDebounce } from "use-debounce";
+import { WorkOrderContextMenu } from "@/components/tables/columns/WorkOrderContextMenu";
 import { WorkOrdersTable } from "@/components/tables/WorkOrdersTable";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Search, RefreshCw, X, ShieldAlert, CheckCircle2, Clock, Users } from "lucide-react";
 import { WorkOrderDetailSheet } from "@/components/work-orders/WorkOrderDetailSheet";
-import { WorkOrderContextMenu } from "@/components/tables/columns/WorkOrderContextMenu";
-import { useDebounce } from "use-debounce";
-import { useQueryClient } from "@tanstack/react-query";
+import { useGetMe } from "@/hooks/auth.hook";
+import { useDepartmentWorkOrders } from "@/hooks/work-order.hook";
 import type { WorkOrder } from "@/types";
 
 const SUB_ROUTES = [
@@ -101,8 +101,7 @@ export function WorkOrdersClient() {
   const workOrders: WorkOrder[] = workOrdersData?.data || [];
   const totalCount = workOrdersData?.meta?.total ?? workOrders.length;
 
-  const activeSubRoute =
-    SUB_ROUTES.find((r) => r.status === currentStatus) || SUB_ROUTES[0];
+  const activeSubRoute = SUB_ROUTES.find((r) => r.status === currentStatus) || SUB_ROUTES[0];
 
   const handleSearchChange = (value: string) => {
     setSearchInput(value);
@@ -141,7 +140,7 @@ export function WorkOrdersClient() {
           <p className="text-xs text-ink/60 mt-1">{activeSubRoute.description}</p>
         </div>
 
-        <div className="flex items-center gap-3 w-full lg:w-auto">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full lg:w-auto">
           {/* Search Bar */}
           <div className="relative flex-1 lg:w-72">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-ink/40" />
@@ -149,15 +148,16 @@ export function WorkOrdersClient() {
               value={searchInput}
               onChange={(e) => handleSearchChange(e.target.value)}
               placeholder="Search work orders..."
-              className="h-8 pl-8 pr-7 text-xs bg-paper border-line/40 focus-visible:ring-1 focus-visible:ring-ledger font-body"
+              className="h-8 pl-8 pr-9 text-xs bg-paper border-line/40 focus-visible:ring-1 focus-visible:ring-ledger font-body"
             />
             {searchInput && (
               <button
                 type="button"
                 onClick={() => handleSearchChange("")}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-ink/40 hover:text-ink cursor-pointer p-0.5"
+                aria-label="Clear search"
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 text-ink/40 hover:text-ink cursor-pointer p-2"
               >
-                <X className="h-3 w-3" />
+                <X className="h-3.5 w-3.5" />
               </button>
             )}
           </div>
@@ -190,7 +190,8 @@ export function WorkOrdersClient() {
           </div>
           <p className="text-signal-open font-medium text-lg">Unable to Load Work Orders</p>
           <p className="text-ink/60 max-w-sm text-xs">
-            There was a problem syncing with the dispatch server. Please verify your connection and try refreshing.
+            There was a problem syncing with the dispatch server. Please verify your connection and
+            try refreshing.
           </p>
           <Button
             variant="secondary"

@@ -60,3 +60,47 @@ export interface IStaffListResponse {
     totalPages: number;
   };
 }
+
+export interface ITechnicianDashboardProfile {
+  userId: string;
+  employeeId?: string;
+  name: string;
+  designation?: string;
+  email: string;
+  phone?: string;
+  isAvailable: boolean;
+  currentWorkload: number;
+  activeWorkloadCount?: number;
+  maxWorkload: number;
+  maxCapacity?: number;
+  utilizationRate: number;
+  department?: { id: string; name: string; code?: string };
+  teams?: Array<{ id: string; name: string; code?: string }>;
+}
+
+export interface ITechnicianDashboardKPI {
+  pendingAssignmentsCount: number;
+  pending?: number;
+  activeWorkOrdersCount: number;
+  active?: number;
+  pendingVerificationCount: number;
+  verificationPending?: number;
+  completedThisWeekCount: number;
+  completedThisWeek?: number;
+  overdueCount: number;
+  overdue?: number;
+}
+
+export interface ITechnicianDashboardQueues {
+  pendingAssignments?: any[];
+  pendingWorkOrders?: any[];
+  activeWorkOrders: any[];
+  verificationWorkOrders?: any[];
+  recentUpdates?: any[];
+}
+
+export interface ITechnicianDashboardData {
+  profile: ITechnicianDashboardProfile;
+  kpi: ITechnicianDashboardKPI;
+  queues: ITechnicianDashboardQueues;
+}

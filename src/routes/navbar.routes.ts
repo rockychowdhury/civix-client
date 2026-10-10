@@ -1,5 +1,7 @@
 import {
+  Activity,
   BarChart3,
+  Bell,
   Building,
   Building2,
   ClipboardList,
@@ -9,10 +11,8 @@ import {
   Inbox,
   Layers,
   LayoutDashboard,
-  ListTodo,
   type LucideIcon,
   MessageSquare,
-  Settings,
   Shield,
   User,
   Users,
@@ -48,7 +48,7 @@ export function getNavbarRoleMenu(roles: string[]): NavbarRoleMenu {
         { label: "Municipalities Directory", href: "/system/municipalities", icon: Building },
         { label: "Issue Categories Engine", href: "/system/categories", icon: Layers },
         { label: "User Access & Roles", href: "/system/users", icon: Users },
-        { label: "Platform Health & Settings", href: "/system/platform-settings", icon: Settings },
+        { label: "System Health", href: "/system/system-health", icon: Activity },
       ],
     };
   }
@@ -63,6 +63,8 @@ export function getNavbarRoleMenu(roles: string[]): NavbarRoleMenu {
         { label: "Departments & Teams", href: "/municipality/departments", icon: FolderTree },
         { label: "Performance & SLAs", href: "/municipality/analytics", icon: BarChart3 },
         { label: "Municipal Staff Directory", href: "/municipality/staff", icon: Users },
+        { label: "Notifications", href: "/municipality/notifications", icon: Bell },
+        { label: "My Profile", href: "/municipality/profile", icon: User },
       ],
     };
   }
@@ -88,10 +90,11 @@ export function getNavbarRoleMenu(roles: string[]): NavbarRoleMenu {
   if (normalized.includes(USER_ROLES.TECHNICIAN)) {
     return {
       title: "Technician Desk",
-      badge: "Field Technician",
+      badge: "Field Operations",
       routes: [
-        { label: "Active Task Queue", href: "/technician/queue", icon: ListTodo },
-        { label: "Assigned Work Orders", href: "/technician/work-orders", icon: Wrench },
+        { label: "Dashboard Overview", href: "/technician/overview", icon: LayoutDashboard },
+        { label: "My Work Orders", href: "/technician/work-orders", icon: Wrench },
+        { label: "Assignments Inbox", href: "/technician/inbox", icon: Inbox },
         { label: "Resolution History", href: "/technician/history", icon: History },
         { label: "Technician Profile", href: "/technician/profile", icon: User },
       ],

@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  type DepartmentServiceRequestsParams,
   flagServiceRequestInvalid,
+  getDepartmentServiceRequests,
   getNearbyCivicIssues,
   getServiceRequestById,
   getServiceRequests,
@@ -13,9 +15,25 @@ export const serviceRequestKeys = {
   all: ["service-requests"] as const,
   lists: () => [...serviceRequestKeys.all, "list"] as const,
   list: (filters: Record<string, string>) => [...serviceRequestKeys.lists(), filters] as const,
+  department: (deptId?: string, params?: DepartmentServiceRequestsParams) =>
+    [...serviceRequestKeys.all, "department", deptId, params] as const,
   details: () => [...serviceRequestKeys.all, "detail"] as const,
   detail: (id: string) => [...serviceRequestKeys.details(), id] as const,
 };
+
+export function useDepartmentServiceRequests(
+  departmentId?: string,
+  params?: DepartmentServiceRequestsParams,
+) {
+  return useQuery({
+    queryKey: serviceRequestKeys.department(departmentId, params),
+    queryFn: () => {
+      if (!departmentId) throw new Error("Department ID required");
+      return getDepartmentServiceRequests(departmentId, params);
+    },
+    enabled: !!departmentId,
+  });
+}
 
 export function useServiceRequests(filters: Record<string, string>) {
   return useQuery({

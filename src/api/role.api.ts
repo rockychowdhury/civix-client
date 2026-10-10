@@ -43,9 +43,10 @@ export function getRolePermissions(roleId: string) {
 }
 
 export function updateRolePermissions(roleId: string, payload: UpdateRolePermissionsPayload) {
+  // Backend expects snake_case `permission_ids`.
   return apiClient<{ data: AdminPermission[] }>(`/roles/${roleId}/permissions`, {
     method: "PUT",
-    body: payload,
+    body: { permission_ids: payload.permissionIds },
   });
 }
 

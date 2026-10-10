@@ -9,21 +9,20 @@ export function generateStaticParams() {
 }
 
 export const metadata = {
-  title: "Work Order | Technician Dashboard",
+  title: "Work Order Execution | Technician Operations",
+  description: "Field job execution, site updates logging, and repair resolution.",
 };
 
-export default function Page() {
+export default function TechnicianWorkOrderDetailPage() {
   return (
-    <div className="flex flex-col gap-6">
-      <Suspense
-        fallback={
-          <div className="h-64 flex items-center justify-center text-ink/40 font-body animate-pulse">
-            Loading job...
-          </div>
-        }
-      >
-        <WorkExecutionView />
-      </Suspense>
-    </div>
+    <Suspense
+      fallback={
+        <div className="h-64 flex items-center justify-center text-ink/40 font-body animate-pulse">
+          Loading job details...
+        </div>
+      }
+    >
+      <WorkExecutionView />
+    </Suspense>
   );
 }

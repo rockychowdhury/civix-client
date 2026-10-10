@@ -32,7 +32,9 @@ export function CitizenFeedbackView() {
   const user = userData?.data;
   const trustLevel = user?.citizenProfile?.trustLevel || user?.trustLevel || "NEW";
 
-  const { data: requestsRes, isLoading: isMyRequestsLoading } = useMyServiceRequests({ limit: 100 });
+  const { data: requestsRes, isLoading: isMyRequestsLoading } = useMyServiceRequests({
+    limit: 100,
+  });
   const requests: ServiceRequest[] = requestsRes?.data || [];
 
   const { data: pendingFeedbackRes, isLoading: isPendingLoading } = usePendingFeedbackRequests();
@@ -145,8 +147,8 @@ export function CitizenFeedbackView() {
                   </h3>
                   <p className="font-body text-xs text-ink/65 leading-relaxed">
                     You have no repairs waiting for inspection. When city technicians finish work on
-                    one of your reported issues, you will receive an alert here to review photo proof
-                    and rate craftsmanship.
+                    one of your reported issues, you will receive an alert here to review photo
+                    proof and rate craftsmanship.
                   </p>
                 </div>
                 <div className="pt-2">
@@ -227,7 +229,8 @@ export function CitizenFeedbackView() {
                       {summary && (
                         <div className="rounded-md bg-field/35 border-l-2 border-ledger/70 border-y border-r border-line/50 p-3.5 space-y-1">
                           <span className="font-mono text-[10px] uppercase tracking-wider text-ledger font-semibold flex items-center gap-1.5">
-                            <CheckCircle2 className="size-3 text-signal-resolved" /> Technician Resolution Memo
+                            <CheckCircle2 className="size-3 text-signal-resolved" /> Technician
+                            Resolution Memo
                           </span>
                           <p className="font-body text-xs text-ink/85 italic leading-relaxed">
                             "{summary}"
@@ -239,7 +242,8 @@ export function CitizenFeedbackView() {
                       {attachments.length > 0 && (
                         <div className="space-y-1.5 pt-1">
                           <span className="text-[10px] font-mono uppercase tracking-wider text-ink/45 flex items-center gap-1">
-                            <ImageIcon className="size-3" /> Field Repair Evidence ({attachments.length})
+                            <ImageIcon className="size-3" /> Field Repair Evidence (
+                            {attachments.length})
                           </span>
                           <div className="flex items-center gap-2 overflow-x-auto pb-1">
                             {attachments.map((att, idx) => (
@@ -263,7 +267,8 @@ export function CitizenFeedbackView() {
                       {/* Bottom Action Footer */}
                       <div className="pt-3 border-t border-line/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <span className="font-mono text-[11px] text-ink/45">
-                          Submitted {req.submittedAt ? format(new Date(req.submittedAt), "MMM d, yyyy") : ""}
+                          Submitted{" "}
+                          {req.submittedAt ? format(new Date(req.submittedAt), "MMM d, yyyy") : ""}
                         </span>
 
                         <div className="flex items-center gap-2 self-end sm:self-auto">
@@ -284,7 +289,8 @@ export function CitizenFeedbackView() {
                             onClick={() => setTargetRequest(req)}
                             className="h-8 px-3.5 text-xs cursor-pointer active:translate-y-px rounded-xs shadow-2xs font-medium"
                           >
-                            <Star className="size-3.5 mr-1.5 fill-paper text-paper" /> Rate Resolution
+                            <Star className="size-3.5 mr-1.5 fill-paper text-paper" /> Rate
+                            Resolution
                           </Button>
                         </div>
                       </div>
@@ -296,7 +302,9 @@ export function CitizenFeedbackView() {
           ) : completedReviews.length === 0 ? (
             <div className="rounded-xl border border-line/70 bg-paper p-10 sm:p-12 text-center space-y-3 shadow-2xs">
               <MessageSquare className="size-10 mx-auto text-ink/30" />
-              <h3 className="font-display text-lg font-semibold text-ink">No Reviews Recorded Yet</h3>
+              <h3 className="font-display text-lg font-semibold text-ink">
+                No Reviews Recorded Yet
+              </h3>
               <p className="font-body text-xs text-ink/65 max-w-md mx-auto leading-relaxed">
                 When you evaluate resolved reports, your comments, ratings, and resolution audits
                 will be permanently archived here for your records.
@@ -391,9 +399,7 @@ export function CitizenFeedbackView() {
             <div className="flex items-center justify-between pb-3 border-b border-line/50">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="size-4 text-signal-resolved" />
-                <h3 className="font-display text-sm font-semibold text-ink">
-                  Citizen Standing
-                </h3>
+                <h3 className="font-display text-sm font-semibold text-ink">Citizen Standing</h3>
               </div>
               <CitizenTrustBadge level={trustLevel} />
             </div>
@@ -403,16 +409,12 @@ export function CitizenFeedbackView() {
                 <span className="text-[10px] font-mono uppercase text-ink/50">
                   Verification Rate
                 </span>
-                <p className="font-display text-lg font-bold text-ink">
-                  {verificationRate}%
-                </p>
+                <p className="font-display text-lg font-bold text-ink">{verificationRate}%</p>
                 <span className="text-[10px] font-mono text-ink/40">of closed repairs</span>
               </div>
 
               <div className="p-3 rounded-lg bg-field/30 border border-line/60 space-y-0.5">
-                <span className="text-[10px] font-mono uppercase text-ink/50">
-                  Average Rating
-                </span>
+                <span className="text-[10px] font-mono uppercase text-ink/50">Average Rating</span>
                 <p className="font-display text-lg font-bold text-ink">
                   {averageRating ? `${averageRating}` : "—"}
                 </p>
@@ -443,7 +445,9 @@ export function CitizenFeedbackView() {
                   1
                 </span>
                 <div className="space-y-0.5">
-                  <h5 className="font-body text-xs font-semibold text-ink">Technician Fix Logged</h5>
+                  <h5 className="font-body text-xs font-semibold text-ink">
+                    Technician Fix Logged
+                  </h5>
                   <p className="font-body text-[11px] text-ink/60 leading-relaxed">
                     Contractor resolves the issue and attaches timestamped photos.
                   </p>
@@ -455,7 +459,9 @@ export function CitizenFeedbackView() {
                   2
                 </span>
                 <div className="space-y-0.5">
-                  <h5 className="font-body text-xs font-semibold text-ink">Citizen Quality Audit</h5>
+                  <h5 className="font-body text-xs font-semibold text-ink">
+                    Citizen Quality Audit
+                  </h5>
                   <p className="font-body text-[11px] text-ink/60 leading-relaxed">
                     You inspect the repair, award 1–5 stars, and leave optional notes.
                   </p>

@@ -70,7 +70,7 @@ export function IssueSearchForm({ defaultIssueNumber = "" }: { defaultIssueNumbe
                           disabled={!field.state.value || !field.state.meta.isValid || isSubmitting}
                           loading={isSubmitting}
                           size="sm"
-                          className="h-7 text-xs"
+                          className="h-9 sm:h-7 text-xs px-3"
                         >
                           Track
                         </Button>

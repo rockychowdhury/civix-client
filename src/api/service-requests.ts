@@ -56,6 +56,44 @@ export async function getPendingFeedbackServiceRequests() {
   });
 }
 
+export interface DepartmentServiceRequestsParams {
+  stage?: "queue" | "in_progress" | "resolved" | "all" | string;
+  status?: string;
+  categoryId?: string;
+  wardId?: string;
+  searchTerm?: string;
+  page?: number;
+  limit?: number;
+  sortBy?: "createdAt" | "updatedAt" | "submittedAt" | "status" | "trackingNumber" | string;
+  sortOrder?: "asc" | "desc";
+}
+
+export async function getDepartmentServiceRequests(
+  departmentId: string,
+  params?: DepartmentServiceRequestsParams,
+): Promise<{
+  data: ServiceRequest[];
+  meta?: { page: number; limit: number; total: number; totalPages: number };
+}> {
+  const { stage, ...queryParams } = params || {};
+  let path = `/service-requests/department/${departmentId}`;
+
+  if (stage === "queue") {
+    path = `/service-requests/department/${departmentId}/queue`;
+  } else if (stage === "in_progress" || stage === "in-progress") {
+    path = `/service-requests/department/${departmentId}/in-progress`;
+  } else if (stage === "resolved") {
+    path = `/service-requests/department/${departmentId}/resolved`;
+  } else if (stage && stage !== "all") {
+    (queryParams as any).stage = stage;
+  }
+
+  const res = await apiClient(path, {
+    params: cleanParams(queryParams),
+  });
+  return res as { data: ServiceRequest[]; meta?: any };
+}
+
 export async function getServiceRequests(filters?: Record<string, string>) {
   const res = await apiClient<{ data: ServiceRequest[] }>("/service-requests", {
     query: filters,

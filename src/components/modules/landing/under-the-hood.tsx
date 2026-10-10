@@ -109,7 +109,7 @@ export function UnderTheHood() {
                 onOpenChange={(open) => setOpenId(open ? item.id : null)}
                 className="border-t border-line"
               >
-                <CollapsibleTrigger className="group flex w-full items-center gap-6 py-6 text-left">
+                <CollapsibleTrigger className="group flex w-full items-center gap-3 sm:gap-6 py-5 sm:py-6 text-left">
                   <span
                     className={cn(
                       "h-px shrink-0 bg-line transition-all duration-300 motion-reduce:transition-none",
@@ -128,7 +128,7 @@ export function UnderTheHood() {
                 </CollapsibleTrigger>
 
                 <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down motion-reduce:animate-none">
-                  <div className="pb-8 pl-12">
+                  <div className="pb-8 pl-6 sm:pl-12">
                     <p className="max-w-[60ch] font-body text-sm leading-relaxed text-ink/75">
                       {item.explanation}
                     </p>

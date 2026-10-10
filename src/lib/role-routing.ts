@@ -12,7 +12,7 @@ export const ROLE_PORTAL_MAP: Record<string, string> = {
 
 export const ROLE_DEFAULT_LANDING: Record<string, string> = {
   [USER_ROLES.CITIZEN]: "/citizen/overview",
-  [USER_ROLES.TECHNICIAN]: "/technician/queue",
+  [USER_ROLES.TECHNICIAN]: "/technician/overview",
   [USER_ROLES.DISPATCHER]: "/department/work-orders",
   [USER_ROLES.DEPARTMENT_MANAGER]: "/department/overview",
   [USER_ROLES.CITY_ADMIN]: "/municipality/overview",

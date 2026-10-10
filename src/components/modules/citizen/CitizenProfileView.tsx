@@ -195,7 +195,7 @@ export function CitizenProfileView() {
               <span className="text-[11px] font-mono text-ink/50 uppercase">Municipal Records</span>
             </div>
 
-            <div className="grid grid-cols-3 gap-3 text-center">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-center">
               <div className="p-3 rounded-xl bg-field/40 border border-line/60">
                 <p className="font-display text-2xl font-bold text-ink">{requests.length}</p>
                 <p className="text-[10px] font-mono text-ink/50 uppercase mt-0.5">Total Reports</p>
@@ -207,7 +207,9 @@ export function CitizenProfileView() {
                 <p className="text-[10px] font-mono text-ink/50 uppercase mt-0.5">Resolved</p>
               </div>
               <div className="p-3 rounded-xl bg-field/40 border border-line/60">
-                <p className="font-display text-2xl font-bold text-signal-progress">{reviewsCount}</p>
+                <p className="font-display text-2xl font-bold text-signal-progress">
+                  {reviewsCount}
+                </p>
                 <p className="text-[10px] font-mono text-ink/50 uppercase mt-0.5">Reviewed</p>
               </div>
             </div>

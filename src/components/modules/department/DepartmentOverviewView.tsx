@@ -1,5 +1,6 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import {
   AlertCircle,
@@ -25,7 +26,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useGetMe } from "@/hooks/auth.hook";
 import { useDepartmentOverview } from "@/hooks/department.hook";
-import { useQueryClient } from "@tanstack/react-query";
 import type { IDepartmentOverviewData } from "@/types";
 
 export function DepartmentOverviewView() {
@@ -34,8 +34,7 @@ export function DepartmentOverviewView() {
   const user = userData?.data;
   const staffProfile = user?.staffProfile;
   const departmentMember = staffProfile?.departmentMembers?.[0];
-  const departmentId =
-    departmentMember?.departmentId || (departmentMember as any)?.department?.id;
+  const departmentId = departmentMember?.departmentId || (departmentMember as any)?.department?.id;
 
   // Single cached endpoint for the entire department overview
   const {
@@ -294,9 +293,7 @@ export function DepartmentOverviewView() {
                 {workOrderStats?.pendingVerification ?? 0}
               </p>
               {(workOrderStats?.pendingVerification ?? 0) > 0 ? (
-                <span className="text-[10px] font-mono text-amber-600 font-semibold">
-                  Review →
-                </span>
+                <span className="text-[10px] font-mono text-amber-600 font-semibold">Review →</span>
               ) : (
                 <span className="text-[10px] font-mono text-signal-resolved font-medium">
                   Clear ✓
@@ -365,12 +362,10 @@ export function DepartmentOverviewView() {
               </Button>
             </div>
 
-            {(!queues?.activeWorkOrders || queues.activeWorkOrders.length === 0) ? (
+            {!queues?.activeWorkOrders || queues.activeWorkOrders.length === 0 ? (
               <div className="p-8 text-center rounded-lg border border-line/40 bg-field/15 space-y-2">
                 <CheckCircle2 className="size-8 mx-auto text-signal-resolved" />
-                <p className="font-display text-sm font-semibold text-ink">
-                  No Active Work Orders
-                </p>
+                <p className="font-display text-sm font-semibold text-ink">No Active Work Orders</p>
                 <p className="font-body text-xs text-ink/60 max-w-sm mx-auto">
                   There are currently no active work orders underway.
                 </p>
@@ -524,9 +519,7 @@ export function DepartmentOverviewView() {
 
             <div className="grid grid-cols-2 gap-3">
               <div className="p-3 rounded-lg bg-field/30 border border-line/60 space-y-0.5">
-                <span className="text-[10px] font-mono uppercase text-ink/50">
-                  Total Staff
-                </span>
+                <span className="text-[10px] font-mono uppercase text-ink/50">Total Staff</span>
                 <p className="font-display text-xl font-bold text-ink">
                   {staffStats?.totalStaff ?? 0}
                 </p>
@@ -536,9 +529,7 @@ export function DepartmentOverviewView() {
               </div>
 
               <div className="p-3 rounded-lg bg-field/30 border border-line/60 space-y-0.5">
-                <span className="text-[10px] font-mono uppercase text-ink/50">
-                  Utilization
-                </span>
+                <span className="text-[10px] font-mono uppercase text-ink/50">Utilization</span>
                 <p className="font-display text-xl font-bold text-ink">
                   {staffStats?.technicians?.utilizationRate ?? 0}%
                 </p>

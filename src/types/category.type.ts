@@ -9,12 +9,13 @@ export interface Category {
   name: string;
   slug: string;
   description: string | null;
+  workInstructions?: string | null;
   parentId: string | null;
-  departmentId: string;
+  departmentId: string | null;
   baseSeverity: number;
   sortOrder: number;
   isActive: boolean;
-  department: Department;
+  department?: Department | null;
 }
 
 export interface CategoryResponse {

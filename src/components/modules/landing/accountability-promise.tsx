@@ -8,7 +8,7 @@ export function AccountabilityPromise() {
           Accountability Promise
         </h2>
 
-        <blockquote className="mb-8 max-w-[85%] border-l-[3px] border-ink pl-12 font-display text-[clamp(2rem,4.5vw,3.5rem)] font-normal leading-[1.1] text-ink">
+        <blockquote className="mb-8 max-w-full sm:max-w-[85%] border-l-[3px] border-ink pl-6 sm:pl-12 font-display text-[clamp(1.5rem,4.5vw,3.5rem)] font-normal leading-[1.15] text-ink break-words">
           Every report has a deadline. If a department misses it, the issue escalates automatically
           — no one has to ask twice.
         </blockquote>

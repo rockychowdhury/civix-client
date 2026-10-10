@@ -80,7 +80,7 @@ const feedbackColumns: ColumnDef<CityFeedback, any>[] = [
               key={s}
               className={cn(
                 "size-3",
-                s <= f.rating ? "fill-amber-400 text-amber-500" : "text-ink/20",
+                s <= f.rating ? "fill-signal-progress text-signal-progress" : "text-ink/20",
               )}
             />
           ))}
@@ -231,7 +231,9 @@ function CityFeedbackContent({ municipalityId }: { municipalityId: string }) {
                   key={s}
                   className={cn(
                     "size-4",
-                    s <= Math.round(metrics.avg) ? "fill-amber-400 text-amber-500" : "text-ink/20",
+                    s <= Math.round(metrics.avg)
+                      ? "fill-signal-progress text-signal-progress"
+                      : "text-ink/20",
                   )}
                 />
               ))}
@@ -253,10 +255,10 @@ function CityFeedbackContent({ municipalityId }: { municipalityId: string }) {
         </div>
 
         <div className="space-y-1 border-t sm:border-t-0 sm:border-l border-line sm:pl-5 pt-3 sm:pt-0">
-          <span className="font-mono text-[10px] uppercase tracking-wider text-amber-600">
+          <span className="font-mono text-[10px] uppercase tracking-wider text-signal-progress">
             Requires Attention
           </span>
-          <p className="font-display text-3xl font-semibold text-amber-600">
+          <p className="font-display text-3xl font-semibold text-signal-progress">
             {metrics.lowCount.toLocaleString()}
           </p>
           <p className="text-[11px] font-body text-ink/60">
@@ -272,28 +274,28 @@ function CityFeedbackContent({ municipalityId }: { municipalityId: string }) {
           onValueChange={(val) => setActiveRatingTab(val as RatingTab)}
           className="w-full lg:w-auto"
         >
-          <TabsList className="bg-field/50 border border-line/20 p-1">
+          <TabsList className="bg-field/50 border border-line/60 rounded-sm p-1">
             <TabsTrigger
               value="ALL"
-              className="text-xs uppercase tracking-wider font-display data-[state=active]:bg-ledger data-[state=active]:text-paper cursor-pointer"
+              className="font-body text-xs rounded-xs data-[state=active]:bg-paper data-[state=active]:text-ink data-[state=active]:border data-[state=active]:border-line/70 cursor-pointer px-3 py-1.5"
             >
               All ({feedbackList.length})
             </TabsTrigger>
             <TabsTrigger
               value="5"
-              className="text-xs uppercase tracking-wider font-display data-[state=active]:bg-ledger data-[state=active]:text-paper cursor-pointer"
+              className="font-body text-xs rounded-xs data-[state=active]:bg-paper data-[state=active]:text-ink data-[state=active]:border data-[state=active]:border-line/70 cursor-pointer px-3 py-1.5"
             >
               5 Stars
             </TabsTrigger>
             <TabsTrigger
               value="4"
-              className="text-xs uppercase tracking-wider font-display data-[state=active]:bg-ledger data-[state=active]:text-paper cursor-pointer"
+              className="font-body text-xs rounded-xs data-[state=active]:bg-paper data-[state=active]:text-ink data-[state=active]:border data-[state=active]:border-line/70 cursor-pointer px-3 py-1.5"
             >
               4 Stars
             </TabsTrigger>
             <TabsTrigger
               value="LOW"
-              className="text-xs uppercase tracking-wider font-display data-[state=active]:bg-ledger data-[state=active]:text-paper cursor-pointer"
+              className="font-body text-xs rounded-xs data-[state=active]:bg-paper data-[state=active]:text-ink data-[state=active]:border data-[state=active]:border-line/70 cursor-pointer px-3 py-1.5"
             >
               Needs Review (≤3★)
             </TabsTrigger>
@@ -437,7 +439,7 @@ function CityFeedbackContent({ municipalityId }: { municipalityId: string }) {
                       className={cn(
                         "size-4",
                         s <= inspectingFeedback.rating
-                          ? "fill-amber-400 text-amber-500"
+                          ? "fill-signal-progress text-signal-progress"
                           : "text-ink/20",
                       )}
                     />

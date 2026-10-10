@@ -4,7 +4,6 @@ export const ADMIN_PATHS = {
   municipalities: "/system/municipalities",
   municipalityDetail: (id: string) => `/system/municipalities/${id}`,
   users: "/system/users",
-  userDetail: (id: string) => `/system/users/${id}`,
   staff: "/system/staff",
   staffDetail: (id: string) => `/system/staff/${id}`,
   roles: "/system/roles",

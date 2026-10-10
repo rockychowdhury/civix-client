@@ -1,8 +1,8 @@
 "use client";
 
-import { AddTeamForm } from "@/components/form/add-team-form";
 import { ChevronLeft, Info } from "lucide-react";
 import Link from "next/link";
+import { AddTeamForm } from "@/components/form/add-team-form";
 import { Button } from "@/components/ui/button";
 
 export default function AddTeamPage() {

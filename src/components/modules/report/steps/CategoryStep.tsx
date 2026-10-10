@@ -134,10 +134,11 @@ export function CategoryStep({
             <button
               type="button"
               onClick={() => setSearch("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-ink/40 hover:text-ink cursor-pointer p-0.5"
+              aria-label="Clear search"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-ink/40 hover:text-ink cursor-pointer p-2"
               title="Clear search"
             >
-              <X className="w-3.5 h-3.5" />
+              <X className="w-4 h-4" />
             </button>
           )}
         </div>

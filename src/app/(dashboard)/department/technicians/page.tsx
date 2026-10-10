@@ -1,13 +1,13 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
-import { StaffTable } from "@/components/tables/StaffTable";
-import { useGetAllStaff } from "@/hooks/staff.hook";
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
 import { useDebounce } from "use-debounce";
+import { StaffTable } from "@/components/tables/StaffTable";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useGetAllStaff } from "@/hooks/staff.hook";
 
 export default function StaffDirectoryPage() {
   const [searchTerm, setSearchTerm] = useState("");

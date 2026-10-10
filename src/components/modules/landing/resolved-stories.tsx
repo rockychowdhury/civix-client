@@ -151,7 +151,7 @@ export function ResolvedStories() {
               onClick={() => setCurrent(i)}
               aria-label={`View case study ${i + 1}`}
               aria-current={i === current ? "true" : "false"}
-              className={`flex size-7 items-center justify-center rounded-xs font-mono text-xs transition-colors ${
+              className={`flex size-9 items-center justify-center rounded-xs font-mono text-xs transition-colors cursor-pointer ${
                 i === current ? "bg-ledger text-paper" : "bg-line text-ink hover:bg-ledger/20"
               }`}
             >
