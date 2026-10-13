@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Civix Client - Civic Reporting and Dispatch Frontend
 
-## Getting Started
+Frontend for Civix, a civic platform where residents report street-level problems and track resolution. Citizens file in under a minute, departments triage and dispatch, technicians resolve from the field.
 
-First, run the development server:
+**Live app:** add your Vercel URL here | **API repo:** [civix-api](https://github.com/rockychowdhury/civix-api)
+
+## Why this exists
+
+The product promise is simple: a report never disappears into a void. Every report gets a tracking number, a public status ledger, and a responsible department with a deadline.
+
+## What it does (by user)
+
+- Citizen: description-first report flow with fuzzy category matching, photo upload, and shareable tracking page with status history.
+- Department staff: triage raw service requests, confirm or merge duplicates into one civic issue, manage the issue queue by SLA urgency.
+- Dispatcher: confirm suggested technicians inline on the work order row, reassign when no one is available, monitor field progress live.
+- Technician: mobile-first queue sorted by SLA, accept jobs, post work updates with photos, submit one final resolution.
+
+## Tech
+
+Next.js 16, React 19, TypeScript, TanStack Query, TanStack Form, TanStack Table, ofetch, Tailwind CSS v4, Zod, Biome
+
+- Static shell with live query islands: pages ship static, operational data stays live via TanStack Query with cache patching (no full list refetch on actions).
+- Client-side category matcher with stemming, synonyms, and fuzzy match to route reports correctly despite typos and Bangla mixed text.
+- URL-synced filters so any queue view is shareable inside a team.
+
+## Run locally
 
 ```bash
+git clone https://github.com/rockychowdhury/civix-client.git
+cd civix-client
+npm install
+cp .env.example .env
+# set NEXT_PUBLIC_API_URL=http://localhost:5000/api/v1
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+App runs on `http://localhost:3000`. Needs `civix-api` running.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+  app/           # SSG shells only, no per-request data fetch
+  api/           # typed ofetch functions per domain
+  hooks/         # useQuery and useMutation wrappers
+  components/    # tables, forms, sheets, shared UI
+  lib/           # category-matcher, utils, validators
+```
 
-## Learn More
+## Author
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Rocky Chowdhury, Backend Developer, Dhaka, Bangladesh
+Portfolio: https://rockychowdhury.vercel.app | LinkedIn: https://linkedin.com/in/rockychowdhury1
