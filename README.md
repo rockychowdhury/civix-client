@@ -2,7 +2,7 @@
 
 Frontend for Civix, a civic platform where residents report street-level problems and track resolution. Citizens file in under a minute, departments triage and dispatch, technicians resolve from the field.
 
-**Live app:** add your Vercel URL here | **API repo:** [civix-api](https://github.com/rockychowdhury/civix-api)
+**Live app:** [civix](https://civix-issue.vercel.app) | **API repo:** [civix-api](https://github.com/rockychowdhury/civix-api)
 
 ## Why this exists
 
